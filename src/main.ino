@@ -140,12 +140,7 @@ void refreshScreen(Task *me) //screen refresh function all display data goes her
   screen.setText("p3to2_val", String(config.threeTotwo));
 //2to1
   screen.setText("p2to1_val", String(config.twoToone));
-//Tire size
-//Test line
-//testline from ben
-//Another one
 
- 
 //ATF bar + value display on Nextion
 //  screen.setText("atf_value", sensor.curAtfTemp);
 //  screen.setText("atf_bar", sensor.curAtfTemp);
