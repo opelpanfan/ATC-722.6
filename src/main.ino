@@ -1,5 +1,3 @@
-TEST MESSAGE
-
 /*
     722.6 transmission controller
     Copyright (C) 2018 Markus Kovero <mui@mui.fi>
@@ -142,8 +140,9 @@ void refreshScreen(Task *me) //screen refresh function all display data goes her
   screen.setText("p3to2_val", String(config.threeTotwo));
 //2to1
   screen.setText("p2to1_val", String(config.twoToone));
+//Tire size
 
-  
+ 
 //ATF bar + value display on Nextion
 //  screen.setText("atf_value", sensor.curAtfTemp);
 //  screen.setText("atf_bar", sensor.curAtfTemp);
