@@ -1,3 +1,5 @@
+TEST MESSAGE
+
 /*
     722.6 transmission controller
     Copyright (C) 2018 Markus Kovero <mui@mui.fi>
