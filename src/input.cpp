@@ -867,37 +867,37 @@ void keypadWatch(Task *me)
     if (keypadValue > 850 && keypadValue < 870)
     {
       lastPress = millis();
-      keypadControl(100);
+      keypadControl(100);  //Gear UP
     }
     if (keypadValue > 230 && keypadValue < 250)
     {
       lastPress = millis();
-      keypadControl(101);
+      keypadControl(101); //BOOST Override UP
     }
     if (keypadValue > 115 && keypadValue < 140)
     {
       lastPress = millis();
-      keypadControl(200);
+      keypadControl(200); //Gear DOWN
     }
     if (keypadValue > 485 && keypadValue < 510)
     {
       lastPress = millis();
-      keypadControl(201);
+      keypadControl(201); //BOOST Override DOWN
     }
     if (keypadValue > 725 && keypadValue < 750)
     {
       lastPress = millis();
-      keypadControl(249);
+      keypadControl(249); //PWR Counter
     }
     if (keypadValue > 370 && keypadValue < 400)
     {
       lastPress = millis();
-      keypadControl(150);
+      keypadControl(150); //Previous page
     }
     if (keypadValue > 580 && keypadValue < 620)
     {
       lastPress = millis();
-      keypadControl(151);
+      keypadControl(151); //Next page
     }
     if (keypadValue > 950 && keypadValue < 1024)
     {
@@ -911,7 +911,7 @@ void keypadWatch(Task *me)
     }
     if (keypadValue < 902 || keypadValue < 903)
     {
-      keypadControl(55);
+      keypadControl(55); //Horn
     }
   }
 }
