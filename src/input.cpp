@@ -889,7 +889,7 @@ void keypadWatch(Task *me)
       lastPress = millis();
       keypadControl(249);
     }
-    if ((keypadValue > 370 && keypadValue < 400)
+    if (keypadValue > 370 && keypadValue < 400)
     {
       lastPress = millis();
       keypadControl(150);
