@@ -206,6 +206,7 @@ int speedRead()
       }
     }
   }
+  
   return speedValue / (digitalRead(lowGearPin) == HIGH && config.transferRatio > 0 ? config.transferRatio : 1);
   // return vehicleSpeedRevs;
 }
@@ -569,7 +570,7 @@ int atfRead1()
     R2 = 2479;
     }
 
-  int atfTemp = atfRead;
+  int atfTemp = atfRead();
 
   if (wantedGear == 6 || wantedGear == 8)
   {
