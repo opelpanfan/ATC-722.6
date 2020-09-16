@@ -206,10 +206,7 @@ int speedRead()
       }
     }
   }
-<<<<<<< HEAD
-=======
   
->>>>>>> 9d7b35232468a87075f12a0287efabba85040e89
   return speedValue / (digitalRead(lowGearPin) == HIGH && config.transferRatio > 0 ? config.transferRatio : 1);
   // return vehicleSpeedRevs;
 }
