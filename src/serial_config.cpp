@@ -417,7 +417,7 @@ void setConfigFloat(int asset, float value)
 {
     lastActiveConfig = millis();
 
-    if (asset > 49 && asset < 70)
+    if (asset > 49 && asset < 71)
     {
         int assetLocation = asset * 10;
         if (debugEnabled)
@@ -562,7 +562,7 @@ void setConfig(int asset, int value)
 {
     lastActiveConfig = millis();
 
-    if (asset > 49 && asset < 70)
+    if (asset > 49 && asset < 71)
     {
         int assetLocation = asset * 10;
         if (debugEnabled)
