@@ -110,7 +110,7 @@ void pollsensors(Task *me)
 
       if(digitalRead(lowGearPin) == HIGH)
       {
-        vehicleSpeedRevs = vehicleSpeedRevs * 2.0;
+        vehicleSpeedRevs = vehicleSpeedRevs * 2.0; //config.transferRatio
       }
 
       vehicleSpeedPulses = 0;
