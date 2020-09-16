@@ -108,10 +108,7 @@ void pollsensors(Task *me)
       vehicleTravelRevs = vehicleSpeedPulses / config.rearDiffTeeth;
       vehicleSpeedRevs = vehicleSpeedPulses / config.rearDiffTeeth / elapsedTime * 1000 * 60;
 
-      if(digitalRead(lowGearPin) == HIGH)
-      {
-        vehicleSpeedRevs = vehicleSpeedRevs * (config.transferRatio > 0 ? config.transferRatio : 1);
-      }
+      vehicleSpeedRevs = vehicleSpeedRevs * (digitalRead(lowGearPin) == HIGH && config.transferRatio > 0 ? config.transferRatio : 1);
 
       vehicleSpeedPulses = 0;
     }
@@ -209,6 +206,10 @@ int speedRead()
       }
     }
   }
+<<<<<<< HEAD
+=======
+  
+>>>>>>> 9d7b35232468a87075f12a0287efabba85040e89
   return speedValue / (digitalRead(lowGearPin) == HIGH && config.transferRatio > 0 ? config.transferRatio : 1);
   // return vehicleSpeedRevs;
 }
