@@ -33,9 +33,9 @@
 // INPUT PINS
 // Stick input
 #define whitepin 54 // orig pin 27 // 0.5kohm <-> yellow <-> grey-yellow-grey // DIN2 <-> blue
-#define bluepin 52 // orig pin 34 //0.5kohm <-> yellow <-> grey-green-grey // DIN4 <-> green
+#define bluepin 34 //0.5kohm <-> yellow <-> grey-green-grey // DIN4 <-> green
 #define greenpin 26 // 0.5kohm <-> yellow <-> grey-white-grey // DIN1 <-> whiteblue
-#define yellowpin 28     // 0.5kohm <-> yellow <-> grey-black-grey // DIN3 <-> whiteorange
+#define yellowpin 53  // orig pin 28 //0.5kohm <-> yellow <-> grey-black-grey // DIN3 <-> whiteorange
 
 // Switches
 #define autoSwitch 33 // ex. 22, 0.5kohm <-> yellow <-> grey-pink-grey // DIN5
@@ -44,7 +44,7 @@
 #define keypadPin  27 // test pin only, original "whitepin"
 
 //Low Gear Switch
-#define lowGearPin  28 // test pin only, original "bluepin"
+#define lowGearPin  28 // test pin only, original "yellowpin"
 
 
 #define gdownSwitch 23 // ex. 23 <-> NC // DIN6
