@@ -108,10 +108,7 @@ void pollsensors(Task *me)
       vehicleTravelRevs = vehicleSpeedPulses / config.rearDiffTeeth;
       vehicleSpeedRevs = vehicleSpeedPulses / config.rearDiffTeeth / elapsedTime * 1000 * 60;
 
-      if(digitalRead(lowGearPin) == HIGH)
-      {
-        vehicleSpeedRevs = vehicleSpeedRevs * (config.transferRatio > 0 ? config.transferRatio : 1);
-      }
+      vehicleSpeedRevs = vehicleSpeedRevs * (digitalRead(lowGearPin) == HIGH && config.transferRatio > 0 ? config.transferRatio : 1);
 
       vehicleSpeedPulses = 0;
     }
