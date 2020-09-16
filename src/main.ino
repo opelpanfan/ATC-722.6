@@ -101,7 +101,8 @@ void refreshScreen(Task *me) //screen refresh function all display data goes her
   realTPS = realTPS < 0 ? 360 + realTPS : realTPS;
   screen.setVal("tpsGauge", realTPS);
 //RATIO display on Nextion
-  screen.setText("ratioValue", String(sensor.curRatio));
+  screen.setText("ratioValue", String(config.transferRatio));
+  //screen.setText("ratioValue", String(sensor.curRatio));
 //n2 display on Nextion
   screen.setText("n2Value", String(n2Speed));
 //n3 display on Nextion

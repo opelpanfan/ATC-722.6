@@ -141,7 +141,8 @@ void initConfig()
         setConfig(66, 2);
         setConfig(68, 5000);
         setConfig(69, 1);
-        setConfigFloat(67, 1.00);
+        setConfigFloat(67, 1.00);        
+        setConfigFloat(70, 1.00);
         setUpGear(1, 35);
         setUpGear(2, 72);
         setUpGear(3, 80);
