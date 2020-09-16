@@ -209,7 +209,7 @@ int speedRead()
       }
     }
   }
-  return speedValue;
+  return speedValue / (config.transferRatio > 0 ? config.transferRatio : 1);
   // return vehicleSpeedRevs;
 }
 
