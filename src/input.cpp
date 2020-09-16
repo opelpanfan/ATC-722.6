@@ -864,52 +864,52 @@ void keypadWatch(Task *me)
   int keypadValue = analogRead(keypadPin);
   if ((millis() - lastPress > 500))
   {
-    if (keypadValue > 860 && keypadValue < 890)
+    if (keypadValue > 850 && keypadValue < 870)
     {
       lastPress = millis();
       keypadControl(100);
     }
-    if (keypadValue > 730 && keypadValue < 790)
+    if (keypadValue > 230 && keypadValue < 250)
     {
       lastPress = millis();
       keypadControl(101);
     }
-    if (keypadValue > 860 && keypadValue < 890)
+    if (keypadValue > 115 && keypadValue < 140)
     {
       lastPress = millis();
       keypadControl(200);
     }
-    if (keypadValue > 730 && keypadValue < 790)
+    if (keypadValue > 485 && keypadValue < 510)
     {
       lastPress = millis();
       keypadControl(201);
     }
-    if ((keypadValue > 600 && keypadValue < 670) && (keypadValue > 600 && keypadValue < 670))
+    if (keypadValue > 725 && keypadValue < 750)
     {
       lastPress = millis();
       keypadControl(249);
     }
-    if ((keypadValue > 600 && keypadValue < 670) && (keypadValue < 600 && keypadValue > 670))
+    if ((keypadValue > 370 && keypadValue < 400)
     {
       lastPress = millis();
       keypadControl(150);
     }
-    if (keypadValue > 430 && keypadValue < 490)
+    if (keypadValue > 580 && keypadValue < 620)
     {
       lastPress = millis();
       keypadControl(151);
     }
-    if (keypadValue > 600 && keypadValue < 670)
+    if (keypadValue > 950 && keypadValue < 1024)
     {
       lastPress = millis();
       keypadControl(160);
     }
-    if (keypadValue > 430 && keypadValue < 490)
+    if (keypadValue > 900 && keypadValue < 901)
     {
       lastPress = millis();
       keypadControl(161);
     }
-    if (keypadValue < 400 || keypadValue < 400)
+    if (keypadValue < 902 || keypadValue < 903)
     {
       keypadControl(55);
     }
