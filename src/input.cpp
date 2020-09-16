@@ -135,6 +135,12 @@ void canSniff(const CAN_message_t &msg)
       }
     }
   }
+
+  if (frame[0] == 608)
+  {
+
+  }
+
 }
 #endif
 // Polling for stick control

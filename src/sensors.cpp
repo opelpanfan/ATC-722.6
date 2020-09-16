@@ -570,7 +570,7 @@ int atfRead1()
     R2 = 2479;
     }
 
-  int atfTemp = atfRead;
+  int atfTemp = atfRead();
 
   if (wantedGear == 6 || wantedGear == 8)
   {
