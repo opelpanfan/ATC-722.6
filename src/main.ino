@@ -151,7 +151,8 @@ void refreshScreen(Task *me) //screen refresh function all display data goes her
 //screen.setText("PRND", wantedGear == 8 ? "P" : wantedGear == 7 ? "R" : wantedGear == 6 ? "N" : fullAuto < 6 ? "D" : String(wantedGear));
 
 //Battery bar + value display on Nextion
-  screen.setText("bat_value", sensor.curBattery);
+
+  screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10);
   int realBatt = screen.mapInt(sensor.curBattery, 11000, 16000, 0, 100);
   screen.setVal("bat_value", realBatt);
 
