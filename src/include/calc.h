@@ -8,4 +8,6 @@ int readTempMapInverted(const int theMap[14][2], int y);
 int readPercentualMap(const int theMap[14][12], int x, int y);
 int readGearMap(const int theMap[14][6], int x, int y);
 int pressureNormalization(int givenPressure);
+unsigned int hexToDec(String hexString);
+String decToHex(byte decValue, byte desiredStringLength);
 extern int initBVoltage;

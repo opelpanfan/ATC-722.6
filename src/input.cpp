@@ -26,6 +26,7 @@ double boostKi = 7;        //40,7 Pid Integral Gain. Overall change while near T
 const double boostKd = 0;  //100, 1 Pid Derivative Gain.
 double pidBoost, boostPWM, pidBoostLim;
 int boostOverride = 150;
+int canTPS, canRPM, canCoolant;
 
 //Load PID controller
 AutoPID boostPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, boostKp, boostKi, boostKd);
@@ -136,11 +137,39 @@ void canSniff(const CAN_message_t &msg)
     }
   }
 
+  // ID608  7 6D 3B 02 25 FF 01 7E
+  // As i see id: 608 is engine 2nd bit is coolant temp = 3B.
+  // Quote:
+  //     if(rxId  == 0x608){
+  //      {
+  //          T=(rxBuf[0]-40);
+  // 3B > hex to dec = 59
+  // 59-40=19 *C
+  // Thats how it works
   if (frame[0] == 608)
   {
-
+    canCoolant = hexToDec(frame[2]) - 40;
   }
 
+  // 210 8 02 FF 00 02 00 08 00 FF
+  // pressed maximum
+  // 210 8 02 FF FA 02 00 08 81 FF
+  // calculation for TPS
+  // 100*A/255
+  // 100*FA/255 = 98%
+  // FA HEX = 250 DEC
+  if (frame[0] == 210)
+  {
+    canTPS = 100 * hexToDec(frame[7]) / 255; // (frame[7] << 8);
+  }
+
+  // ID308 8 00 02 78 00 00 FF FF FF // idle
+  // 256 x 02 + 78 (02 to dec & 78 to dec)
+  // 256 x 2 + 120 = 632 RPM
+  if (frame[0] == 308)
+  {
+    canRPM = 256 * hexToDec(frame[1]) + hexToDec(frame[2]);
+  }
 }
 #endif
 // Polling for stick control
@@ -873,7 +902,7 @@ void keypadWatch(Task *me)
     if (keypadValue > 850 && keypadValue < 870)
     {
       lastPress = millis();
-      keypadControl(100);  //Gear UP
+      keypadControl(100); //Gear UP
     }
     if (keypadValue > 230 && keypadValue < 250)
     {
