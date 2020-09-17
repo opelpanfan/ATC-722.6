@@ -76,6 +76,9 @@ int realLOAD = 0;
 int realTPS = 0;
 int realRPM2 = 0;
 int realATF2 = 0;
+int realtps_Bar = 0;
+int realload_Bar = 0;
+
 
 void refreshScreen(Task *me) //screen refresh function all display data goes here
 {
@@ -144,9 +147,13 @@ void refreshScreen(Task *me) //screen refresh function all display data goes her
 //2to1
   screen.setText("p2to1_val", String(config.twoToone));
 //TPS bar
-screen.setText("tps_BAR", sensor.curTps);
+screen.setText("tps_Bar", sensor.curTps);
+int realtps_Bar = screen.mapInt(sensor.curTps, 0, 100, 0, 100);
+screen.setVal("tps_Bar", realtps_Bar);
 //Load bar
-screen.setText("load_BAR", sensor.curLoad);
+screen.setText("load_Bar", sensor.curLoad);
+int realload_Bar = screen.mapInt(sensor.curLoad, 0, 100, 0, 100);
+screen.setVal("load_Bar", realload_Bar);
 
 //  screen.setText("atf_bar", sensor.curAtfTemp);
 //  int realATF = screen.mapInt(sensor.curAtfTemp, -40, 130, 0, 100);
