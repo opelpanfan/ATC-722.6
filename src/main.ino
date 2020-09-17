@@ -160,7 +160,7 @@ screen.setText("load_BAR", sensor.curLoad);
 
 //Battery bar + value display on Nextion
 
-screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10);
+screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10));
   int realBatt = screen.mapInt(sensor.curBattery, 11000, 16000, 0, 100);
   screen.setVal("bat_value", realBatt);
 
