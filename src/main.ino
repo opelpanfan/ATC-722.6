@@ -23,6 +23,8 @@
     Liia Ahola for pcb tracing
     Joosep Vahar for testing
     Toni Lassila and Jan Blonski for ideas
+    Krzysztof Dymianiuk for hardware design, coding, Nextion support and ideas
+    Benas Brazdziunas for coding and helping with Nextion support
 */
 
 #include <Arduino.h>
