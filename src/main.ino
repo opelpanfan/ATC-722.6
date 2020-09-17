@@ -108,7 +108,7 @@ void refreshScreen(Task *me) //screen refresh function all display data goes her
 //n3 display on Nextion
   screen.setText("n3Value", String(n3Speed));
 //RPM2 (main window) display
-  realRPM2 = screen.mapInt(sensor.curRPM, 0, 7000, 0, 180) - 90;
+  realRPM2 = screen.mapInt(sensor.curRPM, 0, 7000, 0, 252);
   realRPM2 = realRPM2 < 0 ? 360 + realRPM2 : realRPM2;
   screen.setVal("rpmGauge2", realRPM2);
 // ATF2 (main window)Nextion
@@ -141,6 +141,14 @@ void refreshScreen(Task *me) //screen refresh function all display data goes her
   screen.setText("p3to2_val", String(config.threeTotwo));
 //2to1
   screen.setText("p2to1_val", String(config.twoToone));
+//TPS bar
+screen.setText("tps_BAR", sensor.curTps);
+//Load bar
+screen.setText("load_BAR", sensor.curLoad);
+
+//  screen.setText("atf_bar", sensor.curAtfTemp);
+//  int realATF = screen.mapInt(sensor.curAtfTemp, -40, 130, 0, 100);
+//  screen.setVal("atf_bar", realATF);
 
 //ATF bar + value display on Nextion
 //  screen.setText("atf_value", sensor.curAtfTemp);
@@ -152,7 +160,7 @@ void refreshScreen(Task *me) //screen refresh function all display data goes her
 
 //Battery bar + value display on Nextion
 
-  screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10);
+screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10);
   int realBatt = screen.mapInt(sensor.curBattery, 11000, 16000, 0, 100);
   screen.setVal("bat_value", realBatt);
 
