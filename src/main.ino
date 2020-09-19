@@ -121,9 +121,12 @@ void refreshScreen(Task *me) //screen refresh function all display data goes her
   realATF2 = realATF2 < 0 ? 360 + realATF2 : realATF2;
   screen.setVal("atfGauge2", realATF2);
 //PRND graphics display on Nextion
-  screen.setPic("gear", wantedGear == 8 ? 3 : wantedGear == 7 ? 4 : (wantedGear < 6 &&  wantedGear > 0) ? 6 : 5);
+  //wantedGear 6 = N
+  //wantedGear 7 = R
+  //wantedGear 8 = P
+  screen.setPic("gear", wantedGear == 8 ? 3 : wantedGear == 7 ? 4 : (wantedGear < 6 &&  wantedGear > 0) ? 6 : 3);
 //Current Gear graphics display
-  screen.setPic("curGear", gear == 5 ? 11 : gear == 4 ? 10 : gear == 3 ? 9 : gear == 2 ? 8 : gear == 1 ? 7 : 7);
+  screen.setPic("curGear", gear == 5 ? 11 : gear == 4 ? 10 : gear == 3 ? 9 : gear == 2 ? 8 : gear == 1 ? 7 : 8);
 //Gear display on Nextion
   screen.setText("gear_number", String(gear));
 //Speed display on Nextion
