@@ -19,8 +19,8 @@ byte newGear = 2;
 byte pendingGear = 2;
 float ratio;
 // Shift pressure defaults
-int spcPercentVal = 100;
-int mpcPercentVal = 100;
+int spcPercentVal = 23; //100
+int mpcPercentVal = 11; //100
 
 // for timers
 unsigned long int shiftStartTime, shiftStopTime, delaySinceLast = 0;
@@ -609,15 +609,15 @@ float ratioFromGear(int inputGear)
   switch (inputGear)
   {
   case 1:
-    gearRatio = 3.59;
+    gearRatio = 3.932; // 3.932 4-6 cyl // 3.59 8-12 cyl
     return gearRatio;
     break;
   case 2:
-    gearRatio = 2.19;
+    gearRatio = 2.408; // 2.408 4-6 cyl // 2.19 8-12 cyl
     return gearRatio;
     break;
   case 3:
-    gearRatio = 1.41;
+    gearRatio = 1.486; // 1.486 4-6 cyl // 1.41 8-12 cyl
     return gearRatio;
     break;
   case 4:
@@ -625,7 +625,7 @@ float ratioFromGear(int inputGear)
     return gearRatio;
     break;
   case 5:
-    gearRatio = 0.83;
+    gearRatio = 0.83; // 0.83
     return gearRatio;
     break;
   default:
