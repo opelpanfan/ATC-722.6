@@ -19,8 +19,8 @@ byte newGear = 2;
 byte pendingGear = 2;
 float ratio;
 // Shift pressure defaults
-int spcPercentVal = 23; //100
-int mpcPercentVal = 11; //100
+int spcPercentVal = 2; //100
+int mpcPercentVal = 2; //100
 
 // for timers
 unsigned long int shiftStartTime, shiftStopTime, delaySinceLast = 0;
