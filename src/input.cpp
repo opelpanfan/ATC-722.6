@@ -44,7 +44,7 @@ double garageTime, lastShift, lastInput, hornPressTime, lastPress;
 int lockVal = 0;
 
 
-double canTPS, canRPM, canCoolant;
+double canTPS, canRPM, canCoolant, canSpeed;
 
 
 #ifdef CANBUS
@@ -172,6 +172,13 @@ void canSniff(const CAN_message_t &msg)
   {
     canRPM = 256 * hexToDec(frame[1]) + hexToDec(frame[2]);
   }
+  
+  // ID200 8 00 18 02 9F 02 9A 02 9C // speed
+  if (frame[0] == 200)
+  {
+    canSpeed = 256 * hexToDec(frame[1]);
+  }
+
 }
 #endif
 // Polling for stick control

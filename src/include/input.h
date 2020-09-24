@@ -50,3 +50,4 @@ extern double lastPress;
 extern double canTPS;
 extern double canRPM;
 extern double canCoolant;
+extern double canSpeed;

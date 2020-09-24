@@ -217,7 +217,7 @@ void draw(int wantedGear)
       u8g2.setCursor(0, 50);
       u8g2.print(F("Boost:"));
       u8g2.setCursor(0, 60);
-      u8g2.print(canCoolant);
+      u8g2.print(sensor.curBoost);
       u8g2.setCursor(25, 60);
       u8g2.print(maxBoost);
     }
