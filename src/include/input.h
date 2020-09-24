@@ -46,3 +46,7 @@ extern double boostPWM;
 extern boolean boostLimitShift;
 extern int boostOverride;
 extern double lastPress;
+
+extern double canTPS;
+extern double canRPM;
+extern double canCoolant;

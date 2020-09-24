@@ -26,8 +26,6 @@ double boostKi = 7;        //40,7 Pid Integral Gain. Overall change while near T
 const double boostKd = 0;  //100, 1 Pid Derivative Gain.
 double pidBoost, boostPWM, pidBoostLim;
 int boostOverride = 150;
-int canTPS, canRPM, canCoolant;
-
 //Load PID controller
 AutoPID boostPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, boostKp, boostKi, boostKd);
 
@@ -44,6 +42,10 @@ bool justStarted = true;
 boolean garageShift, garageShiftMove, tpsConfigMode, tpsInitPhase1, tpsInitPhase2 = false;
 double garageTime, lastShift, lastInput, hornPressTime, lastPress;
 int lockVal = 0;
+
+
+double canTPS, canRPM, canCoolant;
+
 
 #ifdef CANBUS
 Circular_Buffer<uint32_t, cbsize> ids;
