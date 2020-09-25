@@ -200,26 +200,26 @@ void draw(int wantedGear)
       }
     }
     u8g2.setFont(u8g2_font_5x8_tr);
-    u8g2.setCursor(0, 10);
+    u8g2.setCursor(3, 10);
     u8g2.print("atfTemp:");
-    u8g2.setCursor(0, 20);
+    u8g2.setCursor(3, 20);
     u8g2.print(sensor.curAtfTemp);
-    u8g2.setCursor(25, 20);
-    u8g2.print(maxAtfTemp);
-    u8g2.setCursor(0, 30);
-    u8g2.print(F("oilTemp:"));
-    u8g2.setCursor(0, 40);
-    u8g2.print(sensor.curOilTemp);
-    u8g2.setCursor(25, 40);
-    u8g2.print(maxOilTemp);
+    u8g2.setCursor(28, 20);
+    //u8g2.print(maxAtfTemp);
+    u8g2.setCursor(3, 30);
+    u8g2.print(F("load:"));
+    u8g2.setCursor(3, 40);
+    u8g2.print(sensor.curLoad);
+    u8g2.setCursor(28, 40);
+    //u8g2.print(maxOilTemp);
     if (boostCtrl)
     {
-      u8g2.setCursor(0, 50);
-      u8g2.print(F("Boost:"));
-      u8g2.setCursor(0, 60);
-      u8g2.print(sensor.curBoost);
-      u8g2.setCursor(25, 60);
-      u8g2.print(maxBoost);
+      u8g2.setCursor(3, 50);
+      u8g2.print(F("canCoolant:"));
+      u8g2.setCursor(3, 60);
+      u8g2.print(canCoolant);
+      u8g2.setCursor(28, 60);
+      //u8g2.print(maxBoost);
     }
     if (exhaustPresSensor)
     {
