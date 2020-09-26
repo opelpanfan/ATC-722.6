@@ -233,7 +233,8 @@ void draw(int wantedGear)
       u8g2.setCursor(100, 10);
       u8g2.print(F("RPM:"));
       u8g2.setCursor(100, 20);
-      u8g2.print(sensor.curRPM);
+      //u8g2.print(sensor.curRPM);
+      u8g2.print(canRPM);
     }
     if (tpsSensor)
     {
