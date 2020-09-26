@@ -140,17 +140,17 @@ void canSniff(const CAN_message_t &msg)
   }
 
   // ID608  7 6D 3B 02 25 FF 01 7E
-  // As i see id: 608 is engine 2nd bit is coolant temp = 3B.
+  // 6D is a coolant data - 40
   // Quote:
   //     if(rxId  == 0x608){
   //      {
   //          T=(rxBuf[0]-40);
-  // 3B > hex to dec = 59
-  // 59-40=19 *C
+  // 6D > hex to dec = 109
+  // 109-40=69 *C
   // Thats how it works
   if (frame[0] == 608)
   {
-    canCoolant = hexToDec(frame[2]) - 40;
+    canCoolant = hexToDec(frame[1]) - 40;
   }
 
   // 210 8 02 FF 00 02 00 08 00 FF

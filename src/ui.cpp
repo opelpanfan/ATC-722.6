@@ -201,7 +201,7 @@ void draw(int wantedGear)
     }
     u8g2.setFont(u8g2_font_5x8_tr);
     u8g2.setCursor(3, 10);
-    u8g2.print("atfTemp:");
+    u8g2.print("ATF:");
     u8g2.setCursor(3, 20);
     u8g2.print(sensor.curAtfTemp);
     u8g2.setCursor(28, 20);
@@ -215,7 +215,7 @@ void draw(int wantedGear)
     if (boostCtrl)
     {
       u8g2.setCursor(3, 50);
-      u8g2.print(F("canCoolant:"));
+      u8g2.print(F("canCLT:"));
       u8g2.setCursor(3, 60);
       u8g2.print(canCoolant);
       u8g2.setCursor(28, 60);
