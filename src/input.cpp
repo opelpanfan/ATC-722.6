@@ -184,7 +184,7 @@ void canSniff(const CAN_message_t &msg)
   // CAN ID200
   if (frame[0] == 512)
   {
-    canSpeed = ((frame[3]) + (frame[5]) * 8 + (((frame[4]) + (frame[6])) / 2) / 15);
+    canSpeed = (((frame[3]) + (frame[5]) * 8 + (((frame[4]) + (frame[6])) / 2) / 15));
   }
 
 }
