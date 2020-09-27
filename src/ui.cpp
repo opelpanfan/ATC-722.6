@@ -185,28 +185,28 @@ void draw(int wantedGear)
     if (diffSpeed || rpmSpeed)
     {
       u8g2.setFont(u8g2_font_fub14_tf);
-      u8g2.setCursor(60, 40);
+      u8g2.setCursor(43, 40);
       u8g2.print(sensor.curSpeed);
       if (truePower)
       {
-        u8g2.setCursor(45, 60);
+        u8g2.setCursor(42, 60);
         u8g2.print(F("km/h"));
       }
       else
       {
-        u8g2.setCursor(45, 60);
+        u8g2.setCursor(42, 60);
         u8g2.print(F("km/h"));
       }
     }
     u8g2.setFont(u8g2_font_5x8_tr);
     u8g2.setCursor(3, 10);
-    u8g2.print("ATF:");
+    u8g2.print("ATF");
     u8g2.setCursor(3, 20);
     u8g2.print(sensor.curAtfTemp);
     u8g2.setCursor(28, 20);
     //u8g2.print(maxAtfTemp);
     u8g2.setCursor(3, 30);
-    u8g2.print(F("load:"));
+    u8g2.print(F("LOAD"));
     u8g2.setCursor(3, 40);
     u8g2.print(sensor.curLoad);
     u8g2.setCursor(28, 40);
@@ -214,7 +214,7 @@ void draw(int wantedGear)
     if (boostCtrl)
     {
       u8g2.setCursor(3, 50);
-      u8g2.print(F("canCLT:"));
+      u8g2.print(F("CLT"));
       u8g2.setCursor(3, 60);
       u8g2.print(canCoolant);
       u8g2.setCursor(28, 60);
@@ -230,26 +230,24 @@ void draw(int wantedGear)
     if (w124rpm)
     {
       u8g2.setCursor(96, 10);
-      u8g2.print(F("canRPM"));
+      u8g2.print(F("RPM"));
       u8g2.setCursor(96, 20);
-      //u8g2.print(sensor.curRPM);
-      u8g2.print(canRPM);
+      u8g2.print(sensor.curRPM);
+      //u8g2.print(canRPM);
     }
     if (tpsSensor)
     {
       u8g2.setCursor(96, 30);
-      u8g2.print(F("TPS:"));
+      u8g2.print(F("TPS"));
       u8g2.setCursor(96, 40);
       u8g2.print(sensor.curTps);
     }
     if (exhaustTempSensor)
     {
       u8g2.setCursor(96, 50);
-      //u8g2.print(F("BATT:"));
-      u8g2.print(F("canSPD"));
+      u8g2.print(F("BATT"));
       u8g2.setCursor(96, 60);
-      //u8g2.print(sensor.curBattery);
-      u8g2.print(canSpeed);
+      u8g2.print(sensor.curBattery);
     }
   }
   else if (page == 2 && infoDisplay == 0)
