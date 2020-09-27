@@ -176,7 +176,7 @@ void canSniff(const CAN_message_t &msg)
   // ID200 8 00 18 02 9F 02 9A 02 9C // speed
   if (frame[0] == 200)
   {
-    canSpeed = (hexToDec(frame[3]) + hexToDec(frame[5]) * 8 + (hexToDec(frame[4]) + hexToDec(frame[6])) / 2) / 15;
+    canSpeed = (hexToDec(frame[3]) + hexToDec(frame[5]) * 8 + ((hexToDec(frame[4]) + hexToDec(frame[6])) / 2) / 15);
   }
 
 }
