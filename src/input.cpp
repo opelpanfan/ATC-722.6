@@ -152,7 +152,7 @@ void canSniff(const CAN_message_t &msg)
   // CAN ID 608 - HEX to DEC = 1544
   if (frame[0] == 1544)
   {
-    canCoolant = hexToDec(frame[1]) - 40;
+    canCoolant = (frame[1]) - 40;
   }
 
   // CAN-BUS TPS
@@ -166,7 +166,7 @@ void canSniff(const CAN_message_t &msg)
   // CAN ID210
   if (frame[0] == 528)
   {
-    canTPS = 100 * hexToDec(frame[7]) / 255; // (frame[7] << 8);
+    canTPS = 100 * (frame[7]) / 255; // (frame[7] << 8);
   }
 
   // CAN-BUS RPM
@@ -176,7 +176,7 @@ void canSniff(const CAN_message_t &msg)
   // CAN ID308
   if (frame[0] == 776)
   {
-    canRPM = 256 * hexToDec(frame[1]) + hexToDec(frame[2]);
+    canRPM = 256 * (frame[2]) + (frame[3]);
   }
   
   // CAN-BUS SPEED
@@ -184,7 +184,7 @@ void canSniff(const CAN_message_t &msg)
   // CAN ID200
   if (frame[0] == 512)
   {
-    canSpeed = (hexToDec(frame[3]) + hexToDec(frame[5]) * 8 + ((hexToDec(frame[4]) + hexToDec(frame[6])) / 2) / 15);
+    canSpeed = ((frame[3]) + (frame[5]) * 8 + (((frame[4]) + (frame[6])) / 2) / 15);
   }
 
 }
