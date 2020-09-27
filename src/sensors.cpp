@@ -160,11 +160,17 @@ void pollsensors(Task *me)
 int speedRead()
 {
   int curRPM = rpmRead();
-  int vehicleSpeedRPM = 0, vehicleSpeedDiff = 0, speedValue = 0;
+  int vehicleSpeedRPM = 0, vehicleSpeedDiff = 0, speedValue = 0, canSpeed = 0;
 
   // int vehicleSpeed = 0.03654 * vehicleSpeedRevs; // 225/45/17 with 3.27 rear diff
   float tireDiameter = (config.tireWidth * config.tireProfile / 2540 * 2 + config.tireInches) * 25.4;
   float tireCircumference = 3.14 * tireDiameter;
+
+  if (canSpeed)
+  {
+    // speed based on CAN-BUS readings
+    speedValue = canSpeed;
+  }
   if (rpmSpeed)
   {
     // speed based on engine rpm

@@ -115,7 +115,7 @@ void draw(int wantedGear)
       u8g2.setCursor(10, 40);
       u8g2.print(F("Speedmon"));
       u8g2.setCursor(10, 60);
-      if (diffSpeed && rpmSpeed) {
+      if (diffSpeed && rpmSpeed && canSpeed) {
       u8g2.print(F("on"));
       } else {
       u8g2.print(F("off"));   
@@ -183,7 +183,7 @@ void draw(int wantedGear)
       u8g2.print(gear);
       u8g2.print(F(")"));
     }
-    if (diffSpeed || rpmSpeed)
+    if (diffSpeed || rpmSpeed || canSpeed)
     {
       u8g2.setFont(u8g2_font_fub14_tf);
       u8g2.setCursor(60, 40);
