@@ -32,6 +32,9 @@ extern boolean boostLimit;
 extern boolean boostLimitShift;
 extern boolean resistiveStick;
 extern struct ConfigParam config;
+
+extern boolean useCanSensors;
+
 void initConfig();
 void pollConfigMode();
 void getFeatures();

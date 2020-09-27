@@ -43,9 +43,7 @@ boolean garageShift, garageShiftMove, tpsConfigMode, tpsInitPhase1, tpsInitPhase
 double garageTime, lastShift, lastInput, hornPressTime, lastPress;
 int lockVal = 0;
 
-
 double canTPS, canRPM, canCoolant, canSpeed;
-
 
 #ifdef CANBUS
 Circular_Buffer<uint32_t, cbsize> ids;
@@ -139,54 +137,57 @@ void canSniff(const CAN_message_t &msg)
     }
   }
 
-  // CAB-BUS COOLANT
-  // ID608  7 6D 3B 02 25 FF 01 7E
-  // 6D is a coolant data - 40
-  // Quote:
-  //     if(rxId  == 0x608){
-  //      {
-  //          T=(rxBuf[0]-40);
-  // 6D > hex to dec = 109
-  // 109-40=69 *C
-  // Thats how it works
-  // CAN ID 608 - HEX to DEC = 1544
-  if (frame[0] == 1544)
+  if (useCanSensors)
   {
-    canCoolant = (frame[1]) - 40;
-  }
 
-  // CAN-BUS TPS
-  // 210 8 02 FF 00 02 00 08 00 FF
-  // pressed maximum
-  // 210 8 02 FF FA 02 00 08 81 FF
-  // calculation for TPS
-  // 100*A/255
-  // 100*FA/255 = 98%
-  // FA HEX = 250 DEC
-  // CAN ID210
-  if (frame[0] == 528)
-  {
-    canTPS = 100 * (frame[3]) / 255; // (frame[7] << 8);
-  }
+    // CAB-BUS COOLANT
+    // ID608  7 6D 3B 02 25 FF 01 7E
+    // 6D is a coolant data - 40
+    // Quote:
+    //     if(rxId  == 0x608){
+    //      {
+    //          T=(rxBuf[0]-40);
+    // 6D > hex to dec = 109
+    // 109-40=69 *C
+    // Thats how it works
+    // CAN ID 608 - HEX to DEC = 1544
+    if (frame[0] == 1544)
+    {
+      canCoolant = (frame[1]) - 40;
+    }
 
-  // CAN-BUS RPM
-  // ID308 8 00 02 78 00 00 FF FF FF // idle
-  // 256 x 02 + 78 (02 to dec & 78 to dec)
-  // 256 x 2 + 120 = 632 RPM
-  // CAN ID308
-  if (frame[0] == 776)
-  {
-    canRPM = 256 * (frame[2]) + (frame[3]);
-  }
-  
-  // CAN-BUS SPEED
-  // ID200 8 00 18 02 9F 02 9A 02 9C // speed
-  // CAN ID200
-  if (frame[0] == 512)
-  {
-    canSpeed = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
-  }
+    // CAN-BUS TPS
+    // 210 8 02 FF 00 02 00 08 00 FF
+    // pressed maximum
+    // 210 8 02 FF FA 02 00 08 81 FF
+    // calculation for TPS
+    // 100*A/255
+    // 100*FA/255 = 98%
+    // FA HEX = 250 DEC
+    // CAN ID210
+    if (frame[0] == 528)
+    {
+      canTPS = 100 * (frame[3]) / 255; // (frame[7] << 8);
+    }
 
+    // CAN-BUS RPM
+    // ID308 8 00 02 78 00 00 FF FF FF // idle
+    // 256 x 02 + 78 (02 to dec & 78 to dec)
+    // 256 x 2 + 120 = 632 RPM
+    // CAN ID308
+    if (frame[0] == 776)
+    {
+      canRPM = 256 * (frame[2]) + (frame[3]);
+    }
+
+    // CAN-BUS SPEED
+    // ID200 8 00 18 02 9F 02 9A 02 9C // speed
+    // CAN ID200
+    if (frame[0] == 512)
+    {
+      canSpeed = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
+    }
+  }
 }
 #endif
 // Polling for stick control

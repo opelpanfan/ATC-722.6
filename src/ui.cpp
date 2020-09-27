@@ -115,7 +115,7 @@ void draw(int wantedGear)
       u8g2.setCursor(10, 40);
       u8g2.print(F("Speedmon"));
       u8g2.setCursor(10, 60);
-      if (diffSpeed && rpmSpeed && canSpeed) {
+      if (diffSpeed && rpmSpeed) {
       u8g2.print(F("on"));
       } else {
       u8g2.print(F("off"));   
@@ -177,13 +177,12 @@ void draw(int wantedGear)
     }
     if (fullAuto && wantedGear < 6)
     {
-
       u8g2.setCursor(50, 20);
       u8g2.print(F("D("));
       u8g2.print(gear);
       u8g2.print(F(")"));
     }
-    if (diffSpeed || rpmSpeed || canSpeed)
+    if (diffSpeed || rpmSpeed)
     {
       u8g2.setFont(u8g2_font_fub14_tf);
       u8g2.setCursor(60, 40);
@@ -239,10 +238,9 @@ void draw(int wantedGear)
     if (tpsSensor)
     {
       u8g2.setCursor(96, 30);
-      u8g2.print(F("canTPS:"));
+      u8g2.print(F("TPS:"));
       u8g2.setCursor(96, 40);
-      //u8g2.print(sensor.curTps);
-      u8g2.print(canTPS);
+      u8g2.print(sensor.curTps);
     }
     if (exhaustTempSensor)
     {
@@ -557,7 +555,14 @@ void datalog(Task *me)
     Serial.print( wantedGear );
     Serial.print(F(";"));
     Serial.println(sensor.curExTemp);
-
+    Serial.print(F(";"));
+    Serial.print(canRPM);
+    Serial.print(F(";"));
+    Serial.print(canSpeed);
+    Serial.print(F(";"));
+    Serial.print(canCoolant);
+    Serial.print(F(";"));
+    Serial.print(canTPS);
   }
     counter++;
 }

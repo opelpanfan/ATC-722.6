@@ -313,6 +313,10 @@ void getFeatures()
     Serial.print(";");
     Serial.print("23:");
     Serial.println(int(resistiveStick));
+    Serial.print(";");
+    Serial.print("24:");
+    Serial.println(int(useCanSensors));
+    
 }
 
 void setFeatures(int asset, int value)
@@ -403,6 +407,9 @@ void setFeatures(int asset, int value)
         break;
     case 23:
         resistiveStick = boolean(value);
+        break;
+    case 24:
+        useCanSensors = boolean(value);
         break;
     default:
         break;

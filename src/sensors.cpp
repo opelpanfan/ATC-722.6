@@ -15,7 +15,6 @@
 #include <SoftTimer.h>
 using namespace std;
 
-
 // Internals
 unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, rpmPulse, curLog, lastLog, fuelIn, fuelOut, fuelUsed, fuelUsedAvg, vehicleTravelRevs, vehicleTravelDiff;
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
@@ -26,7 +25,7 @@ int exhaustSensorOffset = analogRead(exhaustPresPin);
 int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgOilTemp, evalGearVal, avgAtfRef, avgOilRef;
 float alpha = 0.7, gearSlip;
 FilterOnePole filterOneLowpass(LOWPASS, 1);      // for atfTemp
-FilterOnePole filterOneLowpass2(LOWPASS, 5.0);     // for oilTemp
+FilterOnePole filterOneLowpass2(LOWPASS, 5.0);   // for oilTemp
 FilterOnePole boostSensorFilter(LOWPASS, 1);     // for oilTemp
 FilterOnePole exhaustPressureFilter(LOWPASS, 1); // for oilTemp
 
@@ -130,7 +129,6 @@ void pollsensors(Task *me)
       rpmPulse = 0;
     }
 
-
     //fuelUsed = fuelIn - fuelOut;
     //fuelUsedAvg = fuelUsedAvg * 5 + fuelUsed / 6;
     // fuelIn = 0;
@@ -160,59 +158,61 @@ void pollsensors(Task *me)
 int speedRead()
 {
   int curRPM = rpmRead();
-  int vehicleSpeedRPM = 0, vehicleSpeedDiff = 0, speedValue = 0, canSpeed = 0;
+  int vehicleSpeedRPM = 0, vehicleSpeedDiff = 0, speedValue = 0;
 
   // int vehicleSpeed = 0.03654 * vehicleSpeedRevs; // 225/45/17 with 3.27 rear diff
   float tireDiameter = (config.tireWidth * config.tireProfile / 2540 * 2 + config.tireInches) * 25.4;
   float tireCircumference = 3.14 * tireDiameter;
 
-  if (canSpeed)
+  if (useCanSensors)
   {
-    // speed based on CAN-BUS readings
     speedValue = canSpeed;
   }
-  if (rpmSpeed)
+  else
   {
-    // speed based on engine rpm
-    vehicleSpeedRPM = tireCircumference * curRPM / (ratioFromGear(gear) * config.diffRatio) / 1000000 * 60;
-    speedValue = vehicleSpeedRPM;
-  }
-  if (diffSpeed)
-  {
-    // speed based on diff abs sensor
-    vehicleSpeedDiff = tireCircumference * vehicleSpeedRevs / config.diffRatio / 1000000 * 60;
-    speedValue = vehicleSpeedDiff;
-    vehicleTravelDiff = tireCircumference * vehicleTravelRevs / 1000000;
-  }
-  if (rpmSpeed && diffSpeed)
-  {
-    if (vehicleSpeedRPM / (float)vehicleSpeedDiff > 1.3 || vehicleSpeedRPM / (float)vehicleSpeedDiff < 0.7)
+    if (rpmSpeed)
     {
-      if (!speedFault)
+      // speed based on engine rpm
+      vehicleSpeedRPM = tireCircumference * curRPM / (ratioFromGear(gear) * config.diffRatio) / 1000000 * 60;
+      speedValue = vehicleSpeedRPM;
+    } 
+    else if (diffSpeed)
+    {
+      // speed based on diff abs sensor
+      vehicleSpeedDiff = tireCircumference * vehicleSpeedRevs / config.diffRatio / 1000000 * 60;
+      speedValue = vehicleSpeedDiff;
+      vehicleTravelDiff = tireCircumference * vehicleTravelRevs / 1000000;
+    }
+    else if (rpmSpeed && diffSpeed)
+    {
+      if (vehicleSpeedRPM / (float)vehicleSpeedDiff > 1.3 || vehicleSpeedRPM / (float)vehicleSpeedDiff < 0.7)
       {
-        speedFault = true; // if both sensors are enabled and difference is too great, then create a fault.
-        /* if (debugEnabled)
+        if (!speedFault)
+        {
+          speedFault = true; // if both sensors are enabled and difference is too great, then create a fault.
+          /* if (debugEnabled)
           {
           Serial.print(F("SPEED FAULT: detected - autoshift disabled "));
           Serial.print(vehicleSpeedDiff);
           Serial.print(F("-"));
           Serial.println(vehicleSpeedRPM);
           }*/
+        }
       }
-    }
-    else
-    {
-      if (speedFault)
+      else
       {
-        speedFault = false; // we're in sync, good to go
-        if (debugEnabled)
+        if (speedFault)
         {
-          Serial.println(F("SPEED FAULT: recovery"));
+          speedFault = false; // we're in sync, good to go
+          if (debugEnabled)
+          {
+            Serial.println(F("SPEED FAULT: recovery"));
+          }
         }
       }
     }
   }
-  
+
   return speedValue / (digitalRead(lowGearPin) == HIGH && config.transferRatio > 0 ? config.transferRatio : 1);
   // return vehicleSpeedRevs;
 }
@@ -220,7 +220,10 @@ int speedRead()
 int tpsRead()
 {
   int tpsPercentValue = 0;
-  if (tpsSensor)
+  if (useCanSensors) {
+    tpsPercentValue = canTPS;
+  } 
+  else if (tpsSensor)
   {
     float refRead = analogRead(refPin);
     float refTps = refRead / 1023 * 3.3;
@@ -290,6 +293,10 @@ void tpsInit(int action)
 int rpmRead()
 {
 
+  if (useCanSensors) {
+    rpmRevs = canRPM;
+  } 
+  
   if (rpmRevs > config.maxRPM)
   {
     rpmRevs = config.maxRPM;
@@ -325,7 +332,7 @@ int oilRead()
   */
   //float c1 = 1.689126553357672e-03, c2 = 8.951863613981253e-05, c3 = 2.411208545519697e-05;
   static float oilTemp;
- /* if (!shiftBlocker)
+  /* if (!shiftBlocker)
   {
     float c1 = 1.268318203e-03, c2 = 2.662206632e-04, c3 = 1.217978476e-07;
     float refRead = analogRead(refPin);
@@ -349,24 +356,23 @@ int oilRead()
     else {
     avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
     }*/
- //   int R2 = 0;
- if (!shiftBlocker)
-{
- float refRead = analogRead(refPin);
-  float tempRead = analogRead(oilPin);
-  filterOneLowpass2.input(tempRead);
-  float refVoltage = (refRead+30) * 5.0 / 1024;
-  float ref3V3 = (refRead+30) * 3.3 / 1024;
-  float buffer = tempRead * refVoltage;
-//  Serial.print("buffer: ");
-//  Serial.println(buffer);
-  float outVoltage = (buffer)/(refRead+30);
-  buffer = (refVoltage/outVoltage) -1;
-  
-  int R2 = 4700 * (1/(((ref3V3)/(outVoltage))-1)) - 70;
+  //   int R2 = 0;
+  if (!shiftBlocker)
+  {
+    float refRead = analogRead(refPin);
+    float tempRead = analogRead(oilPin);
+    filterOneLowpass2.input(tempRead);
+    float refVoltage = (refRead + 30) * 5.0 / 1024;
+    float ref3V3 = (refRead + 30) * 3.3 / 1024;
+    float buffer = tempRead * refVoltage;
+    //  Serial.print("buffer: ");
+    //  Serial.println(buffer);
+    float outVoltage = (buffer) / (refRead + 30);
+    buffer = (refVoltage / outVoltage) - 1;
+
+    int R2 = 4700 * (1 / (((ref3V3) / (outVoltage)) - 1)) - 70;
     oilTemp = readTempMapInverted(oilSensorMap, R2);
-  
-}
+  }
   return oilTemp;
 
   /*
@@ -392,15 +398,16 @@ int boostRead()
   {
     //reading MAP/boost
     int refRead = analogRead(refPin);
-    boostVoltage = ( analogRead(boostPin) - boostSensorOffset ) * ( 3.3 / refRead );
-    boostValue =  boostVoltage * 700 / 2.95;
+    boostVoltage = (analogRead(boostPin) - boostSensorOffset) * (3.3 / refRead);
+    boostValue = boostVoltage * 700 / 2.95;
     boostSensorFilter.input(boostValue);
     boostValue = boostSensorFilter.output();
   }
-  if (boostValue < 0) { 
+  if (boostValue < 0)
+  {
     boostValue = 0;
   }
-  
+
   return boostValue;
 }
 
@@ -412,15 +419,16 @@ int exhaustPressureRead()
   {
     //reading exhaust pressure
     int refRead = analogRead(refPin);
-    exhaustPresVol = ( analogRead(exhaustPresPin) - exhaustSensorOffset ) * ( 3.3 / refRead );
-    exhaustPresVal =  exhaustPresVol * 700 / 2.95;
+    exhaustPresVol = (analogRead(exhaustPresPin) - exhaustSensorOffset) * (3.3 / refRead);
+    exhaustPresVal = exhaustPresVol * 700 / 2.95;
     exhaustPressureFilter.input(exhaustPresVal);
     exhaustPresVal = exhaustPressureFilter.output();
   }
-  if (exhaustPresVal < 0) {
+  if (exhaustPresVal < 0)
+  {
     exhaustPresVal = 0;
   }
-  
+
   return exhaustPresVal;
 }
 
@@ -438,9 +446,9 @@ int batteryRead()
 
 int boostLimitRead(int oilTemp)
 {
-//  int allowedBoostPressure = readGearMap(boostControlPressureMap, gear, oilTemp);
-//  return allowedBoostPressure;
-    return boostOverride;
+  //  int allowedBoostPressure = readGearMap(boostControlPressureMap, gear, oilTemp);
+  //  return allowedBoostPressure;
+  return boostOverride;
 }
 
 int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
@@ -487,10 +495,11 @@ int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
 
 //reading oil temp sensor / pn-switch (same input pin, see page 27: http://www.all-trans.by/assets/site/files/mercedes/722.6.1.pdf)
 
-int atfRead(){
-    uint8_t len = 14;
-    int16_t atfMap[len][3] = {
-      
+int atfRead()
+{
+  uint8_t len = 14;
+  int16_t atfMap[len][3] = {
+
       {2500, 846, 130},
       {2500, 843, 120},
       {2500, 840, 110},
@@ -498,61 +507,67 @@ int atfRead(){
       {2000, 830, 90},
       {2000, 825, 80},
       {1750, 819, 70},
-      {1500, 811, 60 },
-      {1500, 800, 47 },
-      {1250, 798, 44 },
-      {1250, 783, 34 },
-      {1000, 778, 23 },
-      { 750, 723, -10},
-      { 500, 652, -40},
+      {1500, 811, 60},
+      {1500, 800, 47},
+      {1250, 798, 44},
+      {1250, 783, 34},
+      {1000, 778, 23},
+      {750, 723, -10},
+      {500, 652, -40},
   };
   byte idx = 0;
-  static uint32_t m = millis()+900;
+  static uint32_t m = millis() + 900;
   uint16_t adc = analogRead(atfPin);
-//  if( m < millis() ){
-//    m = millis()+900; 
-//      Serial.print(", adc val : ");
-//      Serial.print(adc);
-//      Serial.print(" ");
-//  }
-  for( byte i = 0; i < len; i++ ){
-      if( adc  >= atfMap[i][1] ) {
-          idx = i;
-          break;
-      }
+  //  if( m < millis() ){
+  //    m = millis()+900;
+  //      Serial.print(", adc val : ");
+  //      Serial.print(adc);
+  //      Serial.print(" ");
+  //  }
+  for (byte i = 0; i < len; i++)
+  {
+    if (adc >= atfMap[i][1])
+    {
+      idx = i;
+      break;
+    }
   }
-  if( idx == 0 ){
-      return atfMap[0][2];  
-  } else if ( idx > 0 && idx < len ) {
-      int16_t tempAbove = atfMap[idx - 1][2];
-      int16_t temp = atfMap[idx][2];
-      int16_t adcAbove = atfMap[idx-1][1];
-      int16_t curAdc = atfMap[idx][1];
-      uint16_t res = map( adc, curAdc, adcAbove, temp, tempAbove );
-//        if( tempAbove < temp ) res = map( adc, curAdc, adcAbove, temp, tempAbove );
-      return res;
-  } else {
-      return atfMap[len-1][2];  
-  }  
+  if (idx == 0)
+  {
+    return atfMap[0][2];
+  }
+  else if (idx > 0 && idx < len)
+  {
+    int16_t tempAbove = atfMap[idx - 1][2];
+    int16_t temp = atfMap[idx][2];
+    int16_t adcAbove = atfMap[idx - 1][1];
+    int16_t curAdc = atfMap[idx][1];
+    uint16_t res = map(adc, curAdc, adcAbove, temp, tempAbove);
+    //        if( tempAbove < temp ) res = map( adc, curAdc, adcAbove, temp, tempAbove );
+    return res;
+  }
+  else
+  {
+    return atfMap[len - 1][2];
+  }
 }
 
 int atfRead1()
 {
 
-  
   float refRead = analogRead(refPin);
   float tempRead = analogRead(atfPin);
   filterOneLowpass.input(tempRead);
-  float refVoltage = (refRead+30) * 5.0 / 1024;
-  float ref3V3 = (refRead+30) * 3.3 / 1024;
+  float refVoltage = (refRead + 30) * 5.0 / 1024;
+  float ref3V3 = (refRead + 30) * 3.3 / 1024;
   float buffer = tempRead * refVoltage;
-//  Serial.print("buffer: ");
-//  Serial.println(buffer);
-  float outVoltage = (buffer)/(refRead+30);
-  buffer = (refVoltage/outVoltage) -1;
-  
-  int R2 = 2740 * (1/(((ref3V3)/(outVoltage))-1)) - 150;
- /* Serial.print("refRead: ");
+  //  Serial.print("buffer: ");
+  //  Serial.println(buffer);
+  float outVoltage = (buffer) / (refRead + 30);
+  buffer = (refVoltage / outVoltage) - 1;
+
+  int R2 = 2740 * (1 / (((ref3V3) / (outVoltage)) - 1)) - 150;
+  /* Serial.print("refRead: ");
   Serial.println(refRead);
   Serial.print("tempRead: ");
   Serial.println(tempRead);
@@ -567,14 +582,14 @@ int atfRead1()
     Serial.print("ref3V3: ");
   Serial.println(ref3V3);*/
   if (R2 < 564)
-    {
+  {
     R2 = 564;
-    }
+  }
 
-    if (R2 > 2479)
-    {
+  if (R2 > 2479)
+  {
     R2 = 2479;
-    }
+  }
 
   int atfTemp = atfRead();
 
@@ -585,7 +600,6 @@ int atfRead1()
   atfTemp = atfTemp;
   return atfTemp;
 }
-
 
 /////////////////////////////////////
 
