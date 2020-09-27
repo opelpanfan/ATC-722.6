@@ -230,25 +230,25 @@ void draw(int wantedGear)
     }
     if (w124rpm)
     {
-      u8g2.setCursor(100, 10);
-      u8g2.print(F("RPM:"));
-      u8g2.setCursor(100, 20);
+      u8g2.setCursor(96, 10);
+      u8g2.print(F("canRPM"));
+      u8g2.setCursor(96, 20);
       //u8g2.print(sensor.curRPM);
       u8g2.print(canRPM);
     }
     if (tpsSensor)
     {
-      u8g2.setCursor(100, 30);
+      u8g2.setCursor(96, 30);
       u8g2.print(F("TPS:"));
-      u8g2.setCursor(100, 40);
+      u8g2.setCursor(96, 40);
       u8g2.print(sensor.curTps);
     }
     if (exhaustTempSensor)
     {
-      u8g2.setCursor(100, 50);
+      u8g2.setCursor(96, 50);
       //u8g2.print(F("BATT:"));
       u8g2.print(F("canSPD"));
-      u8g2.setCursor(100, 60);
+      u8g2.setCursor(96, 60);
       //u8g2.print(sensor.curBattery);
       u8g2.print(canSpeed);
     }
