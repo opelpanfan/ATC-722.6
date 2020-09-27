@@ -139,6 +139,7 @@ void canSniff(const CAN_message_t &msg)
     }
   }
 
+  // CAB-BUS COOLANT
   // ID608  7 6D 3B 02 25 FF 01 7E
   // 6D is a coolant data - 40
   // Quote:
@@ -148,11 +149,13 @@ void canSniff(const CAN_message_t &msg)
   // 6D > hex to dec = 109
   // 109-40=69 *C
   // Thats how it works
-  if (frame[0] == 608)
+  // CAN ID 608 - HEX to DEC = 1544
+  if (frame[0] == 1544)
   {
     canCoolant = hexToDec(frame[1]) - 40;
   }
 
+  // CAN-BUS TPS
   // 210 8 02 FF 00 02 00 08 00 FF
   // pressed maximum
   // 210 8 02 FF FA 02 00 08 81 FF
@@ -160,21 +163,26 @@ void canSniff(const CAN_message_t &msg)
   // 100*A/255
   // 100*FA/255 = 98%
   // FA HEX = 250 DEC
-  if (frame[0] == 210)
+  // CAN ID210
+  if (frame[0] == 528)
   {
     canTPS = 100 * hexToDec(frame[7]) / 255; // (frame[7] << 8);
   }
 
+  // CAN-BUS RPM
   // ID308 8 00 02 78 00 00 FF FF FF // idle
   // 256 x 02 + 78 (02 to dec & 78 to dec)
   // 256 x 2 + 120 = 632 RPM
-  if (frame[0] == 308)
+  // CAN ID308
+  if (frame[0] == 776)
   {
     canRPM = 256 * hexToDec(frame[1]) + hexToDec(frame[2]);
   }
   
+  // CAN-BUS SPEED
   // ID200 8 00 18 02 9F 02 9A 02 9C // speed
-  if (frame[0] == 200)
+  // CAN ID200
+  if (frame[0] == 512)
   {
     canSpeed = (hexToDec(frame[3]) + hexToDec(frame[5]) * 8 + ((hexToDec(frame[4]) + hexToDec(frame[6])) / 2) / 15);
   }
