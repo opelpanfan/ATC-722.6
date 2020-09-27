@@ -239,9 +239,10 @@ void draw(int wantedGear)
     if (tpsSensor)
     {
       u8g2.setCursor(96, 30);
-      u8g2.print(F("TPS:"));
+      u8g2.print(F("canTPS:"));
       u8g2.setCursor(96, 40);
-      u8g2.print(sensor.curTps);
+      //u8g2.print(sensor.curTps);
+      u8g2.print(canTPS);
     }
     if (exhaustTempSensor)
     {

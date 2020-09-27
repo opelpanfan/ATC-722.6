@@ -166,7 +166,7 @@ void canSniff(const CAN_message_t &msg)
   // CAN ID210
   if (frame[0] == 528)
   {
-    canTPS = 100 * (frame[7]) / 255; // (frame[7] << 8);
+    canTPS = 100 * (frame[3]) / 255; // (frame[7] << 8);
   }
 
   // CAN-BUS RPM
