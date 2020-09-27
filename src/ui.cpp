@@ -556,6 +556,14 @@ void datalog(Task *me)
     Serial.print( wantedGear );
     Serial.print(F(";"));
     Serial.println(sensor.curExTemp);
+    Serial.print(F(";"));
+    Serial.print(canRPM);
+    Serial.print(F(";"));
+    Serial.print(canSpeed);
+    Serial.print(F(";"));
+    Serial.print(canCoolant);
+    Serial.print(F(";"));
+    Serial.print(canTPS);
   }
     counter++;
 }
