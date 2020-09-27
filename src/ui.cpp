@@ -246,9 +246,11 @@ void draw(int wantedGear)
     if (exhaustTempSensor)
     {
       u8g2.setCursor(100, 50);
-      u8g2.print(F("BATT:"));
+      //u8g2.print(F("BATT:"));
+      u8g2.print(F("canSPD"));
       u8g2.setCursor(100, 60);
-      u8g2.print(sensor.curBattery);
+      //u8g2.print(sensor.curBattery);
+      u8g2.print(canSpeed);
     }
   }
   else if (page == 2 && infoDisplay == 0)
