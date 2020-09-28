@@ -415,8 +415,9 @@ void setup()
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
   analogWrite(speedoCtrl, 0); // Wake up speedometer motor so it wont stick
-  
-  //TODO check if that is ok
+
+  //TODO check if that is ok can be replaced to
+  //if (fuelPumpControl)
   if (rpmSpeed && fuelPumpControl)
   {
     analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
