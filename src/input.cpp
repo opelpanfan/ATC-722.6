@@ -206,19 +206,19 @@ void pollstick(Task *me)
         CAN_filter_t RxFilter[5];
         RxFilter[0].ext = 0;
         RxFilter[0].rtr = 0;
-        RxFilter[0].id = 608;
+        RxFilter[0].id = 608; //ID608 HextoDec 1544
         RxFilter[1].ext = 0;
         RxFilter[1].rtr = 0;
-        RxFilter[1].id = 210;
+        RxFilter[1].id = 210; //ID210 HextoDec 528
         RxFilter[2].ext = 0;
         RxFilter[2].rtr = 0;
-        RxFilter[2].id = 308;
+        RxFilter[2].id = 308; //ID308 HextoDec 776
         RxFilter[3].ext = 0;
         RxFilter[3].rtr = 0;
-        RxFilter[3].id = 200;
+        RxFilter[3].id = 200; //ID200 HextoDec 512
         RxFilter[4].ext = 0;
         RxFilter[4].rtr = 0;
-        RxFilter[4].id = 560;
+        RxFilter[4].id = 560; //ID230 HextoDec 560
 
         //Can0.begin();
         Can0.setBaudRate(500000);
