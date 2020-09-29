@@ -214,7 +214,7 @@ void draw(int wantedGear)
     if (boostCtrl)
     {
       u8g2.setCursor(3, 50);
-      u8g2.print(F("CLT"));
+      u8g2.print(F("canCLT"));
       u8g2.setCursor(3, 60);
       u8g2.print(canCoolant);
       u8g2.setCursor(28, 60);
@@ -230,17 +230,20 @@ void draw(int wantedGear)
     if (w124rpm)
     {
       u8g2.setCursor(96, 10);
-      u8g2.print(F("RPM"));
+      //u8g2.print(F("RPM"));
+      u8g2.print(F("canRPM"));
       u8g2.setCursor(96, 20);
-      u8g2.print(sensor.curRPM);
-      //u8g2.print(canRPM);
+      //u8g2.print(sensor.curRPM);
+      u8g2.print(canRPM);
     }
     if (tpsSensor)
     {
       u8g2.setCursor(96, 30);
-      u8g2.print(F("TPS"));
+      //u8g2.print(F("TPS"));
+      u8g2.print(F("canTPS"));
       u8g2.setCursor(96, 40);
-      u8g2.print(sensor.curTps);
+      //u8g2.print(sensor.curTps);
+      u8g2.print(canTPS);
     }
     if (exhaustTempSensor)
     {
@@ -553,14 +556,6 @@ void datalog(Task *me)
     Serial.print( wantedGear );
     Serial.print(F(";"));
     Serial.println(sensor.curExTemp);
-    Serial.print(F(";"));
-    Serial.print(canRPM);
-    Serial.print(F(";"));
-    Serial.print(canSpeed);
-    Serial.print(F(";"));
-    Serial.print(canCoolant);
-    Serial.print(F(";"));
-    Serial.print(canTPS);
   }
     counter++;
 }
