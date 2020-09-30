@@ -51,8 +51,10 @@ Circular_Buffer<uint32_t, cbsize, 10> storage;
 
 void canSniff(const CAN_message_t &msg)
 { // global callback
+  
   uint32_t frame[10] = {msg.id};
 
+  Serial.println(msg.id, HEX);
   if (!storage.find(frame, 10, 0, 0, 0))
   {
     if (storage.size() == storage.capacity())
@@ -204,7 +206,7 @@ void pollstick(Task *me)
         Can0.setMBFilter(MB1, 1544, 528, 776, 512, 560); //ID to DEC convert
         Can0.enableMBInterrupt(MB1);
         Can0.onReceive(canSniff);
-        Can0.intervalTimer();
+        //Can0.intervalTimer();
 
         justStarted = false;
     #endif
