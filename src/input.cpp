@@ -54,7 +54,7 @@ void canSniff(const CAN_message_t &msg)
   
   uint32_t frame[10] = {msg.id};
 
-  Serial.println(msg.id, HEX);
+  //Serial.println(msg.id, HEX);
   if (!storage.find(frame, 10, 0, 0, 0))
   {
     if (storage.size() == storage.capacity())
