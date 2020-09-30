@@ -198,44 +198,12 @@ void pollstick(Task *me)
   {
     #ifdef CANBUS
 
-        CAN_filter_t hs_mask;
-        hs_mask.ext = 0;
-        hs_mask.rtr = 0;
-        hs_mask.id = 0xFFFFFFFF;
-
-        CAN_filter_t RxFilter[5];
-        RxFilter[0].ext = 0;
-        RxFilter[0].rtr = 0;
-        RxFilter[0].id = 608; //ID608 HextoDec 1544
-        RxFilter[1].ext = 0;
-        RxFilter[1].rtr = 0;
-        RxFilter[1].id = 210; //ID210 HextoDec 528
-        RxFilter[2].ext = 0;
-        RxFilter[2].rtr = 0;
-        RxFilter[2].id = 308; //ID308 HextoDec 776
-        RxFilter[3].ext = 0;
-        RxFilter[3].rtr = 0;
-        RxFilter[3].id = 200; //ID200 HextoDec 512
-        RxFilter[4].ext = 0;
-        RxFilter[4].rtr = 0;
-        RxFilter[4].id = 560; //ID230 HextoDec 560
-
-        //Can0.begin();
         Can0.setBaudRate(500000);
-        Can0.enableFIFO(1);
-        Can0.enableFIFOInterrupt(1);
+        Can0.setMBFilter(REJECT_ALL);
+        Can0.setMBFilter(MB1, 608, 210, 308, 200, 560);
+        Can0.enableMBInterrupt(MB1);
         Can0.onReceive(canSniff);
-        Can0.intervalTimer(); // enable queue system and run callback in background.
-        
-        for (int c = 0; c < NUM_MAILBOXES; c++)
-        {
-          Can0.setMask(0, c);
-          Can0.setFilter(RxFilter[0], c);
-          Can0.setFilter(RxFilter[1], c);
-          Can0.setFilter(RxFilter[2], c);
-          Can0.setFilter(RxFilter[3], c);
-          Can0.setFilter(RxFilter[4], c);
-        }
+        Can0.intervalTimer();
 
         justStarted = false;
     #endif
