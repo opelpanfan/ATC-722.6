@@ -164,7 +164,7 @@ void canSniff(const CAN_message_t &msg)
     // 100*A/255
     // 100*FA/255 = 98%
     // FA HEX = 250 DEC
-    // CAN ID210
+    // CAN ID210 //hex 528
     if (frame[0] == 528)
     {
       canTPS = 100 * (frame[3]) / 255; // (frame[7] << 8);
@@ -200,7 +200,8 @@ void pollstick(Task *me)
 
         Can0.setBaudRate(500000);
         Can0.setMBFilter(REJECT_ALL);
-        Can0.setMBFilter(MB1, 608, 210, 308, 200, 560);
+        //Can0.setMBFilter(MB1, 608, 210, 308, 200, 230);
+        Can0.setMBFilter(MB1, 1544, 528, 776, 512, 560); //ID to DEC convert
         Can0.enableMBInterrupt(MB1);
         Can0.onReceive(canSniff);
         Can0.intervalTimer();
