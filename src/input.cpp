@@ -93,6 +93,7 @@ void canSniff(const CAN_message_t &msg)
   //CAN ID 230 - HEX to DEC = 560
   if (frame[0] == 560)
   {
+    digitalToggle(LED_BUILTIN);
     if (frame[1] == 8)
     {
       wantedGear = 8;
@@ -212,7 +213,7 @@ void pollstick(Task *me)
   if (justStarted)
   {
     #ifdef CANBUS
-
+        pinMode(LED_BUILTIN, OUTPUT);
         Can0.setBaudRate(500000);
         Can0.enableFIFO(1);
         Can0.enableFIFOInterrupt(1);
