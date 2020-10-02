@@ -12,8 +12,9 @@
 #include "include/serial_config.h"
 #include <SoftTimer.h>
 #include <AutoPID.h>
-#include <FlexCAN_T4.h>
+#include <IFCT.h>
 
+#define cbsize 16
 #define CANBUS true
 byte wantedGear = 100;
 
@@ -45,24 +46,41 @@ int lockVal = 0;
 double canTPS, canRPM, canCoolant, canSpeed;
 
 #ifdef CANBUS
-
-FlexCAN_T4<CAN0, RX_SIZE_256, TX_SIZE_16> Can0;
-
+Circular_Buffer<uint32_t, cbsize> ids;
+Circular_Buffer<uint32_t, cbsize, 10> storage;
 
 void canSniff(const CAN_message_t &msg)
 { // global callback
-  useCanSensors = true;
-  Serial.print("MB "); Serial.print(msg.mb);
-  Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
-  Serial.print("  LEN: "); Serial.print(msg.len);
-  Serial.print(" EXT: "); Serial.print(msg.flags.extended);
-  Serial.print(" TS: "); Serial.print(msg.timestamp);
-  Serial.print(" ID HEX: "); Serial.print(msg.id, HEX);
-  Serial.print(" ID DEC: "); Serial.println(msg.id, DEC);
+  
+  uint32_t frame[10] = {msg.id};
 
-  if (msg.id == 560)
+  //Serial.println(msg.id, HEX);
+  if (!storage.find(frame, 10, 0, 0, 0))
   {
-    if (msg.buf[0] == 8)
+    if (storage.size() == storage.capacity())
+    {
+      Serial.print("Buffer full, couldn't add CAN ID to the list!");
+      return;
+    }
+    frame[0] = msg.id;
+    for (uint8_t i = 0; i < 8; i++)
+      frame[i + 1] = msg.buf[i];
+    frame[9] = 1;
+    storage.push_back(frame, 10);
+    ids.push_back(msg.id);
+    ids.sort_ascending();
+  }
+  else
+  {
+    frame[9]++;
+    for (uint8_t i = 0; i < 8; i++)
+      frame[i + 1] = msg.buf[i];
+    storage.replace(frame, 10, 0, 0, 0);
+  }
+
+  if (frame[0] == 560)
+  {
+    if (frame[1] == 8)
     {
       wantedGear = 8;
       gear = 2; // force reset gear to 2
@@ -74,7 +92,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Park requested via canbus");
       }
     }
-    if (msg.buf[0] == 7)
+    if (frame[1] == 7)
     {
       wantedGear = 7;
       gear = 2; // force reset gear to 2
@@ -84,7 +102,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Reverse requested via canbus");
       }
     }
-    if (msg.buf[0] == 6)
+    if (frame[1] == 6)
     {
       wantedGear = 6;
       garageShiftMove = false;
@@ -93,7 +111,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Neutral requested via canbus");
       }
     }
-    if (msg.buf[0] == 5)
+    if (frame[1] == 5)
     {
       wantedGear = 2;
       garageShiftMove = false;
@@ -103,7 +121,7 @@ void canSniff(const CAN_message_t &msg)
       }
     }
 
-    if (msg.buf[0] == 10)
+    if (frame[1] == 10)
     {
       gearDown();
       if (debugEnabled)
@@ -111,7 +129,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Downshift requested via canbus");
       }
     }
-    if (msg.buf[0] == 9)
+    if (frame[1] == 9)
     {
       gearUp();
       if (debugEnabled)
@@ -135,9 +153,9 @@ void canSniff(const CAN_message_t &msg)
     // 109-40=69 *C
     // Thats how it works
     // CAN ID 608 - HEX to DEC = 1544
-    if (msg.id == 1544)
+    if (frame[0] == 1544)
     {
-      canCoolant = (msg.buf[0]) - 40;
+      canCoolant = (frame[1]) - 40;
     }
 
     // CAN-BUS TPS
@@ -149,9 +167,9 @@ void canSniff(const CAN_message_t &msg)
     // 100*FA/255 = 98%
     // FA HEX = 250 DEC
     // CAN ID210 //hex 528
-    if (msg.id == 528)
+    if (frame[0] == 528)
     {
-      canTPS = 100 * (msg.buf[2]) / 255; // (frame[7] << 8);
+      canTPS = 100 * (frame[3]) / 255; // (frame[7] << 8);
     }
 
     // CAN-BUS RPM
@@ -159,17 +177,17 @@ void canSniff(const CAN_message_t &msg)
     // 256 x 02 + 78 (02 to dec & 78 to dec)
     // 256 x 2 + 120 = 632 RPM
     // CAN ID308
-    if (msg.id == 776)
+    if (frame[0] == 776)
     {
-      canRPM = 256 * (msg.buf[1]) + (msg.buf[2]);
+      canRPM = 256 * (frame[2]) + (frame[3]);
     }
 
     // CAN-BUS SPEED
     // ID200 8 00 18 02 9F 02 9A 02 9C // speed
     // CAN ID200
-    if (msg.id == 512)
+    if (frame[0] == 512)
     {
-      canSpeed = ((8 * ((msg.buf[2]) + ((msg.buf[4]))) + (((msg.buf[3]) + (msg.buf[5])) / 2) / 15));
+      canSpeed = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
     }
   }
 }
@@ -182,22 +200,15 @@ void pollstick(Task *me)
   {
     #ifdef CANBUS
 
-      Can0.begin();
-      Can0.setRX(DEF);
-      Can0.setTX(DEF);
-      Can0.setBaudRate(500000);
-      Can0.setMaxMB(16);
-      Can0.enableFIFO();
-      Can0.enableFIFOInterrupt();
-      Can0.setFIFOFilter(REJECT_ALL);
-      Can0.setFIFOFilter(0, 0x608, STD);
-      Can0.setFIFOFilter(1, 0x210, STD);
-      Can0.setFIFOFilter(2, 0x308, STD);
-      Can0.setFIFOFilter(3, 0x200, STD);
-      Can0.setFIFOFilter(4, 0x230, STD);
-      Can0.onReceive(canSniff);
+        Can0.setBaudRate(500000);
+        Can0.setMBFilter(REJECT_ALL);
+        //Can0.setMBFilter(MB1, 608, 210, 308, 200, 230);
+        Can0.setMBFilter(MB1, 1544, 528, 776, 512, 560); //ID to DEC convert
+        Can0.enableMBInterrupt(MB1);
+        Can0.onReceive(canSniff);
+        //Can0.intervalTimer();
 
-      justStarted = false;
+        justStarted = false;
     #endif
   }
 #ifndef CANBUS
