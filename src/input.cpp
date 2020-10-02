@@ -52,9 +52,22 @@ Circular_Buffer<uint32_t, cbsize, 10> storage;
 void canSniff(const CAN_message_t &msg)
 { // global callback
   
+  //Uncomment this to view incoming CAN messages
+  // Serial.print("MB: "); Serial.print(msg.mb);
+  // Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
+  // Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
+  // Serial.print("  EXT: "); Serial.print(msg.flags.extended );
+  // Serial.print("  LEN: "); Serial.print(msg.len);
+  
+  // Serial.print(" DATA: ");
+  // for ( uint8_t i = 0; i <msg.len ; i++ ) {
+  //   Serial.print(msg.buf[i]); Serial.print(" ");
+  // }
+  // Serial.print("  TS: "); Serial.println(msg.timestamp);
+
   uint32_t frame[10] = {msg.id};
 
-  //Serial.println(msg.id, HEX);
+  
   if (!storage.find(frame, 10, 0, 0, 0))
   {
     if (storage.size() == storage.capacity())
@@ -201,12 +214,18 @@ void pollstick(Task *me)
     #ifdef CANBUS
 
         Can0.setBaudRate(500000);
-        Can0.setMBFilter(REJECT_ALL);
-        //Can0.setMBFilter(MB1, 608, 210, 308, 200, 230);
-        Can0.setMBFilter(MB1, 1544, 528, 776, 512, 560); //ID to DEC convert
-        Can0.enableMBInterrupt(MB1);
+        Can0.enableFIFO(1);
+        Can0.enableFIFOInterrupt(1);
+        //Can0.setFIFOFilter(ACCEPT_ALL);
+        Can0.setFIFOFilter(REJECT_ALL);
+        Can0.setFIFOFilter(0, 0x608, STD, NONE);
+        Can0.setFIFOFilter(1, 0x210, STD, NONE);
+        Can0.setFIFOFilter(2, 0x308, STD, NONE);
+        Can0.setFIFOFilter(3, 0x200, STD, NONE);
+        Can0.setFIFOFilter(4, 0x230, STD, NONE);
+        Can0.enhanceFilter(FIFO);
         Can0.onReceive(canSniff);
-        //Can0.intervalTimer();
+        Can0.intervalTimer();
 
         justStarted = false;
     #endif
