@@ -222,7 +222,7 @@ void pollstick(Task *me)
         Can0.setFIFOFilter(1, 0x210, STD, NONE);
         Can0.setFIFOFilter(2, 0x308, STD, NONE);
         Can0.setFIFOFilter(3, 0x200, STD, NONE);
-        Can0.setFIFOFilter(4, 0x560, STD, NONE);
+        Can0.setFIFOFilter(4, 0x230, STD, NONE);
         Can0.enhanceFilter(FIFO);
         Can0.onReceive(canSniff);
         Can0.intervalTimer();
