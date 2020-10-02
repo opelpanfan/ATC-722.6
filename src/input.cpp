@@ -77,7 +77,7 @@ void canSniff(const CAN_message_t &msg)
       frame[i + 1] = msg.buf[i];
     storage.replace(frame, 10, 0, 0, 0);
   }
-
+  //CAN ID 230 - HEX to DEC = 560
   if (frame[0] == 560)
   {
     if (frame[1] == 8)
