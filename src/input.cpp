@@ -90,9 +90,9 @@ void canSniff(const CAN_message_t &msg)
       frame[i + 1] = msg.buf[i];
     storage.replace(frame, 10, 0, 0, 0);
   }
+
   //CAN ID 230 - HEX to DEC = 560
   if (frame[0] == 560)
- 
   {
     int autoState = digitalRead(autoSwitch);
     if (autoState == HIGH)
@@ -100,8 +100,12 @@ void canSniff(const CAN_message_t &msg)
       stickCtrl = true;
       fullAuto = true;
     }
-
-    //digitalToggle(LED_BUILTIN);
+    else
+    {
+      stickCtrl = false;
+      fullAuto = false;
+    }
+  
     if (frame[1] == 8)
     {
       wantedGear = 8;
@@ -160,10 +164,8 @@ void canSniff(const CAN_message_t &msg)
       }
     }
   }
-
   if (useCanSensors)
   {
-
     // CAB-BUS COOLANT
     // ID608  7 6D 3B 02 25 FF 01 7E
     // 6D is a coolant data - 40
