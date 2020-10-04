@@ -196,12 +196,17 @@ void canSniff(const CAN_message_t &msg)
       canRPM = 256 * (frame[2]) + (frame[3]);
     }
 
-    // CAN-BUS SPEED
-    // ID200 8 00 18 02 9F 02 9A 02 9C // speed
-    // CAN ID200
+// CAN-BUS SPEED ID200 (HexToDec - 512)
+// ID200 8 00 18 02 9F 02 9A 02 9C // sample message
     if (frame[0] == 512)
     {
-      canSpeed = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
+      //int canSpeedPulses   = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
+      int rpm_right = (((frame[3] & 0b00111111) << 8) | frame[4]) / 2;    //RPM RAW value is x2
+      int rpm_left  = (((frame[5] & 0b00111111) << 8) | frame[6]) / 2;    //RPM RAW value is x2
+      int canSpeedPulses   = (rpm_right + rpm_left) / 2;
+      float tireDiameter = ((config.tireProfile * 2) + (config.tireInches * 25.4)) + config.tireOffset;
+      float tireCircumference = 3.14 * tireDiameter;     
+      canSpeed = (tireCircumference * canSpeedPulses * 60) / 1000000;
     }
   }
 }

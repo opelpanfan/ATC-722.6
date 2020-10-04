@@ -79,6 +79,7 @@ struct ConfigParam config = {
   .maxRPM = 7000, // Max engine RPM
   .tireWidth = 195,
   .tireProfile = 65,
+  .tireOffset = 75,
   .tireInches = 15,
   .rearDiffTeeth = 29, // number of teeth in diff
   .nextShiftDelay = 2000, // ms. to wait before next shift to avoid accidental overshifting.
@@ -637,6 +638,8 @@ void setConfig(int asset, int value)
     case 69:
         config.lowRPMshiftLimit = value;
         break;
+    case 70:
+        config.tireOffset = value;
     default:
         break;
     }
@@ -712,6 +715,9 @@ void getConfig()
     Serial.print(";");
     Serial.print("70:");
     Serial.println(config.transferRatio);
+    Serial.print(";");
+    Serial.print("71:");
+    Serial.print(config.tireOffset);
 }
 
 void serialConfig()
