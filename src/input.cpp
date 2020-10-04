@@ -120,7 +120,7 @@ void canSniff(const CAN_message_t &msg)
     if (frame[1] == 7)
     {
       wantedGear = 7;
-      //gear = 2; // force reset gear to 2
+      gear = 2; // force reset gear to 2
       garageShiftMove = false;
       if (debugEnabled)
       {
