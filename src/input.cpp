@@ -105,7 +105,6 @@ void canSniff(const CAN_message_t &msg)
       stickCtrl = false;
       fullAuto = false;
     }
-  int vehicleSpeed;
     if (frame[1] == 8)
     {
       wantedGear = 8;
@@ -128,7 +127,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Reverse requested via canbus");
       }
     }
-    if ((frame[1] == 6) && (vehicleSpeed <= 4))
+    if (frame[1] == 6)
     {
       wantedGear = 6;
       garageShiftMove = false;
@@ -137,7 +136,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Neutral requested via canbus");
       }
     }
-    if ((frame[1] == 22) && (vehicleSpeed >= 4)) //16 HexToDec 22
+    if (frame[1] == 22) //16 HexToDec 22
     {
       wantedGear = 6;
       garageShiftMove = false;
@@ -147,7 +146,7 @@ void canSniff(const CAN_message_t &msg)
       }
     }
 
-    if ((frame[1] == 5) && (vehicleSpeed <= 4))
+    if (frame[1] == 5)
     {
       wantedGear = 2;
       garageShiftMove = false;
@@ -157,7 +156,7 @@ void canSniff(const CAN_message_t &msg)
       }
     }
 
-    if ((frame[1] == 21) && (vehicleSpeed >= 4)) // 15 HexToDec = 21
+    if (frame[1] == 21) // 15 HexToDec = 21
     {
       wantedGear = 2;
       garageShiftMove = false;
@@ -167,7 +166,7 @@ void canSniff(const CAN_message_t &msg)
       }
     }
 
-    if ((frame[1] == 10) && (vehicleSpeed <= 4))
+    if (frame[1] == 10)
     {
       gearDown();
       if (debugEnabled)
@@ -175,7 +174,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Downshift requested via canbus");
       }
     }
-     if ((frame[1] == 26) && (vehicleSpeed >= 4)) // 1A HexToDec = 26
+     if (frame[1] == 26) // 1A HexToDec = 26
     {
       gearDown();
       if (debugEnabled)
@@ -183,7 +182,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Downshift requested via canbus");
       }
     }
-    if ((frame[1] == 9) && (vehicleSpeed <= 4))
+    if (frame[1] == 9)
     {
       gearUp();
       if (debugEnabled)
@@ -191,7 +190,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Upshift requested via canbus");
       }
     }
-      if ((frame[1] == 25) && (vehicleSpeed >= 4)) // 19 HexToDec = 25
+      if (frame[1] == 25) // 19 HexToDec = 25
     {
       gearUp();
       if (debugEnabled)
