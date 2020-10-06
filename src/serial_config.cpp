@@ -123,6 +123,7 @@ void initConfig()
         setFeatures(21, 0);
         setFeatures(22, 0);
         setFeatures(23, 0);
+        setFeatures(24, 0);
         setConfig(50, 700);
         setConfig(51, 50);
         setConfig(52, 120);
@@ -158,7 +159,7 @@ void initConfig()
     }
     else
     {
-        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
+        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
         int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 68, 69};
         int configF[] = {58, 61, 67, 70};
         int upGears[] = {1, 2, 3, 4};
