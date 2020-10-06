@@ -16,6 +16,7 @@ struct ConfigParam config = {
   .tireWidth = 195,
   .tireProfile = 65,
   .tireInches = 15,
+  .tireOffset = 75, // fix speed oled display vs gauge display
   .rearDiffTeeth = 29, // number of teeth in diff
   .nextShiftDelay = 2000, // ms. to wait before next shift to avoid accidental overshifting.
   .stallSpeed = 2200, // torque converter stall speed

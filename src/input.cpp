@@ -51,8 +51,23 @@ Circular_Buffer<uint32_t, cbsize, 10> storage;
 
 void canSniff(const CAN_message_t &msg)
 { // global callback
+  
+  //Uncomment this to view incoming CAN messages
+  // Serial.print("MB: "); Serial.print(msg.mb);
+  // Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
+  // Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
+  // Serial.print("  EXT: "); Serial.print(msg.flags.extended );
+  // Serial.print("  LEN: "); Serial.print(msg.len);
+  
+  // Serial.print(" DATA: ");
+  // for ( uint8_t i = 0; i <msg.len ; i++ ) {
+  //   Serial.print(msg.buf[i]); Serial.print(" ");
+  // }
+  // Serial.print("  TS: "); Serial.println(msg.timestamp);
+
   uint32_t frame[10] = {msg.id};
 
+  
   if (!storage.find(frame, 10, 0, 0, 0))
   {
     if (storage.size() == storage.capacity())
@@ -76,8 +91,20 @@ void canSniff(const CAN_message_t &msg)
     storage.replace(frame, 10, 0, 0, 0);
   }
 
+  //CAN ID 230 - HEX to DEC = 560
   if (frame[0] == 560)
   {
+    int autoState = digitalRead(autoSwitch);
+    if (autoState == HIGH)
+    {
+      stickCtrl = true;
+      fullAuto = true;
+    }
+    else
+    {
+      stickCtrl = false;
+      fullAuto = false;
+    }
     if (frame[1] == 8)
     {
       wantedGear = 8;
@@ -109,7 +136,27 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Neutral requested via canbus");
       }
     }
+    if (frame[1] == 22) //16 HexToDec 22
+    {
+      wantedGear = 6;
+      garageShiftMove = false;
+      if (debugEnabled)
+      {
+        Serial.println("Neutral requested via canbus");
+      }
+    }
+
     if (frame[1] == 5)
+    {
+      wantedGear = 2;
+      garageShiftMove = false;
+      if (debugEnabled)
+      {
+        Serial.println("D requested via canbus");
+      }
+    }
+
+    if (frame[1] == 21) // 15 HexToDec = 21
     {
       wantedGear = 2;
       garageShiftMove = false;
@@ -127,6 +174,14 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Downshift requested via canbus");
       }
     }
+     if (frame[1] == 26) // 1A HexToDec = 26
+    {
+      gearDown();
+      if (debugEnabled)
+      {
+        Serial.println("Downshift requested via canbus");
+      }
+    }
     if (frame[1] == 9)
     {
       gearUp();
@@ -135,11 +190,17 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Upshift requested via canbus");
       }
     }
+      if (frame[1] == 25) // 19 HexToDec = 25
+    {
+      gearUp();
+      if (debugEnabled)
+      {
+        Serial.println("Upshift requested via canbus");
+      }
+    }
   }
-
   if (useCanSensors)
   {
-
     // CAB-BUS COOLANT
     // ID608  7 6D 3B 02 25 FF 01 7E
     // 6D is a coolant data - 40
@@ -164,7 +225,7 @@ void canSniff(const CAN_message_t &msg)
     // 100*A/255
     // 100*FA/255 = 98%
     // FA HEX = 250 DEC
-    // CAN ID210
+    // CAN ID210 //hex 528
     if (frame[0] == 528)
     {
       canTPS = 100 * (frame[3]) / 255; // (frame[7] << 8);
@@ -180,12 +241,17 @@ void canSniff(const CAN_message_t &msg)
       canRPM = 256 * (frame[2]) + (frame[3]);
     }
 
-    // CAN-BUS SPEED
-    // ID200 8 00 18 02 9F 02 9A 02 9C // speed
-    // CAN ID200
+// CAN-BUS SPEED ID200 (HexToDec - 512)
+// ID200 8 00 18 02 9F 02 9A 02 9C // sample message
     if (frame[0] == 512)
     {
-      canSpeed = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
+      //int canSpeedPulses   = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
+      int rpm_right = (((frame[3] & 0b00111111) << 8) | frame[4]) / 2;    //RPM RAW value is x2
+      int rpm_left  = (((frame[5] & 0b00111111) << 8) | frame[6]) / 2;    //RPM RAW value is x2
+      int canSpeedPulses   = (rpm_right + rpm_left) / 2;
+      float tireDiameter = ((config.tireProfile * 2) + (config.tireInches * 25.4)) + config.tireOffset;
+      float tireCircumference = 3.14 * tireDiameter;     
+      canSpeed = (tireCircumference * canSpeedPulses * 60) / 1000000;
     }
   }
 }
@@ -197,46 +263,19 @@ void pollstick(Task *me)
   if (justStarted)
   {
     #ifdef CANBUS
-
-        CAN_filter_t hs_mask;
-        hs_mask.ext = 0;
-        hs_mask.rtr = 0;
-        hs_mask.id = 0xFFFFFFFF;
-
-        CAN_filter_t RxFilter[5];
-        RxFilter[0].ext = 0;
-        RxFilter[0].rtr = 0;
-        RxFilter[0].id = 608; //ID608 HextoDec 1544
-        RxFilter[1].ext = 0;
-        RxFilter[1].rtr = 0;
-        RxFilter[1].id = 210; //ID210 HextoDec 528
-        RxFilter[2].ext = 0;
-        RxFilter[2].rtr = 0;
-        RxFilter[2].id = 308; //ID308 HextoDec 776
-        RxFilter[3].ext = 0;
-        RxFilter[3].rtr = 0;
-        RxFilter[3].id = 200; //ID200 HextoDec 512
-        RxFilter[4].ext = 0;
-        RxFilter[4].rtr = 0;
-        RxFilter[4].id = 560; //ID230 HextoDec 560
-
-        //Can0.begin();
         Can0.setBaudRate(500000);
         Can0.enableFIFO(1);
         Can0.enableFIFOInterrupt(1);
+        //Can0.setFIFOFilter(ACCEPT_ALL);
+        Can0.setFIFOFilter(REJECT_ALL);
+        Can0.setFIFOFilter(0, 1544, STD, NONE); //608 - coolant
+        Can0.setFIFOFilter(1, 528, STD, NONE);  //210 - TPS
+        Can0.setFIFOFilter(2, 776, STD, NONE);  //308 - RPM
+        Can0.setFIFOFilter(3, 512, STD, NONE);  //200 - speed
+        Can0.setFIFOFilter(4, 560, STD, NONE);  //230 - shifter
+        Can0.enhanceFilter(FIFO);
         Can0.onReceive(canSniff);
-        Can0.intervalTimer(); // enable queue system and run callback in background.
-        
-        for (int c = 0; c < NUM_MAILBOXES; c++)
-        {
-          Can0.setMask(0, c);
-          Can0.setFilter(RxFilter[0], c);
-          Can0.setFilter(RxFilter[1], c);
-          Can0.setFilter(RxFilter[2], c);
-          Can0.setFilter(RxFilter[3], c);
-          Can0.setFilter(RxFilter[4], c);
-        }
-
+        Can0.intervalTimer();
         justStarted = false;
     #endif
   }
