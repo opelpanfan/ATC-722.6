@@ -20,14 +20,14 @@
 #define tcc 29 // pink <-> brown/yellow/white // DOUT6
 #define speedoCtrl 7 // blue <-> blue/green // DOUT7, 
 #define rpmMeter 30 // FMT2 missing // DOUT10
-#define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8, 3?
-#define fuelPumpCtrl 12 // missing // DOUT9, 13?
-#define hornPin 2 // Horn
+#define boostCtrl 49 // FMT1, green <-> green/white/yellow // DOUT8, 3?
+#define fuelPumpCtrl 50 // missing // DOUT9, 13?
+#define hornPin 51 // Horn 
 
 #define reversePin 52 // reverse light digital pin
 
 // END OUTPUT PINS
-#define injectionPin 36 // should be 16.
+#define injectionPin 53 // should be 16.
 
 
 // INPUT PINS
@@ -44,7 +44,7 @@
 #define keypadPin  54 // Resistive keys pin, analog pin
 
 //Low Gear Switch
-#define lowGearPin  53 // TransferCase lowrange switch pin, +12V
+#define lowGearPin  55 // TransferCase lowrange switch pin, +12V
 
 
 #define gdownSwitch 23 // ex. 23 <-> NC // DIN6

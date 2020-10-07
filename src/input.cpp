@@ -1036,7 +1036,7 @@ void keypadWatch(Task *me)
       lastPress = millis();
       keypadControl(161);
     }
-    if (keypadValue < 902 || keypadValue < 903)
+    if (keypadValue < 3000 || keypadValue < 3000)
     {
       keypadControl(55); //Horn
     }
