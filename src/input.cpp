@@ -12,7 +12,7 @@
 #include "include/serial_config.h"
 #include <SoftTimer.h>
 #include <AutoPID.h>
-#include <IFCT.h>
+#include <FlexCAN_T4.h>
 
 #define cbsize 16
 #define CANBUS true
@@ -260,9 +260,15 @@ void canSniff(const CAN_message_t &msg)
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
 void pollstick(Task *me)
 {
+
+  digitalToggle(13);
+
   if (justStarted)
   {
     #ifdef CANBUS
+        FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can0;
+        FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can1; 
+
         Can0.setBaudRate(500000);
         Can0.enableFIFO(1);
         Can0.enableFIFOInterrupt(1);
@@ -275,7 +281,6 @@ void pollstick(Task *me)
         Can0.setFIFOFilter(4, 560, STD, NONE);  //230 - shifter
         Can0.enhanceFilter(FIFO);
         Can0.onReceive(canSniff);
-        Can0.intervalTimer();
         justStarted = false;
     #endif
   }

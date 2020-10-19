@@ -51,7 +51,7 @@ class FrequencyTask : public Task
     boolean _stateOn;
     uint8_t _bitMask;
 #ifndef ESP8266
-    volatile uint8_t *_portRegister;
+    volatile uint32_t *_portRegister;
 #else
     volatile uint32_t *_portRegister;
 #endif

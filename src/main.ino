@@ -88,7 +88,7 @@ int realload_Bar = 0;
 
 void fastRefreshScreen(Task *me) //screen refresh function all display data goes here
 {
-
+  digitalToggle(13);
   struct SensorVals sensor = readSensors(); //read current sensor data
   
 // RPM value + gauge display on Nextion
@@ -292,7 +292,10 @@ void slowRefreshScreen(Task *me) //screen refresh function all display data goes
 
 void setup()
 {
-  delay(5000);
+  pinMode(13, OUTPUT); 
+  digitalToggle(13);
+  delay(2000);
+  digitalToggle(13);
 
   initConfig();
 
@@ -315,6 +318,8 @@ void setup()
       Serial.println("Radio initialized.");
     }
   }
+
+
 
 #ifdef DISPLAYTYPE1
   U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
@@ -351,24 +356,24 @@ void setup()
   pinMode(lowGearPin, INPUT);  //keypad analog pin
 
 
-  *portConfigRegister(boostCtrl) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(hornPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(reversePin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(boostCtrl) = 1;
+  // //  *portConfigRegister(tpsPin) = 1;
+  // //*portConfigRegister(atfPin) = 1;
+  // //*portConfigRegister(n2pin) = 1;
+  // //*portConfigRegister(n3pin) = 1;
+  // *portConfigRegister(speedPin) = 1;
+  // *portConfigRegister(rpmPin) = 1;
+  // *portConfigRegister(hornPin) = 1;
+  // *portConfigRegister(reversePin) = 1;
   //For manual control
   pinMode(autoSwitch, INPUT);
 
   if (!resistiveStick)
   {
     pinMode(gupSwitch, INPUT);   // gear up
-    pinMode(gdownSwitch, INPUT); // gear down
-    *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-    *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+    // pinMode(gdownSwitch, INPUT); // gear down
+    // *portConfigRegister(gupSwitch) = 1;
+    // *portConfigRegister(gdownSwitch) = 1;
   }
   else
   {
@@ -378,11 +383,11 @@ void setup()
 
   pinMode(fuelInPin, INPUT); // Fuel flow meter in
   // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
-  *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(fuelInPin) = 1;
+  // *portConfigRegister(fuelOutPin) = 1;
   //#endif
 
-  *portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(autoSwitch) = 1;
 
   //For stick control
   pinMode(whitepin, INPUT);
@@ -390,21 +395,21 @@ void setup()
   pinMode(greenpin, INPUT);
   pinMode(yellowpin, INPUT);
 
-  *portConfigRegister(whitepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(bluepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(whitepin) = 1;
+  // *portConfigRegister(bluepin) = 1;
+  // *portConfigRegister(greenpin) = 1;
+  // *portConfigRegister(yellowpin) = 1;
 
   /*#ifdef ASPC
   pinMode(aSpcUpSwitch, INPUT);
   pinMode(aSpcDownSwitch, INPUT);
-  *portConfigRegister(aSpcUpSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(aSpcDownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  *portConfigRegister(aSpcUpSwitch) = 1;
+  *portConfigRegister(aSpcDownSwitch) = 1;
 #else*/
   pinMode(exhaustPresPin, INPUT);
   pinMode(exhaustTempPin, INPUT);
-  // *portConfigRegister(exhaustPresPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(exhaustTempPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(exhaustPresPin) = 1;
+  // *portConfigRegister(exhaustTempPin) = 1;
   //#endif
 
   // Make sure solenoids are all off.
