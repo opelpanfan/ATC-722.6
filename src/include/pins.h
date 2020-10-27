@@ -18,33 +18,33 @@
 #define mpc 38 // red <-> brown/pink // DOUT5 // FMT3
 #define spc 37 // red <-> brown/yellow // DOUT4 // FMT3
 #define tcc 29 // pink <-> brown/yellow/white // DOUT6
-#define speedoCtrl 53 // orig 7, blue <-> blue/green // DOUT7, 
+#define speedoCtrl 7 // blue <-> blue/green // DOUT7, 
 #define rpmMeter 30 // FMT2 missing // DOUT10
-#define boostCtrl 6 // FMT1, green <-> green/white/yellow // DOUT8, 3?
-#define fuelPumpCtrl 12 // missing // DOUT9, 13?
-#define hornPin 2 // Horn
+#define boostCtrl 49 // FMT1, green <-> green/white/yellow // DOUT8, 3?
+#define fuelPumpCtrl 50 // missing // DOUT9, 13?
+#define hornPin 51 // Horn 
 
-#define reversePin 7 // Reverse pin, test only, original "speedoCtrl"
+#define reversePin 52 // reverse light digital pin
 
 // END OUTPUT PINS
-#define injectionPin 36 // should be 16.
+#define injectionPin 53 // should be 16.
 
 
 // INPUT PINS
 // Stick input
-#define whitepin 54 // orig pin 27 // 0.5kohm <-> yellow <-> grey-yellow-grey // DIN2 <-> blue
-#define bluepin 53 // orig pin 34 // /0.5kohm <-> yellow <-> grey-green-grey // DIN4 <-> green
+#define whitepin 27 // 0.5kohm <-> yellow <-> grey-yellow-grey // DIN2 <-> blue
+#define bluepin 34// /0.5kohm <-> yellow <-> grey-green-grey // DIN4 <-> green
 #define greenpin 26 // 0.5kohm <-> yellow <-> grey-white-grey // DIN1 <-> whiteblue
-#define yellowpin 53  // orig pin 28 //0.5kohm <-> yellow <-> grey-black-grey // DIN3 <-> whiteorange
+#define yellowpin 28//0.5kohm <-> yellow <-> grey-black-grey // DIN3 <-> whiteorange
 
 // Switches
 #define autoSwitch 33 // ex. 22, 0.5kohm <-> yellow <-> grey-pink-grey // DIN5
 
 // KeyPad
-#define keypadPin  A15 // test pin only, original "bluepin"
+#define keypadPin  54 // Resistive keys pin, analog pin
 
 //Low Gear Switch
-#define lowGearPin  28 // test pin only, original "yellowpin"
+#define lowGearPin  55 // TransferCase lowrange switch pin, +12V
 
 
 #define gdownSwitch 23 // ex. 23 <-> NC // DIN6
