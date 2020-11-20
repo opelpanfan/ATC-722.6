@@ -213,7 +213,7 @@ void pollConfigMode()
         {
             readData = Serial.read();
 
-            if (readData == 71)
+            if (readData == 72)
             {
                 Serial.print("69696969:");
                 Serial.println(myVersion);
@@ -426,7 +426,7 @@ void setConfigFloat(int asset, float value)
 {
     lastActiveConfig = millis();
 
-    if (asset > 49 && asset < 71)
+    if (asset > 49 && asset < 72)
     {
         int assetLocation = asset * 10;
         if (debugEnabled)
@@ -713,10 +713,10 @@ void getConfig()
     Serial.print(config.highRPMshiftLimit);
     Serial.print(";");
     Serial.print("69:");
-    Serial.println(config.lowRPMshiftLimit);    
+    Serial.print(config.lowRPMshiftLimit);    
     Serial.print(";");
     Serial.print("70:");
-    Serial.println(config.transferRatio);
+    Serial.print(config.transferRatio);
     Serial.print(";");
     Serial.print("71:");
     Serial.println(config.tireOffset);
