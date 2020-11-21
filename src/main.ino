@@ -84,6 +84,7 @@ int realRPM2 = 0;
 int realATF2 = 0;
 int realtps_Bar = 0;
 int realload_Bar = 0;
+int realAtf_Bar = 0;
 
 
 void fastRefreshScreen(Task *me) //screen refresh function all display data goes here
@@ -122,10 +123,14 @@ void fastRefreshScreen(Task *me) //screen refresh function all display data goes
   realRPM2 = screen.mapInt(sensor.curRPM, 0, 7000, 0, 252);
   realRPM2 = realRPM2 < 0 ? 360 + realRPM2 : realRPM2;
   screen.setVal("rpmGauge2", realRPM2);
+//LOAD value
+  screen.setText("cltValue", canCoolant);
 // ATF2 (main window)Nextion
-  realATF2 = screen.mapInt(sensor.curAtfTemp, 140, 0, 90, 270);
-  realATF2 = realATF2 < 0 ? 360 + realATF2 : realATF2;
-  screen.setVal("atfGauge2", realATF2);
+  //realATF2 = screen.mapInt(sensor.curAtfTemp, 140, 0, 90, 270);
+  //realATF2 = realATF2 < 0 ? 360 + realATF2 : realATF2;
+  //screen.setVal("atfGauge2", realATF2);
+
+
 // //PRND graphics display on Nextion
 //   //wantedGear 6 = N
 //   //wantedGear 7 = R
@@ -226,9 +231,9 @@ void averageRefreshScreen(Task *me) //screen refresh function all display data g
   //wantedGear 6 = N
   //wantedGear 7 = R
   //wantedGear 8 = P
-  screen.setPic("gear", wantedGear == 8 ? 3 : wantedGear == 7 ? 4 : (wantedGear < 6 &&  wantedGear > 0) ? 6 : 3);
+  screen.setPic("gear", wantedGear == 8 ? 2 : wantedGear == 7 ? 3 : (wantedGear < 6 &&  wantedGear > 0) ? 5 : 4);
 //Current Gear graphics display
-  screen.setPic("curGear", gear == 5 ? 11 : gear == 4 ? 10 : gear == 3 ? 9 : gear == 2 ? 8 : gear == 1 ? 7 : 8);
+  screen.setPic("curGear", gear == 5 ? 10 : gear == 4 ? 9 : gear == 3 ? 8 : gear == 2 ? 7 : gear == 1 ? 6 : 7);
 //Gear display on Nextion
   screen.setText("gear_number", String(gear));
 //Speed display on Nextion
@@ -257,6 +262,11 @@ screen.setVal("tps_Bar", realtps_Bar);
 screen.setText("load_Bar", sensor.curLoad);
 int realload_Bar = screen.mapInt(sensor.curLoad, 0, 100, 0, 100);
 screen.setVal("load_Bar", realload_Bar);
+//ATF bar
+screen.setText("atf_Bar", sensor.curAtfTemp);
+int realAtf_Bar = screen.mapInt(sensor.curAtfTemp, 0, 100, 0, 100);
+screen.setVal("atf_Bar", realAtf_Bar);
+
 
 //  screen.setText("atf_bar", sensor.curAtfTemp);
 //  int realATF = screen.mapInt(sensor.curAtfTemp, -40, 130, 0, 100);
