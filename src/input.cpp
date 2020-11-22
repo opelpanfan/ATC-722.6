@@ -253,7 +253,7 @@ void canSniff(const CAN_message_t &msg)
       float tireCircumference = 3.14 * tireDiameter;     
       canSpeed = (tireCircumference * canSpeedPulses * 60) / 1000000;
       int vehicleSpeedPulses;
-      canSpeedPulses = vehicleSpeedPulses; 
+      vehicleSpeedPulses = canSpeedPulses;
     }
   }
 }
