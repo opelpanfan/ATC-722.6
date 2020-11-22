@@ -20,6 +20,7 @@ unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, 
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 int boostSensorOffset = analogRead(boostPin);
 int exhaustSensorOffset = analogRead(exhaustPresPin);
+int canSpeedPulses;
 
 // sensor smoothing
 int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgOilTemp, evalGearVal, avgAtfRef, avgOilRef;
@@ -102,13 +103,11 @@ void pollsensors(Task *me)
       n3Speed = 0;
     }
 
-
-  int canSpeedPulses;
-  if (useCanSensors)
-  {
-    canSpeedPulses=vehicleSpeedPulses;
-  }
-  else
+    if (useCanSensors)
+    {
+    canSpeedPulses = vehicleSpeedPulses;
+    }
+    
     if (vehicleSpeedPulses >= config.rearDiffTeeth)
     {
       vehicleTravelRevs = vehicleSpeedPulses / config.rearDiffTeeth;
