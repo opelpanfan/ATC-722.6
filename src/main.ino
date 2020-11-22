@@ -227,6 +227,7 @@ void averageRefreshScreen(Task *me) //screen refresh function all display data g
 //   realATF2 = screen.mapInt(sensor.curAtfTemp, 140, 0, 90, 270);
 //   realATF2 = realATF2 < 0 ? 360 + realATF2 : realATF2;
 //   screen.setVal("atfGauge2", realATF2);
+
 //PRND graphics display on Nextion
   //wantedGear 6 = N
   //wantedGear 7 = R
@@ -254,18 +255,21 @@ void averageRefreshScreen(Task *me) //screen refresh function all display data g
   screen.setText("p3to2_val", String(config.threeTotwo));
 //2to1
   screen.setText("p2to1_val", String(config.twoToone));
-//TPS bar
+// TPS bar
 screen.setText("tps_Bar", sensor.curTps);
 int realtps_Bar = screen.mapInt(sensor.curTps, 0, 100, 0, 100);
 screen.setVal("tps_Bar", realtps_Bar);
-//Load bar
+// Load bar
 screen.setText("load_Bar", sensor.curLoad);
 int realload_Bar = screen.mapInt(sensor.curLoad, 0, 100, 0, 100);
 screen.setVal("load_Bar", realload_Bar);
-//ATF bar
+// ATF bar
 screen.setText("atf_Bar", sensor.curAtfTemp);
 int realAtf_Bar = screen.mapInt(sensor.curAtfTemp, 0, 100, 0, 100);
 screen.setVal("atf_Bar", realAtf_Bar);
+// Manual / Automatic mode
+int autoState = digitalRead(autoSwitch);
+screen.setPic("mode", autoState == HIGH ? 12 : autoState == LOW ? 13 : 13);
 
 
 //  screen.setText("atf_bar", sensor.curAtfTemp);
