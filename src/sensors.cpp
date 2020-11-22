@@ -103,18 +103,11 @@ void pollsensors(Task *me)
       n3Speed = 0;
     }
 
-    if (useCanSensors)
-    {
-    canSpeedPulses = vehicleSpeedPulses;
-    }
-    
-    if (vehicleSpeedPulses >= config.rearDiffTeeth)
+   if (vehicleSpeedPulses >= config.rearDiffTeeth)
     {
       vehicleTravelRevs = vehicleSpeedPulses / config.rearDiffTeeth;
       vehicleSpeedRevs = vehicleSpeedPulses / config.rearDiffTeeth / elapsedTime * 1000 * 60;
-
       vehicleSpeedRevs = vehicleSpeedRevs * (digitalRead(lowGearPin) == HIGH && config.transferRatio > 0 ? config.transferRatio : 1);
-
       vehicleSpeedPulses = 0;
     }
     else
@@ -122,6 +115,7 @@ void pollsensors(Task *me)
       vehicleSpeedPulses = 0;
       vehicleSpeedRevs = 0;
     }
+  
 
     // RPM as per elapsedTime
     if (rpmPulse >= config.triggerWheelTeeth)

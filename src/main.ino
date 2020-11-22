@@ -90,8 +90,10 @@ int realAtf_Bar = 0;
 void fastRefreshScreen(Task *me) //screen refresh function all display data goes here
 {
 
-  struct SensorVals sensor = readSensors(); //read current sensor data
-  
+struct SensorVals sensor = readSensors(); //read current sensor data
+
+//SPEED display on Nextion
+  screen.setText("speedValue", String(sensor.curSpeed)); 
 // RPM value + gauge display on Nextion
   screen.setText("rpmValue", sensor.curRPM);
   realRPM = screen.mapInt(sensor.curRPM, 0, 7000, 0, 253);
@@ -125,108 +127,11 @@ void fastRefreshScreen(Task *me) //screen refresh function all display data goes
   screen.setVal("rpmGauge2", realRPM2);
 //LOAD value
   screen.setText("cltValue", canCoolant);
-// ATF2 (main window)Nextion
-  //realATF2 = screen.mapInt(sensor.curAtfTemp, 140, 0, 90, 270);
-  //realATF2 = realATF2 < 0 ? 360 + realATF2 : realATF2;
-  //screen.setVal("atfGauge2", realATF2);
-
-
-// //PRND graphics display on Nextion
-//   //wantedGear 6 = N
-//   //wantedGear 7 = R
-//   //wantedGear 8 = P
-//   screen.setPic("gear", wantedGear == 8 ? 3 : wantedGear == 7 ? 4 : (wantedGear < 6 &&  wantedGear > 0) ? 6 : 3);
-// //Current Gear graphics display
-//   screen.setPic("curGear", gear == 5 ? 11 : gear == 4 ? 10 : gear == 3 ? 9 : gear == 2 ? 8 : gear == 1 ? 7 : 8);
-// //Gear display on Nextion
-//   screen.setText("gear_number", String(gear));
-// //Speed display on Nextion
-//   screen.setText("speed_val", String(sensor.curSpeed));
-// //1to2
-//   screen.setText("p1to2_val", String(config.oneTotwo));
-// //2to3
-//   screen.setText("p2to3_val", String(config.twoTothree));
-// //3to4
-//   screen.setText("p3to4_val", String(config.threeTofour));
-// //4to5
-//   screen.setText("p4to5_val", String(config.fourTofive));
-// //5to4
-//   screen.setText("p5to4_val", String(config.fiveTofour));
-// //4to3
-//   screen.setText("p4to3_val", String(config.fourTothree));
-// //3to2
-//   screen.setText("p3to2_val", String(config.threeTotwo));
-// //2to1
-//   screen.setText("p2to1_val", String(config.twoToone));
-// //TPS bar
-// screen.setText("tps_Bar", sensor.curTps);
-// int realtps_Bar = screen.mapInt(sensor.curTps, 0, 100, 0, 100);
-// screen.setVal("tps_Bar", realtps_Bar);
-// //Load bar
-// screen.setText("load_Bar", sensor.curLoad);
-// int realload_Bar = screen.mapInt(sensor.curLoad, 0, 100, 0, 100);
-// screen.setVal("load_Bar", realload_Bar);
-
-// //  screen.setText("atf_bar", sensor.curAtfTemp);
-// //  int realATF = screen.mapInt(sensor.curAtfTemp, -40, 130, 0, 100);
-// //  screen.setVal("atf_bar", realATF);
-
-// //ATF bar + value display on Nextion
-// //  screen.setText("atf_value", sensor.curAtfTemp);
-// //  screen.setText("atf_bar", sensor.curAtfTemp);
-// //  int realATF = screen.mapInt(sensor.curAtfTemp, -40, 130, 0, 100);
-// //  screen.setVal("atf_bar", realATF);
-// //PRND value display on Nextion
-// //screen.setText("PRND", wantedGear == 8 ? "P" : wantedGear == 7 ? "R" : wantedGear == 6 ? "N" : fullAuto < 6 ? "D" : String(wantedGear));
-
-// //Battery bar + value display on Nextion
-
-// screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10));
-//   int realBatt = screen.mapInt(sensor.curBattery, 11000, 16000, 0, 100);
-//   screen.setVal("bat_value", realBatt);
-
 }
 
 void averageRefreshScreen(Task *me) //screen refresh function all display data goes here
 {
-
-  struct SensorVals sensor = readSensors(); //read current sensor data
-  
-// // RPM value + gauge display on Nextion
-//   screen.setText("rpmValue", sensor.curRPM);
-//   realRPM = screen.mapInt(sensor.curRPM, 0, 7000, 0, 253);
-//   realRPM = realRPM < 0 ? 360 + realRPM : realRPM;
-//   screen.setVal("rpmGauge", realRPM);
-// // ATF value + gauge display on Nextion
-//   screen.setText("atfValue", sensor.curAtfTemp);
-//   realATF = screen.mapInt(sensor.curAtfTemp, 0, 140, 0, 253);
-//   realATF = realATF < 0 ? 360 + realATF : realATF;
-//   screen.setVal("atfGauge", realATF);
-// // LOAD value + gauge display on Nextion
-//   screen.setText("loadValue", sensor.curLoad);
-//   realLOAD = screen.mapInt(sensor.curLoad, 0, 100, 0, 277);
-//   realLOAD = realLOAD < 0 ? 360 + realLOAD : realLOAD;
-//   screen.setVal("loadGauge", realLOAD);
-// // TPS value + gauge display on Nextion
-//   screen.setText("tpsValue", sensor.curTps);
-//   realTPS = screen.mapInt(sensor.curTps, 0, 100, 0, 277);
-//   realTPS = realTPS < 0 ? 360 + realTPS : realTPS;
-//   screen.setVal("tpsGauge", realTPS);
-// //RATIO display on Nextion
-//   screen.setText("ratioValue", String(config.transferRatio));
-//   //screen.setText("ratioValue", String(sensor.curRatio));
-// //n2 display on Nextion
-//   screen.setText("n2Value", String(n2Speed));
-// //n3 display on Nextion
-//   screen.setText("n3Value", String(n3Speed));
-// //RPM2 (main window) display
-//   realRPM2 = screen.mapInt(sensor.curRPM, 0, 7000, 0, 252);
-//   realRPM2 = realRPM2 < 0 ? 360 + realRPM2 : realRPM2;
-//   screen.setVal("rpmGauge2", realRPM2);
-// // ATF2 (main window)Nextion
-//   realATF2 = screen.mapInt(sensor.curAtfTemp, 140, 0, 90, 270);
-//   realATF2 = realATF2 < 0 ? 360 + realATF2 : realATF2;
-//   screen.setVal("atfGauge2", realATF2);
+struct SensorVals sensor = readSensors(); //read current sensor data
 
 //PRND graphics display on Nextion
   //wantedGear 6 = N
@@ -270,36 +175,25 @@ screen.setVal("atf_Bar", realAtf_Bar);
 // Manual / Automatic mode
 int autoState = digitalRead(autoSwitch);
 screen.setPic("mode", autoState == HIGH ? 12 : autoState == LOW ? 13 : 13);
-
-
-//  screen.setText("atf_bar", sensor.curAtfTemp);
-//  int realATF = screen.mapInt(sensor.curAtfTemp, -40, 130, 0, 100);
-//  screen.setVal("atf_bar", realATF);
-
-//ATF bar + value display on Nextion
-//  screen.setText("atf_value", sensor.curAtfTemp);
-//  screen.setText("atf_bar", sensor.curAtfTemp);
-//  int realATF = screen.mapInt(sensor.curAtfTemp, -40, 130, 0, 100);
-//  screen.setVal("atf_bar", realATF);
-//PRND value display on Nextion
-//screen.setText("PRND", wantedGear == 8 ? "P" : wantedGear == 7 ? "R" : wantedGear == 6 ? "N" : fullAuto < 6 ? "D" : String(wantedGear));
-
-//Battery bar + value display on Nextion
-
-// screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10));
-//   int realBatt = screen.mapInt(sensor.curBattery, 11000, 16000, 0, 100);
-//   screen.setVal("bat_value", realBatt);
-
 }
 
 void slowRefreshScreen(Task *me) //screen refresh function all display data goes here
 {
-  struct SensorVals sensor = readSensors(); //read current sensor data
-  
+struct SensorVals sensor = readSensors(); //read current sensor data
+// BATTERY display  
   screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10));
   int realBatt = screen.mapInt(sensor.curBattery, 11000, 16000, 0, 100);
   screen.setVal("bat_value", realBatt);
-
+//ABS teeth display
+  screen.setText("absValue", String(config.rearDiffTeeth));
+//DIFF ratio display
+  screen.setText("diffValue", String(config.diffRatio));
+//TPS Agresivness ratio display
+  screen.setText("tpsaValue", String(config.tpsAgre));
+//Crankshaft trigger teeth ratio display
+  screen.setText("crankValue", String(config.triggerWheelTeeth));
+//LowRange ratio display
+  screen.setText("lowrangeValue", String(config.transferRatio));
 }
 
 #endif
