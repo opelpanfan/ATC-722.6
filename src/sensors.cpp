@@ -102,6 +102,13 @@ void pollsensors(Task *me)
       n3Speed = 0;
     }
 
+
+  int canSpeedPulses;
+  if (useCanSensors)
+  {
+    canSpeedPulses=vehicleSpeedPulses;
+  }
+  else
     if (vehicleSpeedPulses >= config.rearDiffTeeth)
     {
       vehicleTravelRevs = vehicleSpeedPulses / config.rearDiffTeeth;
