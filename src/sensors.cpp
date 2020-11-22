@@ -102,8 +102,15 @@ void pollsensors(Task *me)
       n3SpeedPulses = 0;
       n3Speed = 0;
     }
-
-   if (vehicleSpeedPulses >= config.rearDiffTeeth)
+   if (useCanSensors)
+   {
+     vehicleSpeedPulses = canSpeedPulses;
+     vehicleTravelRevs = canSpeedPulses / config.rearDiffTeeth;
+     vehicleSpeedRevs = canSpeedPulses / config.rearDiffTeeth / elapsedTime * 1000 * 60;
+     vehicleSpeedRevs = vehicleSpeedRevs * (digitalRead(lowGearPin) == HIGH && config.transferRatio > 0 ? config.transferRatio : 1);
+     canSpeedPulses = 0;
+    }
+   else if (vehicleSpeedPulses >= config.rearDiffTeeth)
     {
       vehicleTravelRevs = vehicleSpeedPulses / config.rearDiffTeeth;
       vehicleSpeedRevs = vehicleSpeedPulses / config.rearDiffTeeth / elapsedTime * 1000 * 60;
