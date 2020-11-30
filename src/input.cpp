@@ -45,6 +45,8 @@ int lockVal = 0;
 
 double canTPS, canRPM, canCoolant, canSpeed;
 
+int canSpeedPulses = 0;
+
 #ifdef CANBUS
 Circular_Buffer<uint32_t, cbsize> ids;
 Circular_Buffer<uint32_t, cbsize, 10> storage;
@@ -248,7 +250,7 @@ void canSniff(const CAN_message_t &msg)
       //int canSpeedPulses   = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
       int rpm_right = (((frame[3] & 0b00111111) << 8) | frame[4]) / 2;    //RPM RAW value is x2
       int rpm_left  = (((frame[5] & 0b00111111) << 8) | frame[6]) / 2;    //RPM RAW value is x2
-      int canSpeedPulses   = (rpm_right + rpm_left) / 2;
+      canSpeedPulses   = (rpm_right + rpm_left) / 2;
       float tireDiameter = ((config.tireProfile * 2) + (config.tireInches * 25.4)) + config.tireOffset;
       float tireCircumference = 3.14 * tireDiameter;     
       canSpeed = (tireCircumference * canSpeedPulses * 60) / 1000000;
