@@ -259,15 +259,15 @@ void setup()
   pinMode(lowGearPin, INPUT);  //keypad analog pin
 
 
-  *portConfigRegister(boostCtrl) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(boostCtrl) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(hornPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(reversePin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(hornPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(reversePin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //For manual control
   pinMode(autoSwitch, INPUT);
 
@@ -275,8 +275,8 @@ void setup()
   {
     pinMode(gupSwitch, INPUT);   // gear up
     pinMode(gdownSwitch, INPUT); // gear down
-    *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-    *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+    //*portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+    //*portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   }
   else
   {
@@ -286,11 +286,11 @@ void setup()
 
   pinMode(fuelInPin, INPUT); // Fuel flow meter in
   // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
-  *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //#endif
 
-  *portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
   //For stick control
   pinMode(whitepin, INPUT);
@@ -298,10 +298,10 @@ void setup()
   pinMode(greenpin, INPUT);
   pinMode(yellowpin, INPUT);
 
-  *portConfigRegister(whitepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(bluepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(whitepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(bluepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  //*portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
   /*#ifdef ASPC
   pinMode(aSpcUpSwitch, INPUT);
