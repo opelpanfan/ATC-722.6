@@ -146,7 +146,7 @@ void initConfig()
         setConfigFloat(67, 1.00);        
         setConfigFloat(70, 1.00);
         setUpGear(1, 35);
-        setUpGear(2, 72);
+        setUpGear(2, 71);
         setUpGear(3, 80);
         setUpGear(4, 80);
         setDownGear(2, 35);
@@ -160,7 +160,7 @@ void initConfig()
     else
     {
         int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
-        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 68, 69};
+        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 68, 69, 70};
         int configF[] = {58, 61, 67, 70};
         int upGears[] = {1, 2, 3, 4};
         int downGears[] = {2, 3, 4, 5};
@@ -426,7 +426,7 @@ void setConfigFloat(int asset, float value)
 {
     lastActiveConfig = millis();
 
-    if (asset > 49 && asset < 71)
+    if (asset > 49 && asset < 72)
     {
         int assetLocation = asset * 10;
         if (debugEnabled)
@@ -571,7 +571,7 @@ void setConfig(int asset, int value)
 {
     lastActiveConfig = millis();
 
-    if (asset > 49 && asset < 71)
+    if (asset > 49 && asset < 72)
     {
         int assetLocation = asset * 10;
         if (debugEnabled)
@@ -639,8 +639,9 @@ void setConfig(int asset, int value)
     case 69:
         config.lowRPMshiftLimit = value;
         break;
-    case 70:
+    case 71:
         config.tireOffset = value;
+        break;
     default:
         break;
     }
@@ -712,13 +713,13 @@ void getConfig()
     Serial.print(config.highRPMshiftLimit);
     Serial.print(";");
     Serial.print("69:");
-    Serial.println(config.lowRPMshiftLimit);    
+    Serial.print(config.lowRPMshiftLimit);    
     Serial.print(";");
     Serial.print("70:");
-    Serial.println(config.transferRatio);
+    Serial.print(config.transferRatio);
     Serial.print(";");
     Serial.print("71:");
-    Serial.print(config.tireOffset);
+    Serial.println(config.tireOffset);
 }
 
 void serialConfig()
