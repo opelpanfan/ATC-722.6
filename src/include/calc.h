@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 int readTPSVoltage(int voltage);
 int readBoostVoltage(int voltage);
 int readExPresVoltage(int voltage);

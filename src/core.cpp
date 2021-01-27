@@ -6,7 +6,7 @@
 #include "include/input.h"
 #include "include/core.h"
 #include "include/config.h"
-#include <SoftTimer.h>
+
 
 // CORE
 // input:pollstick -> core:decideGear -> core:gearChange[Up|Down] -> core:switchGearStart -> core:boostControl
@@ -33,7 +33,7 @@ int lastMapVal;
 int shiftLoad = 0;
 int shiftAtfTemp = 0;
 int wrongGearPoint = 0;
-boolean shiftConfirmed, preShift, postShift, preShiftDone, shiftDone, postShiftDone = false;
+bool shiftConfirmed, preShift, postShift, preShiftDone, shiftDone, postShiftDone = false;
 double lastShiftPoint;
 
 // Gear shift logic
@@ -458,7 +458,7 @@ void gearchangeDown(int newGear)
 }
 
 // Logic for automatic new gear, this makes possible auto up/downshifts.
-void decideGear(Task *me)
+void decideGear()
 {
   int moreGear = gear + 1;
   int lessGear = gear - 1;
@@ -688,7 +688,7 @@ float getGearSlip()
   return slip;
 }
 
-void faultMon(Task *me)
+void faultMon()
 {
   struct SensorVals sensor = readSensors();
 

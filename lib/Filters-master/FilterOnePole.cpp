@@ -204,7 +204,6 @@ void FilterOnePoleCascade::test() {
   float maxVal = 0;
   float valWasOutputThisCycle = true;
   
-  float lastFilterVal = 0;
   
   while( true ) {
     float now = 1e-3*millis();

@@ -1,3 +1,6 @@
+#include <Arduino.h>
+
+
 //722.6 temperature sensor map
 
 static const int atfSensorMap[23][2] PROGMEM {

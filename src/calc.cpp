@@ -8,7 +8,7 @@
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr)[0]))
 int lastXval, lastYval;
 int maxBoostPressure = 700; // Max pressure on boost sensor
-boolean ShiftDebugEnabled = false;
+bool ShiftDebugEnabled = false;
 int initBVoltage = analogRead(boostPin) * 5.0;
 int initEVoltage = analogRead(exhaustPresPin) * 5.0;
 

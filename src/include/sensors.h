@@ -1,4 +1,5 @@
-#include <SoftTimer.h>
+
+#include <Arduino.h>
 
 struct SensorVals
 {
@@ -13,7 +14,7 @@ void vehicleSpeedInterrupt();
 void rpmInterrupt();
 void fuelInInterrupt();
 void fuelOutInterrupt();
-void pollsensors(Task* me);
+void pollsensors();
 int speedRead();
 int tpsRead();
 void tpsInit(int action);
@@ -29,14 +30,15 @@ int oilRead();
 int batteryRead();
 struct SensorVals readSensors();
 
-extern boolean trans;
-extern boolean sensors;
-extern boolean tpsSensor;
-extern boolean boostSensor;
-extern boolean debugEnabled;
-extern boolean boostLimit;
-extern boolean drive;
-extern boolean diffSpeed;
-extern boolean rpmSpeed;
-extern boolean batteryMonitor, exhaustPresSensor, carRunning;
+extern bool trans;
+extern bool sensors;
+extern bool tpsSensor;
+extern bool boostSensor;
+extern bool debugEnabled;
+extern bool boostLimit;
+extern bool drive;
+extern bool diffSpeed;
+extern bool rpmSpeed;
+extern bool useCanSpeed;
+extern bool batteryMonitor, exhaustPresSensor, carRunning;
 extern int evalGearVal, speedoRPM;

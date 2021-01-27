@@ -1,10 +1,11 @@
-#include <SoftTimer.h>
+#include <Arduino.h>
+
 
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal);
 void switchGearStop();
 void gearchangeUp(int newGear);
 void gearchangeDown(int newGear);
-void decideGear(Task* me);
+void decideGear();
 int evaluateGear();
 float ratioFromGear(int inputGear);
 int gearFromRatio(float inputRatio);
@@ -12,7 +13,7 @@ float getGearSlip();
 void doPreShift();
 void doShift();
 void doPostShift();
-void faultMon(Task* me);
+void faultMon();
 
 extern byte gear;         
 extern int cSolenoid;  
@@ -22,17 +23,17 @@ extern unsigned long int shiftStartTime;
 extern unsigned long int shiftDuration;
 extern int cSolenoidEnabled;
 extern int lastMapVal,lastXval,lastYval;
-extern boolean trans;
-extern boolean sensors;
-extern boolean shiftBlocker;
-extern boolean debugEnabled;
+extern bool trans;
+extern bool sensors;
+extern bool shiftBlocker;
+extern bool debugEnabled;
 extern byte wantedGear;
 extern byte newGear;
 extern byte pendingGear;
-extern boolean shiftPending;
+extern bool shiftPending;
 extern int vehicleSpeedRevs;
-extern boolean speedFault;
-extern boolean adaptive;
-extern boolean evalGear;
+extern bool speedFault;
+extern bool adaptive;
+extern bool evalGear;
 extern int shiftLoad, shiftAtfTemp, wrongGearPoint;
-extern boolean shiftConfirmed, preShift, postShift, preShiftDone, postShiftDone, shiftDone, batteryFault, slipFault, carRunning;
+extern bool shiftConfirmed, preShift, postShift, preShiftDone, postShiftDone, shiftDone, batteryFault, slipFault, carRunning;

@@ -1,53 +1,54 @@
-#include <SoftTimer.h>
+#include <Arduino.h>
 
-void pollstick(Task* me);
+
+void pollstick();
 void gearUp();
 void gearDown();
-void polltrans(Task* me);
-void boostControl(Task* me);
-void fuelControl(Task* me);
+void polltrans();
+void boostControl();
+void fuelControl();
 int adaptSPC(int mapId, int xVal, int yVal);
 void adaptSPCup();
 void adaptSPCdown();
 void radioControl();
 void onReleased(unsigned long pressTimespanMs);
 
-void keypadWatch(Task* me);
+void keypadWatch();
 void keypadControl(int command);
 
 extern int spcPercentVal;       
 extern unsigned long int shiftStartTime;
 extern unsigned long int shiftDuration;
-extern boolean trans;
-extern boolean boostSensor;
-extern boolean shiftBlocker;
-extern boolean debugEnabled;
-extern boolean boostLimit;
+extern bool trans;
+extern bool boostSensor;
+extern bool shiftBlocker;
+extern bool debugEnabled;
+extern bool boostLimit;
 extern int n2Speed;
 extern int n3Speed;
-extern boolean fullAuto;
-extern boolean fuelPumpControl;
-extern boolean shiftPending;
-extern boolean ignition;
-extern boolean fuelPumps;
-extern boolean radioEnabled;
-extern boolean stickCtrl;
-extern boolean horn;
-extern boolean manual;
-extern boolean truePower;
-extern boolean tccLock;
-extern boolean stick;
-extern boolean autoGear;
-extern boolean tpsConfigMode;
+extern bool fullAuto;
+extern bool fuelPumpControl;
+extern bool shiftPending;
+extern bool ignition;
+extern bool fuelPumps;
+extern bool radioEnabled;
+extern bool stickCtrl;
+extern bool horn;
+extern bool manual;
+extern bool truePower;
+extern bool tccLock;
+extern bool stick;
+extern bool autoGear;
+extern bool tpsConfigMode;
 extern double lastShiftPoint;
-extern boolean tpsInitPhase1, tpsInitPhase2;
+extern bool tpsInitPhase1, tpsInitPhase2;
 extern byte page;
 extern double boostPWM;
-extern boolean boostLimitShift;
+extern bool boostLimitShift;
 extern int boostOverride;
 extern double lastPress;
 
-extern double canTPS;
-extern double canRPM;
-extern double canCoolant;
-extern double canSpeed;
+extern double canbusTPS;
+extern double canbusRPM;
+extern double canbusCoolant;
+extern double canbusSpeed;

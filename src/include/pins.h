@@ -1,3 +1,6 @@
+#include <Arduino.h>
+
+
 // OUTPUT PINS
 // Solenoid output pins
 
@@ -9,7 +12,7 @@
 // Green = Fuel pump control ground
 // Green-White -> blue-white = TPS signal
 
-#define TEENSY // we're running this on TEENSY
+#define STM // we're running this on TEENSY
 
 
 #define y3 36 // FMT3, orange<->brown/red // DOUT3, I need to use 16 as testing instead of 36.
@@ -41,7 +44,7 @@
 #define autoSwitch 33 // ex. 22, 0.5kohm <-> yellow <-> grey-pink-grey // DIN5
 
 // KeyPad
-#define keypadPin  A15 // test pin only, original "bluepin"
+#define keypadPin  A13 // test pin only, original "bluepin"
 
 //Low Gear Switch
 #define lowGearPin  28 // test pin only, original "yellowpin"
@@ -64,8 +67,8 @@
 #define n3pin 19 // voltage div 5/3 <-> black <-> brownredwhite = 1kohm/1.8kohm div // DIN15
 #define speedPin 20 // voltage div 12/3 <-> black <-> blueyellowblue = 1kohm/380ohm div // DIN10
 #define rpmPin 22 // voltage div 12/3 <-> black <-> whitebluewhite = 1kohm/380ohm div // DIN12
-#define batteryPin A21 // car battery monitor
-#define refPin A22 // sensor voltage ref ?
+#define batteryPin PD1 // car battery monitor
+#define refPin PD2 // sensor voltage ref ?
 //#define refPin A13 // using this in exhaustTempPin for now.
 
 #define exhaustTemperatureCS 9

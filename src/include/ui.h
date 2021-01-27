@@ -1,20 +1,21 @@
-#include <SoftTimer.h>
+#include <Arduino.h>
+
 void draw(int wantedGear, int loopTime);
 void rpmMeterUpdate();
-void updateDisplay(Task* me);
-void datalog(Task* me);
+void updateDisplay();
+void datalog();
 void updateSpeedo();
 
 extern byte gear;         
-extern boolean debugEnabled;
-extern boolean fullAuto;
-extern boolean datalogger;
-extern boolean w124speedo;
-extern boolean w124rpm;
-extern boolean infoBoost;
+extern bool debugEnabled;
+extern bool fullAuto;
+extern bool datalogger;
+extern bool w124speedo;
+extern bool w124rpm;
+extern bool infoBoost;
 extern byte wantedGear,page;
 extern int lastMapVal;
-extern boolean shiftPending,truePower;
+extern bool shiftPending,truePower;
 extern float ratio;
 extern int n2Speed, n3Speed;
 extern float gearSlip;

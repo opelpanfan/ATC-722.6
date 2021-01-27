@@ -7,64 +7,64 @@
 #define INPUT_SIZE 256
 long serialTimeout = 120000;
 long lastActiveConfig;
-boolean configMode, configSet, featureSet, upGear, downGear, tpsInit0, tpsInit1 = false;
+bool configMode, configSet, featureSet, upGear, downGear, tpsInit0, tpsInit1 = false;
 int myVersion = 20190211;
 int asset, value = 0;
 float fvalue = 0.00;
 char input[INPUT_SIZE + 1];
 /*
 // Stick control
-boolean stickCtrl = false;
+bool stickCtrl = false;
 // External radio control
-boolean radioEnabled = true;
+bool radioEnabled = true;
 // Manual microswitch control?
-boolean manual = true;
+bool manual = true;
 // Full automatic mode
-boolean fullAuto = false;
+bool fullAuto = false;
 // torque converter lock
-boolean tccLock = true;
+bool tccLock = true;
 // gear evaluation to determine real running gear, this prevents shifts if previous shift has not completed
-boolean evalGear = true;
+bool evalGear = true;
 
 
 // Do we have TPS?
-boolean tpsSensor = true;
+bool tpsSensor = true;
 // Do we have boost sensor?
-boolean boostSensor = true;
+bool boostSensor = true;
 // Exhaust pressure sensor
-boolean exhaustPresSensor = false;
+bool exhaustPresSensor = false;
 
 // Old style w124 speed meter controlling
-boolean w124speedo = true;
+bool w124speedo = true;
 // Old style w124 rpm meter pwm
-boolean w124rpm = true;
+bool w124rpm = true;
 // Boost control
-boolean boostLimit = true;
+bool boostLimit = true;
 // control fuel pumps (turn off below certain rpm)
-boolean fuelPumpControl = false;
+bool fuelPumpControl = false;
 // Initial state of fuel pumps
-boolean fuelPumps = true;
+bool fuelPumps = true;
 // Initial state of horn
-boolean horn = false;
+bool horn = false;
 
 // calculate vehicleSpeed from engine RPM
-boolean rpmSpeed = true;
+bool rpmSpeed = true;
 // calculate vehicleSpeed from diff abs sensor
-boolean diffSpeed = true;
+bool diffSpeed = true;
 
 // Adaptive pressure
-boolean adaptive = false;
+bool adaptive = false;
 // Battery monitor
-boolean batteryMonitor = true;
+bool batteryMonitor = true;
 
 // Default power mode
-boolean truePower = false;
+bool truePower = false;
 // Output to serial console
-boolean debugEnabled = true;
+bool debugEnabled = true;
 // Datalogging (enabling this disables debug)
-boolean datalogger = true;
+bool datalogger = true;
 
-boolean exhaustTempSensor = false; (20)
+bool exhaustTempSensor = false; (20)
 struct ConfigParam
 {
     int boostMax, boostDrop, boostSpring, fuelMaxRPM, maxRPM, tireWidth, tireProfile, tireInches, rearDiffTeeth, nextShiftDelay, stallSpeed, batteryLimit, firstTccGear, triggerWheelTeeth, tpsAgre;
@@ -163,35 +163,35 @@ void initConfig()
         int upGears[] = {1, 2, 3, 4};
         int downGears[] = {2, 3, 4, 5};
 
-        for (int i = 0; i < sizeof features / sizeof features[0]; i++)
+        for (unsigned int i = 0; i < sizeof features / sizeof features[0]; i++)
         {
             asset = features[i] * 11;
             byte featureVal;
             EEPROM.get(asset, featureVal);
             setFeatures(features[i], featureVal);
         }
-        for (int i = 0; i < sizeof config / sizeof config[0]; i++)
+        for (unsigned int i = 0; i < sizeof config / sizeof config[0]; i++)
         {
             asset = config[i] * 10;
             int configVal;
             EEPROM.get(asset, configVal);
             setConfig(config[i], configVal);
         }
-        for (int i = 0; i < sizeof configF / sizeof configF[0]; i++)
+        for (unsigned int i = 0; i < sizeof configF / sizeof configF[0]; i++)
         {
             asset = configF[i] * 10;
             float configFVal;
             EEPROM.get(asset, configFVal);
             setConfigFloat(configF[i], configFVal);
         }
-        for (int i = 0; i < sizeof upGears / sizeof upGears[0]; i++)
+        for (unsigned int i = 0; i < sizeof upGears / sizeof upGears[0]; i++)
         {
             asset = upGears[i] * 199;
             byte featureVal;
             EEPROM.get(asset, featureVal);
             setUpGear(upGears[i], featureVal);
         }
-        for (int i = 0; i < sizeof downGears / sizeof downGears[0]; i++)
+        for (unsigned int i = 0; i < sizeof downGears / sizeof downGears[0]; i++)
         {
             asset = downGears[i] * 197;
             byte featureVal;
@@ -336,73 +336,73 @@ void setFeatures(int asset, int value)
     switch (asset)
     {
     case 1:
-        stickCtrl = boolean(value);
+        stickCtrl = bool(value);
         break;
     case 2:
-        radioEnabled = boolean(value);
+        radioEnabled = bool(value);
         break;
     case 3:
-        manual = boolean(value);
+        manual = bool(value);
         break;
     case 4:
-        fullAuto = boolean(value);
+        fullAuto = bool(value);
         break;
     case 5:
-        tccLock = boolean(value);
+        tccLock = bool(value);
         break;
     case 6:
-        evalGear = boolean(value);
+        evalGear = bool(value);
         break;
     case 7:
-        tpsSensor = boolean(value);
+        tpsSensor = bool(value);
         break;
     case 8:
-        boostSensor = boolean(value);
+        boostSensor = bool(value);
         break;
     case 9:
-        exhaustPresSensor = boolean(value);
+        exhaustPresSensor = bool(value);
         break;
     case 10:
-        w124speedo = boolean(value);
+        w124speedo = bool(value);
         break;
     case 11:
-        w124rpm = boolean(value);
+        w124rpm = bool(value);
         break;
     case 12:
-        fuelPumpControl = boolean(value);
+        fuelPumpControl = bool(value);
         break;
     case 13:
-        rpmSpeed = boolean(value);
+        rpmSpeed = bool(value);
         break;
     case 14:
-        diffSpeed = boolean(value);
+        diffSpeed = bool(value);
         break;
     case 15:
-        adaptive = boolean(value);
+        adaptive = bool(value);
         break;
     case 16:
-        batteryMonitor = boolean(value);
+        batteryMonitor = bool(value);
         break;
     case 17:
-        truePower = boolean(value);
+        truePower = bool(value);
         break;
     case 18:
-        debugEnabled = boolean(value);
+        debugEnabled = bool(value);
         break;
     case 19:
-        datalogger = boolean(value);
+        datalogger = bool(value);
         break;
     case 20:
         exhaustTempSensor = true;
         break;
     case 21:
-        boostLimit = boolean(value);
+        boostLimit = bool(value);
         break;
     case 22:
-        boostLimitShift = boolean(value);
+        boostLimitShift = bool(value);
         break;
     case 23:
-        resistiveStick = boolean(value);
+        resistiveStick = bool(value);
         break;
     default:
         break;
@@ -851,7 +851,7 @@ void setup() {
 
 }
 */
-void serialWatch(Task *me)
+void serialWatch()
 {
     // put your main code here, to run repeatedly:
     pollConfigMode();

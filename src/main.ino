@@ -37,25 +37,27 @@
 #include "include/config.h"
 
 #include <EEPROM.h>
-#include <SoftTimer.h>
-#include <SPI.h>
-#include <U8g2lib.h>
-#include <AutoPID.h>
+
+#include <STM32_CAN.h>
+
+STM32_CAN Can0 (_CAN1, DEF);
+static CAN_message_t outMsg;
+static CAN_message_t inMsg;
 
 #define DISPLAYTYPE1 // Can be DISPLAYTYPE2 also.
 
 // "Protothreading", we have time slots for different functions to be run.
-Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
-Task pollData(33, datalog);               // 200ms to update datalogging
-Task pollStick(100, pollstick);           // 100ms for checking stick position*
-Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
-Task pollSensors(80, pollsensors);        // 100ms to update sensor values*/
-Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
-Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
-Task pollBoostControl(100, boostControl); // 100ms for boost control*/
-//Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
-Task pollSerialWatch(100, serialWatch);
-Task keypadPressWatch(100, keypadWatch);
+// Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
+// Task pollData(33, datalog);               // 200ms to update datalogging
+// Task pollStick(100, pollstick);           // 100ms for checking stick position*
+// Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
+// Task pollSensors(80, pollsensors);        // 100ms to update sensor values*/
+// Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
+// Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
+// Task pollBoostControl(100, boostControl); // 100ms for boost control*/
+// //Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
+// Task pollSerialWatch(100, serialWatch);
+// Task keypadPressWatch(100, keypadWatch);
 
 #ifdef ECU
 Task pollInjectionControl(100, injectionControl);
@@ -67,14 +69,14 @@ Task pollInjectionControl(100, injectionControl);
 #include "include/nextion.h" // include nection library
 Nextion screen = Nextion(); // create nextion class object
 
-void fastRefreshScreen(Task *me); //define screen refresh function
-Task pollNextionFast(100, fastRefreshScreen); //define refresh task and set frequency
+void fastRefreshScreen(); //define screen refresh function
+//Task pollNextionFast(100, fastRefreshScreen); //define refresh task and set frequency
 
-void averageRefreshScreen(Task *me); //define screen refresh function
-Task pollNextionAverage(500, averageRefreshScreen); //define refresh task and set frequency
+void averageRefreshScreen(); //define screen refresh function
+//Task pollNextionAverage(500, averageRefreshScreen); //define refresh task and set frequency
 
-void slowRefreshScreen(Task *me); //define screen refresh function
-Task pollNextionSlow(1000, slowRefreshScreen); //define refresh task and set frequency
+void slowRefreshScreen(); //define screen refresh function
+//Task pollNextionSlow(1000, slowRefreshScreen); //define refresh task and set frequency
 
 int realRPM = 0;
 int realATF = 0;
@@ -86,31 +88,31 @@ int realtps_Bar = 0;
 int realload_Bar = 0;
 
 
-void fastRefreshScreen(Task *me) //screen refresh function all display data goes here
+void fastRefreshScreen() //screen refresh function all display data goes here
 {
 
   struct SensorVals sensor = readSensors(); //read current sensor data
   
 // RPM value + gauge display on Nextion
-  screen.setText("rpmValue", sensor.curRPM);
+  screen.setText("rpmValue", (String)sensor.curRPM);
   realRPM = screen.mapInt(sensor.curRPM, 0, 7000, 0, 253);
   realRPM = realRPM < 0 ? 360 + realRPM : realRPM;
-  screen.setVal("rpmGauge", realRPM);
+  screen.setVal("rpmGauge", (String)realRPM);
 // ATF value + gauge display on Nextion
-  screen.setText("atfValue", sensor.curAtfTemp);
+  screen.setText("atfValue", (String)sensor.curAtfTemp);
   realATF = screen.mapInt(sensor.curAtfTemp, 0, 140, 0, 253);
   realATF = realATF < 0 ? 360 + realATF : realATF;
-  screen.setVal("atfGauge", realATF);
+  screen.setVal("atfGauge", (String)realATF);
 // LOAD value + gauge display on Nextion
-  screen.setText("loadValue", sensor.curLoad);
+  screen.setText("loadValue", (String)sensor.curLoad);
   realLOAD = screen.mapInt(sensor.curLoad, 0, 100, 0, 277);
   realLOAD = realLOAD < 0 ? 360 + realLOAD : realLOAD;
-  screen.setVal("loadGauge", realLOAD);
+  screen.setVal("loadGauge", (String)realLOAD);
 // TPS value + gauge display on Nextion
-  screen.setText("tpsValue", sensor.curTps);
+  screen.setText("tpsValue", (String)sensor.curTps);
   realTPS = screen.mapInt(sensor.curTps, 0, 100, 0, 277);
   realTPS = realTPS < 0 ? 360 + realTPS : realTPS;
-  screen.setVal("tpsGauge", realTPS);
+  screen.setVal("tpsGauge", (String)realTPS);
 //RATIO display on Nextion
   screen.setText("ratioValue", String(config.transferRatio));
   //screen.setText("ratioValue", String(sensor.curRatio));
@@ -121,11 +123,11 @@ void fastRefreshScreen(Task *me) //screen refresh function all display data goes
 //RPM2 (main window) display
   realRPM2 = screen.mapInt(sensor.curRPM, 0, 7000, 0, 252);
   realRPM2 = realRPM2 < 0 ? 360 + realRPM2 : realRPM2;
-  screen.setVal("rpmGauge2", realRPM2);
+  screen.setVal("rpmGauge2", (String)realRPM2);
 // ATF2 (main window)Nextion
   realATF2 = screen.mapInt(sensor.curAtfTemp, 140, 0, 90, 270);
   realATF2 = realATF2 < 0 ? 360 + realATF2 : realATF2;
-  screen.setVal("atfGauge2", realATF2);
+  screen.setVal("atfGauge2", (String)realATF2);
 // //PRND graphics display on Nextion
 //   //wantedGear 6 = N
 //   //wantedGear 7 = R
@@ -182,7 +184,7 @@ void fastRefreshScreen(Task *me) //screen refresh function all display data goes
 
 }
 
-void averageRefreshScreen(Task *me) //screen refresh function all display data goes here
+void averageRefreshScreen() //screen refresh function all display data goes here
 {
 
   struct SensorVals sensor = readSensors(); //read current sensor data
@@ -226,9 +228,9 @@ void averageRefreshScreen(Task *me) //screen refresh function all display data g
   //wantedGear 6 = N
   //wantedGear 7 = R
   //wantedGear 8 = P
-  screen.setPic("gear", wantedGear == 8 ? 3 : wantedGear == 7 ? 4 : (wantedGear < 6 &&  wantedGear > 0) ? 6 : 3);
+  screen.setPic("gear", (String)(wantedGear == 8 ? 3 : wantedGear == 7 ? 4 : (wantedGear < 6 &&  wantedGear > 0) ? 6 : 3));
 //Current Gear graphics display
-  screen.setPic("curGear", gear == 5 ? 11 : gear == 4 ? 10 : gear == 3 ? 9 : gear == 2 ? 8 : gear == 1 ? 7 : 8);
+  screen.setPic("curGear", (String)(gear == 5 ? 11 : gear == 4 ? 10 : gear == 3 ? 9 : gear == 2 ? 8 : gear == 1 ? 7 : 8));
 //Gear display on Nextion
   screen.setText("gear_number", String(gear));
 //Speed display on Nextion
@@ -250,13 +252,13 @@ void averageRefreshScreen(Task *me) //screen refresh function all display data g
 //2to1
   screen.setText("p2to1_val", String(config.twoToone));
 //TPS bar
-screen.setText("tps_Bar", sensor.curTps);
+screen.setText("tps_Bar", (String)sensor.curTps);
 int realtps_Bar = screen.mapInt(sensor.curTps, 0, 100, 0, 100);
-screen.setVal("tps_Bar", realtps_Bar);
+screen.setVal("tps_Bar", (String)realtps_Bar);
 //Load bar
-screen.setText("load_Bar", sensor.curLoad);
+screen.setText("load_Bar", (String)sensor.curLoad);
 int realload_Bar = screen.mapInt(sensor.curLoad, 0, 100, 0, 100);
-screen.setVal("load_Bar", realload_Bar);
+screen.setVal("load_Bar", (String)realload_Bar);
 
 //  screen.setText("atf_bar", sensor.curAtfTemp);
 //  int realATF = screen.mapInt(sensor.curAtfTemp, -40, 130, 0, 100);
@@ -278,13 +280,13 @@ screen.setVal("load_Bar", realload_Bar);
 
 }
 
-void slowRefreshScreen(Task *me) //screen refresh function all display data goes here
+void slowRefreshScreen() //screen refresh function all display data goes here
 {
   struct SensorVals sensor = readSensors(); //read current sensor data
   
   screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10));
   int realBatt = screen.mapInt(sensor.curBattery, 11000, 16000, 0, 100);
-  screen.setVal("bat_value", realBatt);
+  screen.setVal("bat_value", (String)realBatt);
 
 }
 
@@ -300,10 +302,10 @@ void setup()
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
 
-  analogWriteFrequency(spc, 1000);     // 1khz for spc
-  analogWriteFrequency(mpc, 1000);     // and mpc
-  analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
-  analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
+  // analogWriteFrequency(spc, 1000);     // 1khz for spc
+  // analogWriteFrequency(mpc, 1000);     // and mpc
+  // analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
+  // analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
 
   Serial.begin(115200);
 
@@ -315,13 +317,6 @@ void setup()
       Serial.println("Radio initialized.");
     }
   }
-
-#ifdef DISPLAYTYPE1
-  U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
-#else
-  U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
-#endif
-  u8g2.begin();
 
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
@@ -351,15 +346,15 @@ void setup()
   pinMode(lowGearPin, INPUT);  //keypad analog pin
 
 
-  *portConfigRegister(boostCtrl) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(hornPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(reversePin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(boostCtrl) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // //  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // //*portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(hornPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(reversePin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //For manual control
   pinMode(autoSwitch, INPUT);
 
@@ -367,8 +362,8 @@ void setup()
   {
     pinMode(gupSwitch, INPUT);   // gear up
     pinMode(gdownSwitch, INPUT); // gear down
-    *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-    *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+    // *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+    // *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   }
   else
   {
@@ -378,11 +373,11 @@ void setup()
 
   pinMode(fuelInPin, INPUT); // Fuel flow meter in
   // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
-  *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //#endif
+  // *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // //#endif
 
-  *portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
   //For stick control
   pinMode(whitepin, INPUT);
@@ -390,10 +385,10 @@ void setup()
   pinMode(greenpin, INPUT);
   pinMode(yellowpin, INPUT);
 
-  *portConfigRegister(whitepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(bluepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(whitepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(bluepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  // *portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
   /*#ifdef ASPC
   pinMode(aSpcUpSwitch, INPUT);
@@ -440,19 +435,19 @@ void setup()
   }
 
   // initialize timers
-  SoftTimer.add(&pollDisplay);
-  SoftTimer.add(&pollData);
-  SoftTimer.add(&pollStick);
-  SoftTimer.add(&pollGear);
-  SoftTimer.add(&pollSensors);
-  SoftTimer.add(&pollTrans);
-  SoftTimer.add(&pollFuelControl);
-  SoftTimer.add(&pollBoostControl);
-  SoftTimer.add(&pollSerialWatch);
-  SoftTimer.add(&keypadPressWatch);
+  // SoftTimer.add(&pollDisplay);
+  // SoftTimer.add(&pollData);
+  // SoftTimer.add(&pollStick);
+  // SoftTimer.add(&pollGear);
+  // SoftTimer.add(&pollSensors);
+  // SoftTimer.add(&pollTrans);
+  // SoftTimer.add(&pollFuelControl);
+  // SoftTimer.add(&pollBoostControl);
+  // SoftTimer.add(&pollSerialWatch);
+  // SoftTimer.add(&keypadPressWatch);
 
 #ifdef ECU
-  SoftTimer.add(&pollInjectionControl);
+  // SoftTimer.add(&pollInjectionControl);
 #endif
 
 #ifdef NEXTION // nextion display implementation
@@ -462,9 +457,14 @@ void setup()
   screen.setPage("0"); // set screen page
   screen.setDim(100);  // set screen brightness
 
-  SoftTimer.add(&pollNextionFast); // start screen refresh task
-  SoftTimer.add(&pollNextionAverage); // start screen refresh task
-  SoftTimer.add(&pollNextionSlow); // start screen refresh task
+  // SoftTimer.add(&pollNextionFast); // start screen refresh task
+  // SoftTimer.add(&pollNextionAverage); // start screen refresh task
+  // SoftTimer.add(&pollNextionSlow); // start screen refresh task
 
 #endif
+}
+
+void loop()
+{
+
 }

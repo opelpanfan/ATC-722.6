@@ -1,6 +1,4 @@
 #include <Arduino.h>
-#include <SPI.h>
-#include <U8g2lib.h>
 #include "include/ui.h"
 #include "include/pins.h"
 #include "include/sensors.h"
@@ -11,8 +9,8 @@
 #include "include/input.h"
 #include "include/serial_config.h"
 
-#include <SoftTimer.h>
-#include <AutoPID.h>
+
+
 
 #define DISPLAYTYPE1 // Can be DISPLAYTYPE2 also.
 
@@ -22,29 +20,17 @@ const double speedoKd = 0; //100, 1 Pid Derivative Gain.
 double pidSpeedo, speedoPWM, pidSpeedoLim;
 int updateCount;
 
-AutoPID speedoPID(&pidSpeedoLim, &pidSpeedo, &speedoPWM, 0, 255, speedoKp, speedoKi, speedoKd);
-
-#ifdef DISPLAYTYPE1
-  U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
-#else
-  U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
-#endif
-
 // 9 moves to A10/
 // UI STAGE
 // Control for what user sees and how gearbox is used with
 //
-typedef u8g2_uint_t u8g_uint_t;
-//u8g2.begin();
-boolean infoBoost = false;
+
+bool infoBoost = false;
 
 void draw(int wantedGear)
 {
   struct SensorVals sensor = readSensors();
   static int maxSpeed, maxBoost, maxExPres, maxOilTemp, maxAtfTemp, maxRPM, maxPresDiff;
-  static int infoDisplay = 1;
-  static double infoDisplayTime;
-  static boolean infoDisplayShown, infoSpeed, infoSlip, infoBattery = false;
 
   if (sensor.curOilTemp > maxOilTemp)
   {
@@ -74,385 +60,6 @@ void draw(int wantedGear)
   {
     maxRPM = sensor.curRPM;
   }
-
-  if (infoDisplay > 0)
-  {
-    if (!infoDisplayShown)
-    {
-      infoDisplay = millis();
-      infoDisplayShown = true;
-    }
-
-    if (infoDisplay == 1)
-    {
-      u8g2.setFont(u8g2_font_fub14_tf);
-      u8g2.setCursor(10, 40);
-      u8g2.print(F("LAMP"));
-      u8g2.setCursor(10, 60);
-      u8g2.print(F("DEFECTIVE"));
-    }
-    else if (infoDisplay == 2)
-    {
-      u8g2.setFont(u8g2_font_fub14_tf);
-      if (boostLimit)
-      {
-        u8g2.setCursor(10, 40);
-        u8g2.print(F("boostLimit"));
-        u8g2.setCursor(10, 60);
-        u8g2.print(boostOverride);
-      }
-      else
-      {
-        u8g2.setCursor(10, 40);
-        u8g2.print(F("boostCtrl"));
-        u8g2.setCursor(10, 60);
-        u8g2.print("off");
-      }
-    }
-    else if (infoDisplay == 3)
-    {
-      u8g2.setFont(u8g2_font_fub14_tf);
-      u8g2.setCursor(10, 40);
-      u8g2.print(F("Speedmon"));
-      u8g2.setCursor(10, 60);
-      if (diffSpeed && rpmSpeed && canSpeed) {
-      u8g2.print(F("on"));
-      } else {
-      u8g2.print(F("off"));   
-      }
-      
-    }
-    else if (infoDisplay == 4)
-    {
-      u8g2.setFont(u8g2_font_fub14_tf);
-      u8g2.setCursor(10, 40);
-      u8g2.print(F("Slip"));
-      u8g2.setCursor(10, 60);
-      u8g2.print(F("fault"));
-    }
-    else if (infoDisplay == 5)
-    {
-      u8g2.setFont(u8g2_font_fub14_tf);
-      u8g2.setCursor(10, 40);
-      u8g2.print(F("Battery"));
-      u8g2.setCursor(10, 60);
-      u8g2.print(F("fault"));
-    }
-  }
-
-  if (page == 1 && infoDisplay == 0)
-  {
-    u8g2.setFont(u8g2_font_logisoso16_tr);
-    u8g2.setCursor(50, 20);
-    if (wantedGear == 6)
-    {
-      u8g2.print(F("N"));
-    }
-    if (wantedGear == 7)
-    {
-      u8g2.print(F("R"));
-    }
-    if (wantedGear == 8)
-    {
-      u8g2.print(F("P"));
-    }
-    if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && !shiftPending && gear < 6)
-    {
-      u8g2.print(gear);
-    }
-    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending && !preShift && !postShift)
-    {
-      u8g2.setCursor(40, 20);
-      u8g2.print(F("SHIFT"));
-    }
-    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending && preShift)
-    {
-      u8g2.setCursor(40, 20);
-      u8g2.print(F("PRESHIFT"));
-    }
-    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending && postShift)
-    {
-      u8g2.setCursor(40, 20);
-      u8g2.print(F("POSTSHIFT"));
-    }
-    if (fullAuto && wantedGear < 6)
-    {
-
-      u8g2.setCursor(50, 20);
-      u8g2.print(F("D("));
-      u8g2.print(gear);
-      u8g2.print(F(")"));
-    }
-    if (diffSpeed || rpmSpeed || canSpeed)
-    {
-      u8g2.setFont(u8g2_font_fub14_tf);
-      u8g2.setCursor(60, 40);
-      u8g2.print(sensor.curSpeed);
-      if (truePower)
-      {
-        u8g2.setCursor(45, 60);
-        u8g2.print(F("km/h"));
-      }
-      else
-      {
-        u8g2.setCursor(45, 60);
-        u8g2.print(F("km/h"));
-      }
-    }
-    u8g2.setFont(u8g2_font_5x8_tr);
-    u8g2.setCursor(3, 10);
-    u8g2.print("ATF:");
-    u8g2.setCursor(3, 20);
-    u8g2.print(sensor.curAtfTemp);
-    u8g2.setCursor(28, 20);
-    //u8g2.print(maxAtfTemp);
-    u8g2.setCursor(3, 30);
-    u8g2.print(F("load:"));
-    u8g2.setCursor(3, 40);
-    u8g2.print(sensor.curLoad);
-    u8g2.setCursor(28, 40);
-    //u8g2.print(maxOilTemp);
-    if (boostCtrl)
-    {
-      u8g2.setCursor(3, 50);
-      u8g2.print(F("canCLT:"));
-      u8g2.setCursor(3, 60);
-      u8g2.print(canCoolant);
-      u8g2.setCursor(28, 60);
-      //u8g2.print(maxBoost);
-    }
-    if (exhaustPresSensor)
-    {
-      u8g2.setCursor(0, 70);
-      u8g2.print(sensor.curExPres);
-      u8g2.setCursor(25, 70);
-      u8g2.print(maxExPres);
-    }
-    if (w124rpm)
-    {
-      u8g2.setCursor(96, 10);
-      u8g2.print(F("canRPM"));
-      u8g2.setCursor(96, 20);
-      //u8g2.print(sensor.curRPM);
-      u8g2.print(canRPM);
-    }
-    if (tpsSensor)
-    {
-      u8g2.setCursor(96, 30);
-      u8g2.print(F("canTPS:"));
-      u8g2.setCursor(96, 40);
-      //u8g2.print(sensor.curTps);
-      u8g2.print(canTPS);
-    }
-    if (exhaustTempSensor)
-    {
-      u8g2.setCursor(96, 50);
-      //u8g2.print(F("BATT:"));
-      u8g2.print(F("canSPD"));
-      u8g2.setCursor(96, 60);
-      //u8g2.print(sensor.curBattery);
-      u8g2.print(canSpeed);
-    }
-  }
-  else if (page == 2 && infoDisplay == 0)
-  {
-    /*float boostBar;
-    u8g2.drawFrame(5, 8, 115, 24);
-    if (sensor.curBoostLim > 0)
-    {
-      boostBar = sensor.curBoost / sensor.curBoostLim;
-    }
-    else
-    {
-      boostBar = sensor.curBoost / config.boostSpring;
-    }
-    float boostBox = 100 * boostBar * 115;
-    u8g2.drawBox(5, 8, boostBox, 24);*/
-    u8g2.setFont(u8g2_font_fub14_tf);
-    u8g2.setCursor(20, 28);
-    u8g2.print(sensor.curBoost);
-    u8g2.setCursor(50, 28);
-    u8g2.print(F(" / "));
-    u8g2.setCursor(90, 28);
-    u8g2.print(sensor.curExPres);
-    u8g2.setCursor(50, 56);
-    u8g2.print(sensor.curPresDiff);
-    /* if (sensor.curBoostLim < 1)
-    {
-      u8g2.setCursor(10, 56);
-      u8g2.print(F("LOW TEMP"));
-    }*/
-  }
-  else if (page == 3 && infoDisplay == 0)
-  {
-    u8g2.setFont(u8g2_font_logisoso16_tr);
-    u8g2.setCursor(50, 20);
-    if (wantedGear == 6)
-    {
-      u8g2.print(F("N"));
-    }
-    if (wantedGear == 7)
-    {
-      u8g2.print(F("R"));
-    }
-    if (wantedGear == 8)
-    {
-      u8g2.print(F("P"));
-    }
-    if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && !shiftPending)
-    {
-      u8g2.print(gear);
-    }
-    else if ((wantedGear < 5 || (!fullAuto && wantedGear == 5)) && shiftPending)
-    {
-      u8g2.setCursor(40, 20);
-      u8g2.print(F("SHIFT"));
-    }
-    if (fullAuto && wantedGear < 6)
-    {
-
-      u8g2.setCursor(60, 20);
-      u8g2.print(F("D("));
-      u8g2.print(gear);
-      u8g2.print(F(")"));
-    }
-    u8g2.setFont(u8g2_font_fub14_tf);
-    u8g2.setCursor(50, 40);
-    u8g2.print(sensor.curSlip);
-    u8g2.setFont(u8g2_font_5x8_tr);
-    u8g2.setCursor(0, 10);
-    u8g2.print("shiftTemp:");
-    u8g2.setCursor(0, 20);
-    u8g2.print(shiftAtfTemp);
-    u8g2.setCursor(0, 30);
-    u8g2.print(F("shiftLoad:"));
-    u8g2.setCursor(0, 40);
-    u8g2.print(shiftLoad);
-    u8g2.setCursor(0, 50);
-    u8g2.print(F("SPC:"));
-    u8g2.setCursor(0, 60);
-    u8g2.print(spcPercentVal);
-    u8g2.setCursor(100, 10);
-    u8g2.print(F("MPC:"));
-    u8g2.setCursor(100, 20);
-    u8g2.print(mpcPercentVal);
-    u8g2.setCursor(100, 30);
-    u8g2.print(F("RGear:"));
-    u8g2.setCursor(100, 40);
-    u8g2.print(config.rearDiffTeeth);
-    u8g2.setCursor(100, 50);
-    u8g2.print(F("Ratio;"));
-    u8g2.setCursor(100, 60);
-    u8g2.print(config.diffRatio);
-  }
-  else if (page == 4 && infoDisplay == 0)
-  {
-
-    u8g2.setFont(u8g2_font_fub14_tf);
-    u8g2.setCursor(20, 28);
-  //  u8g2.print(speedoRPM);
-    u8g2.setCursor(60, 28);
-  }
-  else if (page == 5 && infoDisplay == 0)
-  {
-    if (tpsConfigMode)
-    {
-      int tps = analogRead(tpsPin) * 3.0;
-      u8g2.setFont(u8g2_font_5x8_tr);
-      u8g2.setCursor(20, 28);
-      u8g2.print("Don't press throttle");
-      u8g2.setCursor(60, 28);
-      u8g2.print(F(" : "));
-      u8g2.setCursor(90, 48);
-      u8g2.print(tps);
-    }
-    else
-    {
-      page = 1;
-    }
-  }
-  else if (page == 6 && infoDisplay == 0)
-  {
-    if (tpsConfigMode)
-    {
-      if (!tpsInitPhase1)
-      {
-        tpsInit(0);
-        tpsInitPhase1 = true;
-      }
-      int tps = analogRead(tpsPin) * 3.0;
-      u8g2.setFont(u8g2_font_5x8_tr);
-      u8g2.setCursor(20, 28);
-      u8g2.print("Press throttle all the way");
-      u8g2.setCursor(60, 28);
-      u8g2.print(F(" : "));
-      u8g2.setCursor(90, 48);
-      u8g2.print(tps);
-    }
-    else
-    {
-      page = 1;
-    }
-  }
-  else if (page == 7 && infoDisplay == 0)
-  {
-    if (tpsConfigMode)
-    {
-      if (!tpsInitPhase2)
-      {
-        tpsInit(1);
-        tpsInitPhase2 = true;
-      }
-      u8g2.setFont(u8g2_font_5x8_tr);
-      u8g2.setCursor(20, 28);
-      u8g2.print("TPS reset done");
-      u8g2.setCursor(60, 28);
-      u8g2.print(F(" : "));
-      u8g2.setCursor(90, 28);
-      u8g2.print(sensor.curTps);
-    }
-    else
-    {
-      page = 1;
-    }
-  }
-  if ((millis() - infoDisplayTime > 5000) && infoDisplayShown)
-  {
-    infoDisplay = 0;
-    infoDisplayShown = false;
-  }
-  else if (millis() < 2000)
-  {
-    infoDisplay = 1;
-  }
-  else if ((sensor.curBoostLim > 0) && !infoBoost)
-  {
-    infoDisplay = 2;
-    infoBoost = true;
-    infoDisplayTime = millis();
-    infoDisplayShown = true;
-  }
-  else if (speedFault && !infoSpeed && wantedGear < 6)
-  {
-    infoDisplay = 3;
-    infoSpeed = true;
-    infoDisplayTime = millis();
-    infoDisplayShown = true;
-  }
-  else if (slipFault && !infoSlip && wantedGear < 6)
-  {
-    infoDisplay = 4;
-    infoSlip = true;
-    infoDisplayTime = millis();
-    infoDisplayShown = true;
-  }
-  else if (batteryFault && !infoBattery)
-  {
-    infoDisplay = 5;
-    infoBattery = true;
-    infoDisplayTime = millis();
-    infoDisplayShown = true;
-  }
 }
 
 void rpmMeterUpdate()
@@ -476,18 +83,8 @@ void updateSpeedo()
 }
 
 // Display update
-void updateDisplay(Task *me)
+void updateDisplay()
 {
- /* updateCount++;
-  if (updateCount > 10) {
-    u8g2.initDisplay();
-    updateCount = 0;
-  }*/
-
-  u8g2.clearBuffer();
-  draw(wantedGear);
-  u8g2.sendBuffer();
-
   if (w124rpm)
   {
     rpmMeterUpdate();
@@ -498,7 +95,7 @@ void updateDisplay(Task *me)
   }
 }
 
-void datalog(Task *me)
+void datalog()
 {
   static long counter = 0;
 

@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 
 struct ConfigParam
 {

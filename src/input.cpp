@@ -10,9 +10,8 @@
 #include "include/config.h"
 #include "include/ui.h"
 #include "include/serial_config.h"
-#include <SoftTimer.h>
-#include <AutoPID.h>
-#include <IFCT.h>
+
+
 
 #define cbsize 16
 #define CANBUS true
@@ -27,7 +26,7 @@ const double boostKd = 0;  //100, 1 Pid Derivative Gain.
 double pidBoost, boostPWM, pidBoostLim;
 int boostOverride = 150;
 //Load PID controller
-AutoPID boostPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, boostKp, boostKi, boostKd);
+//AutoPID boostPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, boostKp, boostKi, boostKd);
 
 #ifdef ECU
 // Pid tuning parameters, for injectionCtrl
@@ -39,170 +38,170 @@ double pidInject, injectPWM, pidInjectLim;
 AutoPID injectPID(&pidInject, &pidInjectLim, &injectPWM, 0, 255, injectKp, injectKi, injectKd);
 #endif
 bool justStarted = true;
-boolean garageShift, garageShiftMove, tpsConfigMode, tpsInitPhase1, tpsInitPhase2 = false;
+bool garageShift, garageShiftMove, tpsConfigMode, tpsInitPhase1, tpsInitPhase2 = false;
 double garageTime, lastShift, lastInput, hornPressTime, lastPress;
 int lockVal = 0;
 
 
-double canTPS, canRPM, canCoolant, canSpeed;
+double canbusTPS, canbusRPM, canbusCoolant, canbusSpeed;
 
 
 #ifdef CANBUS
-Circular_Buffer<uint32_t, cbsize> ids;
-Circular_Buffer<uint32_t, cbsize, 10> storage;
+//Circular_Buffer<uint32_t, cbsize> ids;
+//Circular_Buffer<uint32_t, cbsize, 10> storage;
 
-void canSniff(const CAN_message_t &msg)
+void canSniff()
 { // global callback
-  uint32_t frame[10] = {msg.id};
+  // uint32_t frame[10] = {msg.id};
 
-  if (!storage.find(frame, 10, 0, 0, 0))
-  {
-    if (storage.size() == storage.capacity())
-    {
-      Serial.print("Buffer full, couldn't add CAN ID to the list!");
-      return;
-    }
-    frame[0] = msg.id;
-    for (uint8_t i = 0; i < 8; i++)
-      frame[i + 1] = msg.buf[i];
-    frame[9] = 1;
-    storage.push_back(frame, 10);
-    ids.push_back(msg.id);
-    ids.sort_ascending();
-  }
-  else
-  {
-    frame[9]++;
-    for (uint8_t i = 0; i < 8; i++)
-      frame[i + 1] = msg.buf[i];
-    storage.replace(frame, 10, 0, 0, 0);
-  }
+  // if (!storage.find(frame, 10, 0, 0, 0))
+  // {
+  //   if (storage.size() == storage.capacity())
+  //   {
+  //     Serial.print("Buffer full, couldn't add CAN ID to the list!");
+  //     return;
+  //   }
+  //   frame[0] = msg.id;
+  //   for (uint8_t i = 0; i < 8; i++)
+  //     frame[i + 1] = msg.buf[i];
+  //   frame[9] = 1;
+  //   storage.push_back(frame, 10);
+  //   ids.push_back(msg.id);
+  //   ids.sort_ascending();
+  // }
+  // else
+  // {
+  //   frame[9]++;
+  //   for (uint8_t i = 0; i < 8; i++)
+  //     frame[i + 1] = msg.buf[i];
+  //   storage.replace(frame, 10, 0, 0, 0);
+  // }
 
-  if (frame[0] == 560)
-  {
-    if (frame[1] == 8)
-    {
-      wantedGear = 8;
-      gear = 2; // force reset gear to 2
-      shiftPending = false;
-      shiftBlocker = false;
-      garageShiftMove = false;
-      if (debugEnabled)
-      {
-        Serial.println("Park requested via canbus");
-      }
-    }
-    if (frame[1] == 7)
-    {
-      wantedGear = 7;
-      gear = 2; // force reset gear to 2
-      garageShiftMove = false;
-      if (debugEnabled)
-      {
-        Serial.println("Reverse requested via canbus");
-      }
-    }
-    if (frame[1] == 6)
-    {
-      wantedGear = 6;
-      garageShiftMove = false;
-      if (debugEnabled)
-      {
-        Serial.println("Neutral requested via canbus");
-      }
-    }
-    if (frame[1] == 5)
-    {
-      wantedGear = 2;
-      garageShiftMove = false;
-      if (debugEnabled)
-      {
-        Serial.println("D requested via canbus");
-      }
-    }
+  // if (frame[0] == 560)
+  // {
+  //   if (frame[1] == 8)
+  //   {
+  //     wantedGear = 8;
+  //     gear = 2; // force reset gear to 2
+  //     shiftPending = false;
+  //     shiftBlocker = false;
+  //     garageShiftMove = false;
+  //     if (debugEnabled)
+  //     {
+  //       Serial.println("Park requested via canbus");
+  //     }
+  //   }
+  //   if (frame[1] == 7)
+  //   {
+  //     wantedGear = 7;
+  //     gear = 2; // force reset gear to 2
+  //     garageShiftMove = false;
+  //     if (debugEnabled)
+  //     {
+  //       Serial.println("Reverse requested via canbus");
+  //     }
+  //   }
+  //   if (frame[1] == 6)
+  //   {
+  //     wantedGear = 6;
+  //     garageShiftMove = false;
+  //     if (debugEnabled)
+  //     {
+  //       Serial.println("Neutral requested via canbus");
+  //     }
+  //   }
+  //   if (frame[1] == 5)
+  //   {
+  //     wantedGear = 2;
+  //     garageShiftMove = false;
+  //     if (debugEnabled)
+  //     {
+  //       Serial.println("D requested via canbus");
+  //     }
+  //   }
 
-    if (frame[1] == 10)
-    {
-      gearDown();
-      if (debugEnabled)
-      {
-        Serial.println("Downshift requested via canbus");
-      }
-    }
-    if (frame[1] == 9)
-    {
-      gearUp();
-      if (debugEnabled)
-      {
-        Serial.println("Upshift requested via canbus");
-      }
-    }
-  }
+  //   if (frame[1] == 10)
+  //   {
+  //     gearDown();
+  //     if (debugEnabled)
+  //     {
+  //       Serial.println("Downshift requested via canbus");
+  //     }
+  //   }
+  //   if (frame[1] == 9)
+  //   {
+  //     gearUp();
+  //     if (debugEnabled)
+  //     {
+  //       Serial.println("Upshift requested via canbus");
+  //     }
+  //   }
+  // }
 
-  // CAB-BUS COOLANT
-  // ID608  7 6D 3B 02 25 FF 01 7E
-  // 6D is a coolant data - 40
-  // Quote:
-  //     if(rxId  == 0x608){
-  //      {
-  //          T=(rxBuf[0]-40);
-  // 6D > hex to dec = 109
-  // 109-40=69 *C
-  // Thats how it works
-  // CAN ID 608 - HEX to DEC = 1544
-  if (frame[0] == 1544)
-  {
-    canCoolant = (frame[1]) - 40;
-  }
+  // // CAB-BUS COOLANT
+  // // ID608  7 6D 3B 02 25 FF 01 7E
+  // // 6D is a coolant data - 40
+  // // Quote:
+  // //     if(rxId  == 0x608){
+  // //      {
+  // //          T=(rxBuf[0]-40);
+  // // 6D > hex to dec = 109
+  // // 109-40=69 *C
+  // // Thats how it works
+  // // CAN ID 608 - HEX to DEC = 1544
+  // if (frame[0] == 1544)
+  // {
+  //   canbusCoolant = (frame[1]) - 40;
+  // }
 
-  // CAN-BUS TPS
-  // 210 8 02 FF 00 02 00 08 00 FF
-  // pressed maximum
-  // 210 8 02 FF FA 02 00 08 81 FF
-  // calculation for TPS
-  // 100*A/255
-  // 100*FA/255 = 98%
-  // FA HEX = 250 DEC
-  // CAN ID210
-  if (frame[0] == 528)
-  {
-    canTPS = 100 * (frame[3]) / 255; // (frame[7] << 8);
-  }
+  // // CAN-BUS TPS
+  // // 210 8 02 FF 00 02 00 08 00 FF
+  // // pressed maximum
+  // // 210 8 02 FF FA 02 00 08 81 FF
+  // // calculation for TPS
+  // // 100*A/255
+  // // 100*FA/255 = 98%
+  // // FA HEX = 250 DEC
+  // // CAN ID210
+  // if (frame[0] == 528)
+  // {
+  //   canbusTPS = 100 * (frame[3]) / 255; // (frame[7] << 8);
+  // }
 
-  // CAN-BUS RPM
-  // ID308 8 00 02 78 00 00 FF FF FF // idle
-  // 256 x 02 + 78 (02 to dec & 78 to dec)
-  // 256 x 2 + 120 = 632 RPM
-  // CAN ID308
-  if (frame[0] == 776)
-  {
-    canRPM = 256 * (frame[2]) + (frame[3]);
-  }
+  // // CAN-BUS RPM
+  // // ID308 8 00 02 78 00 00 FF FF FF // idle
+  // // 256 x 02 + 78 (02 to dec & 78 to dec)
+  // // 256 x 2 + 120 = 632 RPM
+  // // CAN ID308
+  // if (frame[0] == 776)
+  // {
+  //   canbusRPM = 256 * (frame[2]) + (frame[3]);
+  // }
   
-  // CAN-BUS SPEED
-  // ID200 8 00 18 02 9F 02 9A 02 9C // speed
-  // CAN ID200
-  if (frame[0] == 512)
-  {
-    canSpeed = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
-  }
+  // // CAN-BUS SPEED
+  // // ID200 8 00 18 02 9F 02 9A 02 9C // speed
+  // // CAN ID200
+  // if (frame[0] == 512)
+  // {
+  //   canbusSpeed = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
+  // }
 
 }
 #endif
 // Polling for stick control
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
-void pollstick(Task *me)
+void pollstick()
 {
   if (justStarted)
   {
-#ifdef CANBUS
-    Can0.setBaudRate(500000);
-    Can0.enableFIFO(1);
-    Can0.enableFIFOInterrupt(1);
-    Can0.onReceive(canSniff);
-    Can0.intervalTimer(); // enable queue system and run callback in background.
-    justStarted = false;
-#endif
+// #ifdef CANBUS
+//     Can0.setBaudRate(500000);
+//     Can0.enableFIFO(1);
+//     Can0.enableFIFOInterrupt(1);
+//     Can0.onReceive(canSniff);
+//     Can0.intervalTimer(); // enable queue system and run callback in background.
+//     justStarted = false;
+// #endif
   }
 #ifndef CANBUS
   if (!resistiveStick)
@@ -437,7 +436,7 @@ void hornOff()
   }
 }
 
-void boostControl(Task *me)
+void boostControl()
 {
   if (boostLimit)
   {
@@ -446,9 +445,9 @@ void boostControl(Task *me)
     pidBoostLim = double(sensor.curBoostLim);
     // pidBoost = double(sensor.curTps);
     // pidBoostLim = double(50);
-    boostPID.setBangBang(100, 20);
-    boostPID.setTimeStep(50);
-    boostPID.run();
+    //boostPID.setBangBang(100, 20);
+    //boostPID.setTimeStep(50);
+    //boostPID.run();
 
     // Just a sanity check to make sure PID library is not doing anything stupid.
     if (truePower)
@@ -480,7 +479,7 @@ void boostControl(Task *me)
   }
 }
 
-void fuelControl(Task *me)
+void fuelControl()
 {
   if (fuelPumpControl)
   {
@@ -513,7 +512,7 @@ void fuelControl(Task *me)
 // R/N/P modulation pressure regulation
 // idle SPC regulation
 // Boost control
-void polltrans(Task *me)
+void polltrans()
 {
   struct SensorVals sensor = readSensors();
   unsigned int shiftDelay = 2000;
@@ -786,7 +785,7 @@ int adaptSPC(int mapId, int xVal, int yVal)
   return current;
 }
 
-void injectionControl(Task *me)
+void injectionControl()
 {
 #ifdef ECU
   struct SensorVals sensor = readSensors();
@@ -911,7 +910,7 @@ void radioControl()
   }
 }
 
-void keypadWatch(Task *me)
+void keypadWatch()
 {
   int keypadValue = analogRead(keypadPin);
   if ((millis() - lastPress > 500))

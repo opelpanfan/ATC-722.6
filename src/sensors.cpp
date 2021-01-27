@@ -1,7 +1,5 @@
 #include <Arduino.h>
 #include <EEPROM.h>
-#include <SPI.h>
-#include "Adafruit_MAX31855.h"
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/maps.h"
@@ -12,7 +10,7 @@
 #include "include/serial_config.h"
 #include "include/input.h"
 #include <Filters.h>
-#include <SoftTimer.h>
+
 using namespace std;
 
 
@@ -30,7 +28,6 @@ FilterOnePole filterOneLowpass2(LOWPASS, 5.0);     // for oilTemp
 FilterOnePole boostSensorFilter(LOWPASS, 1);     // for oilTemp
 FilterOnePole exhaustPressureFilter(LOWPASS, 1); // for oilTemp
 
-Adafruit_MAX31855 kTC(9);
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -63,7 +60,7 @@ void fuelOutInterrupt()
 }
 
 // Polling sensors
-void pollsensors(Task *me)
+void pollsensors()
 {
 
   const int n2PulsesPerRev = 60;
@@ -592,10 +589,6 @@ int atfRead1()
 int exhaustTempRead()
 {
   static double exhaustTemp = 0;
-  if (exhaustTempSensor)
-  {
-    exhaustTemp = kTC.readCelsius();
-  }
   return exhaustTemp;
 }
 

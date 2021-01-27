@@ -2,9 +2,9 @@
 #include "include/config.h"
 
 // Environment configuration, THIS IS DEPRECATED, CONFIG NOW RESIDES IN EEPROM AND IS VIRGIN INITIALIZED FROM serial_config.cpp.
-boolean boostLimit,boostLimitShift,stickCtrl,radioEnabled,manual,fullAuto,tccLock,evalGear,tpsSensor,boostSensor,exhaustPresSensor,w124speedo,w124rpm = false;
-boolean fuelPumpControl, rpmSpeed, diffSpeed, adaptive, batteryMonitor, truePower, datalogger, exhaustTempSensor, resistiveStick = false;
-boolean debugEnabled = true;
+bool boostLimit,boostLimitShift,stickCtrl,radioEnabled,manual,fullAuto,tccLock,evalGear,tpsSensor,boostSensor,exhaustPresSensor,w124speedo,w124rpm = false;
+bool fuelPumpControl, rpmSpeed, diffSpeed, adaptive, batteryMonitor, truePower, datalogger, exhaustTempSensor, resistiveStick = false;
+bool debugEnabled = true;
 
 struct ConfigParam config = {
   .boostMax = 700, // boost sensor max kpa
@@ -42,21 +42,21 @@ struct ConfigParam config = {
 
 // Do not change any of these.
 // Default for blocking gear switches (do not change.)
-boolean trans = true;
-boolean shiftBlocker = false;
-boolean shiftPending = false;
+bool trans = true;
+bool shiftBlocker = false;
+bool shiftPending = false;
 // everything starts with ignition (do not change.)
-boolean ignition = true;
-boolean carRunning = false;
+bool ignition = true;
+bool carRunning = false;
 byte page = 1; // first page to show in UI
-boolean drive = false;
+bool drive = false;
 // fault mode for speed sensors
-boolean speedFault = false; 
+bool speedFault = false; 
 // fault mode for battery fault
-boolean batteryFault = false;
+bool batteryFault = false;
 // fault mode for excess slip
-boolean slipFault = false;
+bool slipFault = false;
 // Initial state of fuel pumps
-boolean fuelPumps = true;
+bool fuelPumps = true;
 // Initial state of horn
-boolean horn = false;
+bool horn = false;
