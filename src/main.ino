@@ -172,7 +172,8 @@ screen.setPic("mode", autoState == HIGH ? 12 : autoState == LOW ? 13 : 13);
 
 void slowRefreshScreen(Task *me) //screen refresh function all display data goes here
 {
-struct SensorVals sensor = readSensors(); //read current sensor data
+  digitalToggle(LED_BUILTIN);
+  struct SensorVals sensor = readSensors(); //read current sensor data
 // BATTERY display  
   screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10));
   int realBatt = screen.mapInt(sensor.curBattery, 11000, 16000, 0, 100);
@@ -194,7 +195,8 @@ struct SensorVals sensor = readSensors(); //read current sensor data
 void setup()
 {
   delay(1000);
-
+pinMode(LED_BUILTIN, OUTPUT);
+digitalWrite(LED_BUILTIN, LOW);
   initConfig();
 
   // MPC and SPC should have frequency of 1000hz
@@ -208,14 +210,14 @@ void setup()
 
   Serial.begin(115200);
 
-  if (radioEnabled)
-  {
-    Serial1.begin(9600);
-    if (debugEnabled && !datalogger)
-    {
-      Serial.println("Radio initialized.");
-    }
-  }
+  // if (radioEnabled)
+  // {
+  //   Serial1.begin(9600);
+  //   if (debugEnabled && !datalogger)
+  //   {
+  //     Serial.println("Radio initialized.");
+  //   }
+  // }
 
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
