@@ -1,7 +1,5 @@
 #include <Arduino.h>
 #include <EEPROM.h>
-#include <SPI.h>
-#include "Adafruit_MAX31855.h"
 #include "include/pins.h"
 #include "include/calc.h"
 #include "include/maps.h"
@@ -28,8 +26,6 @@ FilterOnePole filterOneLowpass(LOWPASS, 1);      // for atfTemp
 FilterOnePole filterOneLowpass2(LOWPASS, 5.0);   // for oilTemp
 FilterOnePole boostSensorFilter(LOWPASS, 1);     // for oilTemp
 FilterOnePole exhaustPressureFilter(LOWPASS, 1); // for oilTemp
-
-//Adafruit_MAX31855 kTC(9);
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()

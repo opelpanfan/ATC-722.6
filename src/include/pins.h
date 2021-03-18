@@ -50,4 +50,3 @@
       #define fuelInPin 52
       #define injectionPin 53 // should be 16.
       #define exhaustTempPin 54
-      #define gupSwitchalt 55

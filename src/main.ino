@@ -38,14 +38,10 @@
 
 #include <EEPROM.h>
 #include <SoftTimer.h>
-#include <SPI.h>
-#include <U8g2lib.h>
 #include <AutoPID.h>
 
-#define DISPLAYTYPE1 // Can be DISPLAYTYPE2 also.
-
 // "Protothreading", we have time slots for different functions to be run.
-Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
+//Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
 Task pollData(33, datalog);               // 200ms to update datalogging
 Task pollStick(100, pollstick);           // 100ms for checking stick position*
 Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
@@ -57,9 +53,6 @@ Task pollBoostControl(100, boostControl); // 100ms for boost control*/
 Task pollSerialWatch(100, serialWatch);
 Task keypadPressWatch(100, keypadWatch);
 
-#ifdef ECU
-Task pollInjectionControl(100, injectionControl);
-#endif
 
 #define NEXTION
 
@@ -200,7 +193,7 @@ struct SensorVals sensor = readSensors(); //read current sensor data
 
 void setup()
 {
-  delay(5000);
+  delay(1000);
 
   initConfig();
 
@@ -223,13 +216,6 @@ void setup()
       Serial.println("Radio initialized.");
     }
   }
-
-#ifdef DISPLAYTYPE1
-  U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
-#else
-  U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, 10, 17, 5);
-#endif
-  u8g2.begin();
 
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
@@ -271,18 +257,8 @@ void setup()
   //For manual control
   pinMode(autoSwitch, INPUT);
 
-  if (!resistiveStick)
-  {
-    pinMode(gupSwitch, INPUT);   // gear up
-    pinMode(gdownSwitch, INPUT); // gear down
-    //*portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-    //*portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  }
-  else
-  {
-    pinMode(gupSwitchalt, INPUT_PULLUP); // gear up
-    pinMode(gdownSwitch, INPUT_PULLUP);  // gear down
-  }
+  pinMode(gupSwitch, INPUT);   // gear up
+  pinMode(gdownSwitch, INPUT); // gear down
 
   pinMode(fuelInPin, INPUT); // Fuel flow meter in
   // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
@@ -350,7 +326,6 @@ void setup()
   }
 
   // initialize timers
-  SoftTimer.add(&pollDisplay);
   SoftTimer.add(&pollData);
   SoftTimer.add(&pollStick);
   SoftTimer.add(&pollGear);
@@ -360,10 +335,6 @@ void setup()
   SoftTimer.add(&pollBoostControl);
   SoftTimer.add(&pollSerialWatch);
   SoftTimer.add(&keypadPressWatch);
-
-#ifdef ECU
-  SoftTimer.add(&pollInjectionControl);
-#endif
 
 #ifdef NEXTION // nextion display implementation
 

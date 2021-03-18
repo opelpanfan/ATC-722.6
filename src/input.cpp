@@ -29,15 +29,6 @@ int boostOverride = 150;
 //Load PID controller
 AutoPID boostPID(&pidBoost, &pidBoostLim, &boostPWM, 0, 255, boostKp, boostKi, boostKd);
 
-#ifdef ECU
-// Pid tuning parameters, for injectionCtrl
-const double injectKp = 7; //80,21 Pid Proporional Gain. Initial ramp up, Lower if over
-double injectKi = 20;      //40,7 Pid Integral Gain. Overall change while near Target
-const double injectKd = 0; //100, 1 Pid Derivative Gain.
-double pidInject, injectPWM, pidInjectLim;
-//Load PID controller
-AutoPID injectPID(&pidInject, &pidInjectLim, &injectPWM, 0, 255, injectKp, injectKi, injectKd);
-#endif
 bool justStarted = true;
 boolean garageShift, garageShiftMove, tpsConfigMode, tpsInitPhase1, tpsInitPhase2 = false;
 double garageTime, lastShift, lastInput, hornPressTime, lastPress;
@@ -53,14 +44,14 @@ Circular_Buffer<uint32_t, cbsize, 10> storage;
 
 void canSniff(const CAN_message_t &msg)
 { // global callback
-  
+
   //Uncomment this to view incoming CAN messages
   // Serial.print("MB: "); Serial.print(msg.mb);
   // Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
   // Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
   // Serial.print("  EXT: "); Serial.print(msg.flags.extended );
   // Serial.print("  LEN: "); Serial.print(msg.len);
-  
+
   // Serial.print(" DATA: ");
   // for ( uint8_t i = 0; i <msg.len ; i++ ) {
   //   Serial.print(msg.buf[i]); Serial.print(" ");
@@ -69,7 +60,6 @@ void canSniff(const CAN_message_t &msg)
 
   uint32_t frame[10] = {msg.id};
 
-  
   if (!storage.find(frame, 10, 0, 0, 0))
   {
     if (storage.size() == storage.capacity())
@@ -176,7 +166,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Downshift requested via canbus");
       }
     }
-     if (frame[1] == 26) // 1A HexToDec = 26
+    if (frame[1] == 26) // 1A HexToDec = 26
     {
       gearDown();
       if (debugEnabled)
@@ -192,7 +182,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Upshift requested via canbus");
       }
     }
-      if (frame[1] == 25) // 19 HexToDec = 25
+    if (frame[1] == 25) // 19 HexToDec = 25
     {
       gearUp();
       if (debugEnabled)
@@ -243,18 +233,17 @@ void canSniff(const CAN_message_t &msg)
       canRPM = 256 * (frame[2]) + (frame[3]);
     }
 
-// CAN-BUS SPEED ID200 (HexToDec - 512)
-// ID200 8 00 18 02 9F 02 9A 02 9C // sample message
+    // CAN-BUS SPEED ID200 (HexToDec - 512)
+    // ID200 8 00 18 02 9F 02 9A 02 9C // sample message
     if (frame[0] == 512)
     {
       //int canSpeedPulses   = ((8 * ((frame[3]) + ((frame[5]))) + (((frame[4]) + (frame[6])) / 2) / 15));
-      int rpm_right = (((frame[3] & 0b00111111) << 8) | frame[4]) / 2;    //RPM RAW value is x2
-      int rpm_left  = (((frame[5] & 0b00111111) << 8) | frame[6]) / 2;    //RPM RAW value is x2
-      canSpeedPulses   = (rpm_right + rpm_left) / 2;
+      int rpm_right = (((frame[3] & 0b00111111) << 8) | frame[4]) / 2; //RPM RAW value is x2
+      int rpm_left = (((frame[5] & 0b00111111) << 8) | frame[6]) / 2;  //RPM RAW value is x2
+      canSpeedPulses = (rpm_right + rpm_left) / 2;
       float tireDiameter = ((config.tireProfile * 2) + (config.tireInches * 25.4)) + config.tireOffset;
-      float tireCircumference = 3.14 * tireDiameter;     
+      float tireCircumference = 3.14 * tireDiameter;
       canSpeed = (tireCircumference * canSpeedPulses * 60) / 1000000;
-
     }
   }
 }
@@ -268,24 +257,24 @@ void pollstick(Task *me)
 
   if (justStarted)
   {
-    #ifdef CANBUS
-        FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can0;
-        FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can1; 
+#ifdef CANBUS
+    FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can0;
+    FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can1;
 
-        Can0.setBaudRate(500000);
-        Can0.enableFIFO(1);
-        Can0.enableFIFOInterrupt(1);
-        //Can0.setFIFOFilter(ACCEPT_ALL);
-        Can0.setFIFOFilter(REJECT_ALL);
-        Can0.setFIFOFilter(0, 1544, STD, NONE); //608 - coolant
-        Can0.setFIFOFilter(1, 528, STD, NONE);  //210 - TPS
-        Can0.setFIFOFilter(2, 776, STD, NONE);  //308 - RPM
-        Can0.setFIFOFilter(3, 512, STD, NONE);  //200 - speed
-        Can0.setFIFOFilter(4, 560, STD, NONE);  //230 - shifter
-        Can0.enhanceFilter(FIFO);
-        Can0.onReceive(canSniff);
-        justStarted = false;
-    #endif
+    Can0.setBaudRate(500000);
+    Can0.enableFIFO(1);
+    Can0.enableFIFOInterrupt(1);
+    //Can0.setFIFOFilter(ACCEPT_ALL);
+    Can0.setFIFOFilter(REJECT_ALL);
+    Can0.setFIFOFilter(0, 1544, STD, NONE); //608 - coolant
+    Can0.setFIFOFilter(1, 528, STD, NONE);  //210 - TPS
+    Can0.setFIFOFilter(2, 776, STD, NONE);  //308 - RPM
+    Can0.setFIFOFilter(3, 512, STD, NONE);  //200 - speed
+    Can0.setFIFOFilter(4, 560, STD, NONE);  //230 - shifter
+    Can0.enhanceFilter(FIFO);
+    Can0.onReceive(canSniff);
+    justStarted = false;
+#endif
   }
 #ifndef CANBUS
   if (!resistiveStick)
@@ -447,54 +436,25 @@ void pollkeys()
   int gupState = 0;
   int gdownState = 0;
 
-  if (!resistiveStick)
+  gupState = digitalRead(gupSwitch);     // Gear up
+  gdownState = digitalRead(gdownSwitch); // Gear down
+
+  if (gdownState == LOW && gupState == HIGH)
   {
-    gupState = digitalRead(gupSwitch);     // Gear up
-    gdownState = digitalRead(gdownSwitch); // Gear down
-
-    if (gdownState == LOW && gupState == HIGH)
+    if (debugEnabled)
     {
-      if (debugEnabled)
-      {
-        Serial.println(F("pollkeys: Gear up button"));
-      }
-      gearUp();
+      Serial.println(F("pollkeys: Gear up button"));
     }
-    else if (gupState == LOW && gdownState == HIGH)
-    {
-
-      if (debugEnabled)
-      {
-        Serial.println(F("pollkeys: Gear down button"));
-      }
-      gearDown();
-    }
+    gearUp();
   }
-  else
+  else if (gupState == LOW && gdownState == HIGH)
   {
 
-    gupState = analogRead(gupSwitchalt);  // Gear up
-    gdownState = analogRead(gdownSwitch); // Gear down
-
-    if (gupState < 20)
+    if (debugEnabled)
     {
-      if (debugEnabled)
-      {
-        Serial.println(F("pollkeys: Gear up button"));
-      }
-      gearUp();
+      Serial.println(F("pollkeys: Gear down button"));
     }
-    if (gdownState < 100)
-    {
-      if (debugEnabled)
-      {
-        Serial.println(F("pollkeys: Gear down button"));
-      }
-      gearDown();
-    }
-    /* Serial.print(gdownState);
-  Serial.print("-");
-  Serial.println(gupState);*/
+    gearDown();
   }
 }
 
@@ -867,30 +827,6 @@ int adaptSPC(int mapId, int xVal, int yVal)
   }
 #endif
   return current;
-}
-
-void injectionControl(Task *me)
-{
-#ifdef ECU
-  struct SensorVals sensor = readSensors();
-  int fuelRequire = sensor.curLoad / sensor.curLambda; // eg. 100% load / 100% lambda = 1x fueling, 100% load / 10% lambda = 10x fueling
-  int fuelAmount = readMap(injectionMap, fuelRequire, sensor.curRPM);
-  fuelAmount = fuelAmount * 2.55;
-  injectPID.setBangBang(100, 50);
-  injectPID.setTimeStep(100);
-  // Read injectionpump travel
-  injectPID.run();
-  analogWrite(injectionPin, injectPWM);
-  if (debugEnabled)
-  {
-    Serial.print("Fueling quantity with load/lambda: ")
-        Serial.print(sensor.curLoad);
-    Serial.print("/");
-    Serial.print(sensor.curLambda);
-    Serial.print(" is ");
-    Serial.print(fuelAmount);
-  }
-#endif
 }
 
 void radioControl()
