@@ -29,7 +29,7 @@ FilterOnePole filterOneLowpass2(LOWPASS, 5.0);   // for oilTemp
 FilterOnePole boostSensorFilter(LOWPASS, 1);     // for oilTemp
 FilterOnePole exhaustPressureFilter(LOWPASS, 1); // for oilTemp
 
-Adafruit_MAX31855 kTC(9);
+//Adafruit_MAX31855 kTC(9);
 
 // Interrupt for N2 hallmode sensor
 void N2SpeedInterrupt()
@@ -614,7 +614,7 @@ int exhaustTempRead()
   static double exhaustTemp = 0;
   if (exhaustTempSensor)
   {
-    exhaustTemp = kTC.readCelsius();
+    //exhaustTemp = kTC.readCelsius();
   }
   return exhaustTemp;
 }
