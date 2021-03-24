@@ -96,7 +96,7 @@ struct ConfigParam config = {
 */
 void initConfig()
 {
-    byte virginByte = EEPROM.read(4090);
+    byte virginByte = EEPROM.read(1080);
     if (virginByte != 69)
     {
         // Virgin config set
@@ -154,7 +154,7 @@ void initConfig()
         setDownGear(4, 65);
         setDownGear(5, 65);
 
-        EEPROM.put(4090, 69);
+        EEPROM.put(1080, 69);
         Serial.println("Virgin init");
     }
     else
