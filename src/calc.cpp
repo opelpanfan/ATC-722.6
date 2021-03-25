@@ -53,9 +53,9 @@ int pressureNormalization(int givenPressure)
 int readTPSVoltage(int voltage)
 {
   byte minLowByte = EEPROM.read(1000);
-  byte minHighByte = EEPROM.read(1100);
-  byte maxLowByte = EEPROM.read(2000);
-  byte maxHighByte = EEPROM.read(2100);
+  byte minHighByte = EEPROM.read(1001);
+  byte maxLowByte = EEPROM.read(1002);
+  byte maxHighByte = EEPROM.read(1003);
   int minLimit = ((minLowByte << 0) & 0xFF) + ((minHighByte << 8) & 0xFF00);
   int maxLimit = ((maxLowByte << 0) & 0xFF) + ((maxHighByte << 8) & 0xFF00);
   int result = map(voltage, minLimit, maxLimit, 0, 100);
