@@ -6,6 +6,7 @@ boolean boostLimit,boostLimitShift,stickCtrl,radioEnabled,manual,fullAuto,tccLoc
 boolean fuelPumpControl, rpmSpeed, diffSpeed, adaptive, batteryMonitor, truePower, datalogger, exhaustTempSensor, resistiveStick = false;
 boolean debugEnabled = true;
 boolean useCanSensors = false;
+boolean analogShifter = false;
 
 struct ConfigParam config = {
   .boostMax = 700, // boost sensor max kpa
@@ -38,7 +39,7 @@ struct ConfigParam config = {
   .fourTothree = 65,
   .threeTotwo = 17,
   .twoToone = 35
-};
+  };
 
 // End of environment conf
 

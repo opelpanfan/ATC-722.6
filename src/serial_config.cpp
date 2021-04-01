@@ -124,6 +124,7 @@ void initConfig()
         setFeatures(22, 0);
         setFeatures(23, 0);
         setFeatures(24, 0);
+        setFeatures(25, 0);
         setConfig(50, 700);
         setConfig(51, 50);
         setConfig(52, 120);
@@ -159,7 +160,7 @@ void initConfig()
     }
     else
     {
-        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
+        int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25};
         int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 68, 69, 71};
         int configF[] = {58, 61, 67, 70};
         int upGears[] = {1, 2, 3, 4};
@@ -317,8 +318,10 @@ void getFeatures()
     Serial.print(int(resistiveStick));
     Serial.print(";");
     Serial.print("24:");
-    Serial.println(int(useCanSensors));
-    
+    Serial.print(int(useCanSensors));
+    Serial.print(";");
+    Serial.print("25:");
+    Serial.println(int(analogShifter));    
 }
 
 void setFeatures(int asset, int value)
@@ -412,6 +415,9 @@ void setFeatures(int asset, int value)
         break;
     case 24:
         useCanSensors = boolean(value);
+        break;
+    case 25:
+        analogShifter = boolean(value);
         break;
     default:
         break;

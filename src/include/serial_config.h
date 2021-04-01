@@ -31,9 +31,10 @@ extern boolean exhaustTempSensor;
 extern boolean boostLimit;
 extern boolean boostLimitShift;
 extern boolean resistiveStick;
+extern boolean analogShifter;
+extern boolean useCanSensors;
 extern struct ConfigParam config;
 
-extern boolean useCanSensors;
 
 void initConfig();
 void pollConfigMode();
