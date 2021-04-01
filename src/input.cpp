@@ -254,7 +254,7 @@ void pollstick(Task *me)
 {
   digitalToggle(13);
 
-  if (justStarted & !analogShifter)
+  if (justStarted)
   {
     #ifdef CANBUS
     FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can0;
@@ -269,7 +269,10 @@ void pollstick(Task *me)
     Can0.setFIFOFilter(1, 528, STD, NONE);  //210 - TPS
     Can0.setFIFOFilter(2, 776, STD, NONE);  //308 - RPM
     Can0.setFIFOFilter(3, 512, STD, NONE);  //200 - speed
-    Can0.setFIFOFilter(4, 560, STD, NONE);  //230 - shifter
+    if(!analogShifter)
+    {
+      Can0.setFIFOFilter(4, 560, STD, NONE);  //230 - shifter
+    }
     Can0.enhanceFilter(FIFO);
     Can0.onReceive(canSniff);
     justStarted = false;
