@@ -42,6 +42,42 @@ int canSpeedPulses = 0;
 Circular_Buffer<uint32_t, cbsize> ids;
 Circular_Buffer<uint32_t, cbsize, 10> storage;
 
+
+void canSniff83(const CAN_message_t &msg)
+{ 
+  uint32_t frame[10] = {msg.id};
+
+  if (!storage.find(frame, 10, 0, 0, 0))
+  {
+    if (storage.size() == storage.capacity())
+    {
+      Serial.print("Buffer full, couldn't add CAN ID to the list!");
+      return;
+    }
+    frame[0] = msg.id;
+    for (uint8_t i = 0; i < 8; i++)
+      frame[i + 1] = msg.buf[i];
+    frame[9] = 1;
+    storage.push_back(frame, 10);
+    ids.push_back(msg.id);
+    ids.sort_ascending();
+  }
+  else
+  {
+    frame[9]++;
+    for (uint8_t i = 0; i < 8; i++)
+      frame[i + 1] = msg.buf[i];
+    storage.replace(frame, 10, 0, 0, 0);
+  }
+
+  //CAN ID
+  //if (frame[0] == 560)
+  //{
+
+  //}
+}
+
+
 void canSniff(const CAN_message_t &msg)
 { // global callback
 
@@ -252,8 +288,6 @@ void canSniff(const CAN_message_t &msg)
 // This is W202 electronic gear stick, should work on any pre-canbus sticks.
 void pollstick(Task *me)
 {
-  digitalToggle(13);
-
   if (justStarted)
   {
     #ifdef CANBUS
@@ -275,6 +309,18 @@ void pollstick(Task *me)
     }
     Can0.enhanceFilter(FIFO);
     Can0.onReceive(canSniff);
+
+    //Second CAN 
+    Can1.setBaudRate(83000);
+    Can1.enableFIFO(1);
+    Can1.enableFIFOInterrupt(1);
+    //Can0.setFIFOFilter(ACCEPT_ALL);
+    Can1.setFIFOFilter(REJECT_ALL);
+    //Can1.setFIFOFilter(0, 1544, STD, NONE);
+    Can1.enhanceFilter(FIFO);
+    Can1.onReceive(canSniff83);
+
+
     justStarted = false;
     #endif
   }

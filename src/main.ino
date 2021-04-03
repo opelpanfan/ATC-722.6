@@ -172,7 +172,6 @@ screen.setPic("mode", autoState == HIGH ? 12 : autoState == LOW ? 13 : 13);
 
 void slowRefreshScreen(Task *me) //screen refresh function all display data goes here
 {
-  digitalToggle(LED_BUILTIN);
   struct SensorVals sensor = readSensors(); //read current sensor data
 // BATTERY display  
   screen.setText("bat_value", String((int)(sensor.curBattery / 1000)) + "." + String((int)(sensor.curBattery % 1000) / 10));
@@ -195,8 +194,6 @@ void slowRefreshScreen(Task *me) //screen refresh function all display data goes
 void setup()
 {
   delay(1000);
-pinMode(LED_BUILTIN, OUTPUT);
-digitalWrite(LED_BUILTIN, LOW);
   initConfig();
 
   // MPC and SPC should have frequency of 1000hz
@@ -340,8 +337,8 @@ digitalWrite(LED_BUILTIN, LOW);
 
 #ifdef NEXTION // nextion display implementation
 
-  Serial1.begin(115200); //begin serial communication
-  screen.setupScreen(Serial1); // begin screen communication using serial port defned above
+  Serial2.begin(115200); //begin serial communication
+  screen.setupScreen(Serial2); // begin screen communication using serial port defned above
   screen.setPage("0"); // set screen page
   screen.setDim(100);  // set screen brightness
 
