@@ -3,7 +3,7 @@
 // Outputs pins
 #define y3 4
 #define y4 3
-#define y5 4
+#define y5 2
 #define mpc 6
 #define spc 5
 #define tcc 9
