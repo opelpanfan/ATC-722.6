@@ -100,7 +100,7 @@ void initConfig()
     if (virginByte != 69)
     {
         // Virgin config set
-        setFeatures(1, 1);
+        setFeatures(1, 1);  
         setFeatures(2, 0);
         setFeatures(3, 1);
         setFeatures(4, 0);
@@ -143,6 +143,7 @@ void initConfig()
         setConfig(66, 2);
         setConfig(68, 5000);
         setConfig(69, 1);
+        setConfig(71, 1);
         setConfigFloat(67, 1.00);        
         setConfigFloat(70, 1.00);
         setUpGear(1, 35);
@@ -160,7 +161,7 @@ void initConfig()
     else
     {
         int features[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
-        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 68, 69, 70};
+        int config[] = {50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 62, 63, 64, 65, 66, 68, 69, 71};
         int configF[] = {58, 61, 67, 70};
         int upGears[] = {1, 2, 3, 4};
         int downGears[] = {2, 3, 4, 5};
@@ -314,7 +315,7 @@ void getFeatures()
     Serial.print(int(boostLimitShift));
     Serial.print(";");
     Serial.print("23:");
-    Serial.println(int(resistiveStick));
+    Serial.print(int(resistiveStick));
     Serial.print(";");
     Serial.print("24:");
     Serial.println(int(useCanSensors));
@@ -336,7 +337,7 @@ void setFeatures(int asset, int value)
             Serial.print(":");
             Serial.println(value);
         }
-        EEPROM.write(assetLocation, value);
+        EEPROM.put(assetLocation, value);
     }
 
     switch (asset)
