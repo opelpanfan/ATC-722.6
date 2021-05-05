@@ -200,10 +200,12 @@ struct SensorVals sensor = readSensors(); //read current sensor data
 
 void setup()
 {
+  Serial.begin(115200);
   delay(5000);
-
+  Serial.println("INIT BEGIN.");
   initConfig();
-
+  Serial.println("INIT DONE.");
+  
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
@@ -213,7 +215,6 @@ void setup()
   analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
   analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
 
-  Serial.begin(115200);
 
   if (radioEnabled)
   {
