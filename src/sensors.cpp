@@ -20,6 +20,7 @@ unsigned long n2SpeedPulses, n3SpeedPulses, vehicleSpeedPulses, lastSensorTime, 
 int n2Speed, n3Speed, rpmRevs, vehicleSpeedRevs;
 int boostSensorOffset = analogRead(boostPin);
 int exhaustSensorOffset = analogRead(exhaustPresPin);
+int canSpeedPulses;
 
 // sensor smoothing
 int avgAtfTemp, avgBoostValue, avgExhaustPresVal, avgExTemp, avgVehicleSpeedDiff, avgVehicleSpeedRPM, avgRpmValue, oldRpmValue, avgOilTemp, evalGearVal, avgAtfRef, avgOilRef;

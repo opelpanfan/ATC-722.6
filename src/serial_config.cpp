@@ -100,7 +100,7 @@ void initConfig()
     if (virginByte != 69)
     {
         // Virgin config set
-        setFeatures(1, 1);  
+        setFeatures(1, 1);
         setFeatures(2, 0);
         setFeatures(3, 1);
         setFeatures(4, 0);
