@@ -193,7 +193,8 @@ void slowRefreshScreen(Task *me) //screen refresh function all display data goes
 
 void setup()
 {
-  delay(1000);
+  Serial.begin(115200);
+  delay(5000);
   initConfig();
 
   // MPC and SPC should have frequency of 1000hz
@@ -205,7 +206,6 @@ void setup()
   analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
   analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
 
-  Serial.begin(115200);
 
   // if (radioEnabled)
   // {

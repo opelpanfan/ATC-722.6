@@ -144,6 +144,7 @@ void initConfig()
         setConfig(66, 2);
         setConfig(68, 5000);
         setConfig(69, 1);
+        setConfig(71, 1);
         setConfigFloat(67, 1.00);        
         setConfigFloat(70, 1.00);
         setUpGear(1, 35);
@@ -339,7 +340,7 @@ void setFeatures(int asset, int value)
             Serial.print(":");
             Serial.println(value);
         }
-        EEPROM.write(assetLocation, value);
+        EEPROM.put(assetLocation, value);
     }
 
     switch (asset)
