@@ -96,7 +96,7 @@ struct ConfigParam config = {
 */
 void initConfig()
 {
-    byte virginByte = EEPROM.read(1074);
+    byte virginByte = EEPROM.read(1078);
     if (virginByte != 69)
     {
         // Virgin config set
@@ -156,7 +156,7 @@ void initConfig()
         setDownGear(4, 65);
         setDownGear(5, 65);
 
-        EEPROM.put(1074, 69);
+        EEPROM.put(1078, 69);
         Serial.println("Virgin init");
     }
     else
@@ -190,14 +190,14 @@ void initConfig()
         }
         for (int i = 0; i < sizeof upGears / sizeof upGears[0]; i++)
         {
-            asset = upGears[i] * 199;
+            asset = upGears[i] * 10 + 800;
             byte featureVal;
             EEPROM.get(asset, featureVal);
             setUpGear(upGears[i], featureVal);
         }
         for (int i = 0; i < sizeof downGears / sizeof downGears[0]; i++)
         {
-            asset = downGears[i] * 197;
+            asset = downGears[i] * 10 + 900;
             byte featureVal;
             EEPROM.get(asset, featureVal);
             setDownGear(downGears[i], featureVal);
@@ -466,7 +466,7 @@ void setUpGear(int asset, int value)
 
     if (asset > 0 && asset < 6)
     {
-        int assetLocation = asset * 199;
+        int assetLocation = asset * 10 + 800;
         if (debugEnabled)
         {
             Serial.print("Setting upGear: ");
@@ -506,7 +506,7 @@ void setDownGear(int asset, int value)
 
     if (asset > 0 && asset < 6)
     {
-        int assetLocation = asset * 197;
+        int assetLocation = asset * 10 + 900;
         if (debugEnabled)
         {
             Serial.print("Setting downGear: ");
