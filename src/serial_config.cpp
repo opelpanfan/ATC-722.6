@@ -96,7 +96,7 @@ struct ConfigParam config = {
 */
 void initConfig()
 {
-    byte virginByte = EEPROM.read(980);
+    byte virginByte = EEPROM.read(1074);
     if (virginByte != 69)
     {
         // Virgin config set
@@ -156,7 +156,7 @@ void initConfig()
         setDownGear(4, 65);
         setDownGear(5, 65);
 
-        EEPROM.put(980, 69);
+        EEPROM.put(1074, 69);
         Serial.println("Virgin init");
     }
     else
@@ -327,10 +327,7 @@ void getFeatures()
 
 void setFeatures(int asset, int value)
 {
-    lastActiveConfig = millis();
-    if (asset > 0 && asset < 40)
-    {
-        int assetLocation = asset * 11;
+    int assetLocation = asset * 11;
         if (debugEnabled)
         {
             Serial.print("Setting feature: ");
@@ -341,7 +338,6 @@ void setFeatures(int asset, int value)
             Serial.println(value);
         }
         EEPROM.put(assetLocation, value);
-    }
 
     switch (asset)
     {
@@ -433,9 +429,7 @@ void setConfigFloat(int asset, float value)
 {
     lastActiveConfig = millis();
 
-    if (asset > 49 && asset < 72)
-    {
-        int assetLocation = asset * 10;
+    int assetLocation = asset * 10;
         if (debugEnabled)
         {
             Serial.print("Setting configF: ");
@@ -446,7 +440,6 @@ void setConfigFloat(int asset, float value)
             Serial.println(value);
         }
         EEPROM.put(assetLocation, value);
-    }
 
     switch (asset)
     {
@@ -578,9 +571,7 @@ void setConfig(int asset, int value)
 {
     lastActiveConfig = millis();
 
-    if (asset > 49 && asset < 72)
-    {
-        int assetLocation = asset * 10;
+    int assetLocation = asset * 10;
         if (debugEnabled)
         {
             Serial.print("Setting config: ");
@@ -591,7 +582,6 @@ void setConfig(int asset, int value)
             Serial.println(value);
         }
         EEPROM.put(assetLocation, value);
-    }
 
     switch (asset)
     {
@@ -866,6 +856,7 @@ void serialConfig()
         }
         Serial.println("69696969");
     }
+    Serial.print("");
 }
 /*
 void setup() {
