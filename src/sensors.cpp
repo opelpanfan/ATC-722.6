@@ -131,10 +131,7 @@ void pollsensors(Task *me)
       rpmPulse = 0;
     }
 
-    //fuelUsed = fuelIn - fuelOut;
-    //fuelUsedAvg = fuelUsedAvg * 5 + fuelUsed / 6;
-    // fuelIn = 0;
-    // fuelOut = 0;
+
 
     gearSlip = getGearSlip();
     evalGearVal = evaluateGear();
@@ -351,7 +348,7 @@ int oilRead()
     oilTemp = T - 273.15;
   }
   return oilTemp;
-  /* if (wantedGear == 6 || wantedGear == 8)
+  if (wantedGear == 6 || wantedGear == 8)
     {
     avgOilTemp = (avgOilTemp * 5 + oilTemp) / 10 +30;
     }
@@ -392,47 +389,6 @@ int oilRead()
     return oilTemp;*/
 }
 
-int boostRead()
-{
-  int boostValue = 0;
-  float boostVoltage = 0;
-  if (boostSensor)
-  {
-    //reading MAP/boost
-    int refRead = analogRead(refPin);
-    boostVoltage = (analogRead(boostPin) - boostSensorOffset) * (3.3 / refRead);
-    boostValue = boostVoltage * 700 / 2.95;
-    boostSensorFilter.input(boostValue);
-    boostValue = boostSensorFilter.output();
-  }
-  if (boostValue < 0)
-  {
-    boostValue = 0;
-  }
-
-  return boostValue;
-}
-
-int exhaustPressureRead()
-{
-  int exhaustPresVal = 0;
-  float exhaustPresVol = 0;
-  if (exhaustPresSensor)
-  {
-    //reading exhaust pressure
-    int refRead = analogRead(refPin);
-    exhaustPresVol = (analogRead(exhaustPresPin) - exhaustSensorOffset) * (3.3 / refRead);
-    exhaustPresVal = exhaustPresVol * 700 / 2.95;
-    exhaustPressureFilter.input(exhaustPresVal);
-    exhaustPresVal = exhaustPressureFilter.output();
-  }
-  if (exhaustPresVal < 0)
-  {
-    exhaustPresVal = 0;
-  }
-
-  return exhaustPresVal;
-}
 
 int batteryRead()
 {
@@ -446,12 +402,6 @@ int batteryRead()
   return batteryMonVal;
 }
 
-int boostLimitRead(int oilTemp)
-{
-  //  int allowedBoostPressure = readGearMap(boostControlPressureMap, gear, oilTemp);
-  //  return allowedBoostPressure;
-  return boostOverride;
-}
 
 int loadRead(int curTps, int curBoost, int curBoostLim, int curRPM)
 {
@@ -605,15 +555,7 @@ int atfRead1()
 
 /////////////////////////////////////
 
-int exhaustTempRead()
-{
-  static double exhaustTemp = 0;
-  if (exhaustTempSensor)
-  {
-    //exhaustTemp = kTC.readCelsius();
-  }
-  return exhaustTemp;
-}
+
 
 int freeMemory()
 {
@@ -632,11 +574,7 @@ struct SensorVals readSensors()
   struct SensorVals sensor;
   sensor.curOilTemp = oilRead();
   sensor.curAtfTemp = atfRead();
-  sensor.curExTemp = exhaustTempRead();
-  sensor.curBoost = boostRead();
-  sensor.curExPres = exhaustPressureRead();
   sensor.curPresDiff = float(sensor.curExPres) / sensor.curBoost;
-  sensor.curBoostLim = boostLimitRead(sensor.curOilTemp);
   sensor.curTps = tpsRead();
   sensor.curRPM = rpmRead();
   sensor.curSpeed = speedRead();
@@ -646,7 +584,5 @@ struct SensorVals readSensors()
   sensor.curSlip = gearSlip;
   sensor.curRatio = ratio;
   sensor.curEvalGear = evalGearVal;
-  sensor.fuelUsed = fuelUsed;
-  sensor.fuelUsedAvg = fuelUsedAvg;
   return sensor;
 }

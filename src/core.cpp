@@ -145,7 +145,7 @@ void doShift()
   mpcSetVal = (100 - mpcPercentVal) * 2.55;
   int spcPressureNormalized = pressureNormalization(spcSetVal);
   int mpcPressureNormalized = pressureNormalization(mpcSetVal);
-  int onPressureNormalized = pressureNormalization(100);
+  //int onPressureNormalized = pressureNormalization(100);
 
   shiftStartTime = millis(); // Beginning to count shiftStartTime
   // pinmode change is due the fact how n2/n3 speed sensors change during the shift.

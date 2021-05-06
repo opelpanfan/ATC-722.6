@@ -47,9 +47,6 @@ Task pollStick(100, pollstick);           // 100ms for checking stick position*
 Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
 Task pollSensors(80, pollsensors);        // 100ms to update sensor values*/
 Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
-Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
-Task pollBoostControl(100, boostControl); // 100ms for boost control*/
-//Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
 Task pollSerialWatch(100, serialWatch);
 Task keypadPressWatch(100, keypadWatch);
 
@@ -206,16 +203,6 @@ void setup()
   analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
   analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
 
-
-  // if (radioEnabled)
-  // {
-  //   Serial1.begin(9600);
-  //   if (debugEnabled && !datalogger)
-  //   {
-  //     Serial.println("Radio initialized.");
-  //   }
-  // }
-
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
   pinMode(y4, OUTPUT);  // 2-3
@@ -223,10 +210,10 @@ void setup()
   pinMode(spc, OUTPUT); // shift pressure
   pinMode(mpc, OUTPUT); // modulation pressure
   pinMode(tcc, OUTPUT); // lock
-  pinMode(rpmMeter, OUTPUT);
-  pinMode(boostCtrl, OUTPUT);
+
+  // Other LOW-Side outputs
+  pinMode(rpmMeter, OUTPUT); 
   pinMode(speedoCtrl, OUTPUT);
-  pinMode(fuelPumpCtrl, OUTPUT);
   pinMode(hornPin, OUTPUT);
   pinMode(reversePin, OUTPUT);
 
@@ -253,13 +240,13 @@ void setup()
   //*portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(hornPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(reversePin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
+  
   //For manual control
-  pinMode(autoSwitch, INPUT);
-
+  pinMode(autoSwitch, INPUT);  // manual-auto mode
   pinMode(gupSwitch, INPUT);   // gear up
   pinMode(gdownSwitch, INPUT); // gear down
 
-  pinMode(fuelInPin, INPUT); // Fuel flow meter in
+  //pinMode(fuelInPin, INPUT); // Fuel flow meter in
   // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
   //*portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
@@ -278,18 +265,6 @@ void setup()
   //*portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //*portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
-  /*#ifdef ASPC
-  pinMode(aSpcUpSwitch, INPUT);
-  pinMode(aSpcDownSwitch, INPUT);
-  *portConfigRegister(aSpcUpSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(aSpcDownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-#else*/
-  pinMode(exhaustPresPin, INPUT);
-  pinMode(exhaustTempPin, INPUT);
-  // *portConfigRegister(exhaustPresPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(exhaustTempPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //#endif
-
   // Make sure solenoids are all off.
   analogWrite(y3, 255); // 1-2/4-5 Solenoid is pulsed during ignition crank.
   analogWrite(y4, 0);
@@ -298,13 +273,6 @@ void setup()
   analogWrite(mpc, 0);
   analogWrite(tcc, 0);
   analogWrite(speedoCtrl, 0); // Wake up speedometer motor so it wont stick
-
-  //TODO check if that is ok can be replaced to
-  //if (fuelPumpControl)
-  if (rpmSpeed && fuelPumpControl)
-  {
-    analogWrite(fuelPumpCtrl, 255); // Wake up fuel pumps
-  }
 
   digitalWrite(rpmPin, HIGH); // pull-up
 
@@ -330,8 +298,6 @@ void setup()
   SoftTimer.add(&pollGear);
   SoftTimer.add(&pollSensors);
   SoftTimer.add(&pollTrans);
-  SoftTimer.add(&pollFuelControl);
-  SoftTimer.add(&pollBoostControl);
   SoftTimer.add(&pollSerialWatch);
   SoftTimer.add(&keypadPressWatch);
 

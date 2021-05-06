@@ -140,6 +140,7 @@ void canSniff(const CAN_message_t &msg)
       shiftPending = false;
       shiftBlocker = false;
       garageShiftMove = false;
+      digitalWrite(reversePin, LOW);
       if (debugEnabled)
       {
         Serial.println("Park requested via canbus");
@@ -150,6 +151,7 @@ void canSniff(const CAN_message_t &msg)
       wantedGear = 7;
       gear = 2; // force reset gear to 2
       garageShiftMove = false;
+      digitalWrite(reversePin, HIGH);
       if (debugEnabled)
       {
         Serial.println("Reverse requested via canbus");
@@ -159,6 +161,7 @@ void canSniff(const CAN_message_t &msg)
     {
       wantedGear = 6;
       garageShiftMove = false;
+      digitalWrite(reversePin, LOW);
       if (debugEnabled)
       {
         Serial.println("Neutral requested via canbus");
@@ -168,6 +171,7 @@ void canSniff(const CAN_message_t &msg)
     {
       wantedGear = 6;
       garageShiftMove = false;
+      digitalWrite(reversePin, LOW);
       if (debugEnabled)
       {
         Serial.println("Neutral requested via canbus");
@@ -178,6 +182,7 @@ void canSniff(const CAN_message_t &msg)
     {
       wantedGear = 2;
       garageShiftMove = false;
+      digitalWrite(reversePin, LOW);
       if (debugEnabled)
       {
         Serial.println("D requested via canbus");
@@ -188,6 +193,7 @@ void canSniff(const CAN_message_t &msg)
     {
       wantedGear = 2;
       garageShiftMove = false;
+      digitalWrite(reversePin, LOW);
       if (debugEnabled)
       {
         Serial.println("D requested via canbus");
@@ -325,8 +331,8 @@ void pollstick(Task *me)
     #endif
   }
 
-  if(analogShifter)
-  {
+  if(analogShifter) 
+ {
     if (!resistiveStick)
     {
       // Read the stick.
@@ -344,42 +350,50 @@ void pollstick(Task *me)
         shiftPending = false;
         shiftBlocker = false;
         garageShiftMove = false;
+        digitalWrite(reversePin, LOW);
       } // P
       if (whiteState == LOW && blueState == HIGH && greenState == HIGH && yellowState == HIGH)
       {
         wantedGear = 7;
         gear = 2; // force reset gear to 2
         garageShiftMove = false;
+        digitalWrite(reversePin, HIGH);
       } // R
       if (whiteState == HIGH && blueState == LOW && greenState == HIGH && yellowState == HIGH)
       {
         wantedGear = 6;
         garageShiftMove = false;
+        digitalWrite(reversePin, LOW);
       } // N
       if (whiteState == LOW && blueState == LOW && greenState == HIGH && yellowState == LOW)
       {
         wantedGear = 5;
         garageShiftMove = false; // these should not be necessary after wantedGear <5, but don't want to risk this keeping y5 alive for some reason.
+        digitalWrite(reversePin, LOW);
       }
       if (whiteState == LOW && blueState == LOW && greenState == LOW && yellowState == HIGH)
       {
         wantedGear = 4;
         garageShiftMove = false;
+        digitalWrite(reversePin, LOW);
       }
       if (whiteState == LOW && blueState == HIGH && greenState == LOW && yellowState == LOW)
       {
         wantedGear = 3;
         garageShiftMove = false;
+        digitalWrite(reversePin, LOW);
       }
       if (whiteState == HIGH && blueState == LOW && greenState == LOW && yellowState == LOW)
       {
         wantedGear = 2;
         garageShiftMove = false;
+        digitalWrite(reversePin, LOW);
       }
       if (whiteState == HIGH && blueState == HIGH && greenState == LOW && yellowState == HIGH)
       {
         wantedGear = 1;
         garageShiftMove = false;
+        digitalWrite(reversePin, LOW);
       }
 
       if (autoState == HIGH)
@@ -407,34 +421,7 @@ void pollstick(Task *me)
         }
       }
     }
-    else
-    {
-      int blueState = analogRead(bluepin);
-      if (blueState > 450 && blueState < 750)
-      {
-        wantedGear = 8;
-        gear = 2; // force reset gear to 2
-        shiftPending = false;
-        shiftBlocker = false;
-        garageShiftMove = false;
-      }
-      if (blueState > 300 && blueState < 400)
-      {
-        wantedGear = 7;
-        gear = 2; // force reset gear to 2
-        garageShiftMove = false;
-      }
-      if (blueState > 200 && blueState < 300)
-      {
-        wantedGear = 6;
-        garageShiftMove = false;
-      }
-      if (blueState > 100 && blueState < 200)
-      {
-        wantedGear = 5;
-        garageShiftMove = false;
-      }
-    }
+
   }
 }
 
@@ -530,82 +517,9 @@ void hornOff()
   }
 }
 
-void boostControl(Task *me)
-{
-  if (boostLimit)
-  {
-    struct SensorVals sensor = readSensors();
-    pidBoost = double(sensor.curBoost);
-    pidBoostLim = double(sensor.curBoostLim);
-    // pidBoost = double(sensor.curTps);
-    // pidBoostLim = double(50);
-    boostPID.setBangBang(100, 20);
-    boostPID.setTimeStep(50);
-    boostPID.run();
-
-    // Just a sanity check to make sure PID library is not doing anything stupid.
-    if (truePower)
-    {
-      analogWrite(boostCtrl, int(boostPWM));
-      // if (debugEnabled) { Serial.print("BoostPWM = "); Serial.println(boostPWM); }
-    }
-    else
-    {
-      analogWrite(boostCtrl, 0);
-    }
-
-    if (exhaustPresSensor)
-    {
-      if (sensor.curBoost > 150 && ((sensor.curExPres - sensor.curBoost) > 50))
-      {
-        analogWrite(boostCtrl, 0);
-        Serial.println("Exhaust pressure 0.5bar greater than boost, overriding boost control for relief. ");
-      }
-    }
-
-    /*if (debugEnabled)
-    {
-      Serial.print(F("boostControl (allowedBoostPressure/bootSensor):"));
-      Serial.print(sensor.curBoostLim);
-      Serial.print(F("-"));
-      Serial.print(sensor.curBoost);
-    }*/
-  }
-}
-
-void fuelControl(Task *me)
-{
-  if (fuelPumpControl)
-  {
-    struct SensorVals sensor = readSensors();
-
-    if ((sensor.curRPM > config.fuelMaxRPM || millis() < 5000) && !fuelPumps)
-    {
-      analogWrite(fuelPumpCtrl, 255);
-
-      if (debugEnabled)
-      {
-        Serial.print(F("[fuelControl->fuelControl] Fuel Pump RPM limit hit/Prestart init, enabling pumps: "));
-        Serial.println(config.fuelMaxRPM);
-      }
-      fuelPumps = true;
-    }
-    else if (sensor.curRPM < config.fuelMaxRPM && fuelPumps && millis() > 5000)
-    {
-      analogWrite(fuelPumpCtrl, 0);
-      if (debugEnabled)
-      {
-        Serial.print(F("[fuelControl->fuelControl] Fuel Pump RPM disabled due low rpm/timelimit "));
-      }
-      fuelPumps = false;
-    }
-  }
-}
-
 // Polling time for transmission control
 // R/N/P modulation pressure regulation
 // idle SPC regulation
-// Boost control
 void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
@@ -646,14 +560,7 @@ void polltrans(Task *me)
     else if (postShift && !postShiftDone)
     {
       doPostShift();
-      if (gear == 7)
-      {
-        digitalWrite(reversePin, HIGH);
-      }
-      else
-      {
-        digitalWrite(reversePin, LOW);
-      }
+
     }
   }
 
@@ -675,7 +582,7 @@ void polltrans(Task *me)
     if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
     {
       // int mpcSetVal = (100 - mpcVal) * 2.55;
-      int mpcSetVal = 102;
+      int mpcSetVal = 100;
       //  analogWrite(mpc, mpcSetVal);
     }
 
@@ -1030,7 +937,7 @@ void keypadWatch(Task *me)
       lastPress = millis();
       keypadControl(161);
     }
-    if (keypadValue < 3000 || keypadValue < 3000)
+    if (keypadValue > 3000 && keypadValue < 4000)
     {
       keypadControl(55); //Horn
     }
