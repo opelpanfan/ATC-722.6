@@ -297,10 +297,12 @@ void pollstick(Task *me)
   if (justStarted)
   {
     #ifdef CANBUS
-    FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can0;
-    FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can1;
+    FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
+    FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can0;
 
     Can0.setBaudRate(500000);
+    Can0.setRX(DEF);
+    Can0.setTX(DEF);
     Can0.enableFIFO(1);
     Can0.enableFIFOInterrupt(1);
     //Can0.setFIFOFilter(ACCEPT_ALL);
@@ -318,6 +320,8 @@ void pollstick(Task *me)
 
     //Second CAN 
     Can1.setBaudRate(83000);
+    Can1.setRX(ALT);
+    Can1.setTX(ALT);
     Can1.enableFIFO(1);
     Can1.enableFIFOInterrupt(1);
     //Can0.setFIFOFilter(ACCEPT_ALL);
