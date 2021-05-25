@@ -18,6 +18,12 @@
 #define CANBUS true
 byte wantedGear = 100;
 
+
+#ifdef CANBUS
+  FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can0;
+  FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
+#endif
+
 // INPUT
 
 // Pid tuning parameters, for boostCtrl
@@ -263,6 +269,8 @@ void canSniff(const CAN_message_t &msg)
     if (frame[0] == 528)
     {
       canTPS = 100 * (frame[3]) / 255; // (frame[7] << 8);
+      
+      Serial.println(canTPS);
     }
 
     // CAN-BUS RPM
@@ -297,13 +305,12 @@ void pollstick(Task *me)
   if (justStarted)
   {
     #ifdef CANBUS
-    FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can0;
-    FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can1;
 
+    Can0.begin();
     Can0.setBaudRate(500000);
-    Can0.enableFIFO(1);
-    Can0.enableFIFOInterrupt(1);
-    //Can0.setFIFOFilter(ACCEPT_ALL);
+    Can0.setMaxMB(16);
+    Can0.enableFIFO();
+    Can0.enableFIFOInterrupt();
     Can0.setFIFOFilter(REJECT_ALL);
     Can0.setFIFOFilter(0, 1544, STD, NONE); //608 - coolant
     Can0.setFIFOFilter(1, 528, STD, NONE);  //210 - TPS
@@ -315,22 +322,28 @@ void pollstick(Task *me)
     }
     Can0.enhanceFilter(FIFO);
     Can0.onReceive(canSniff);
+    Can0.mailboxStatus();
 
     //Second CAN 
+    Can1.begin();
     Can1.setBaudRate(83000);
-    Can1.enableFIFO(1);
-    Can1.enableFIFOInterrupt(1);
-    //Can0.setFIFOFilter(ACCEPT_ALL);
+    Can1.setMaxMB(16);
+    Can1.enableFIFO();
+    Can1.enableFIFOInterrupt();
     Can1.setFIFOFilter(REJECT_ALL);
     //Can1.setFIFOFilter(0, 1544, STD, NONE);
     Can1.enhanceFilter(FIFO);
     Can1.onReceive(canSniff83);
+    Can1.mailboxStatus();
 
 
     justStarted = false;
     #endif
   }
 
+  Can0.events();
+  Can1.events();
+  
   if(analogShifter) 
  {
     if (!resistiveStick)
