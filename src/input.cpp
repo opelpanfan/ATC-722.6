@@ -88,17 +88,17 @@ void canSniff(const CAN_message_t &msg)
 { // global callback
 
   //Uncomment this to view incoming CAN messages
-  // Serial.print("MB: "); Serial.print(msg.mb);
-  // Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
-  // Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
-  // Serial.print("  EXT: "); Serial.print(msg.flags.extended );
-  // Serial.print("  LEN: "); Serial.print(msg.len);
+  Serial.print("MB: "); Serial.print(msg.mb);
+  Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
+  Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
+  Serial.print("  EXT: "); Serial.print(msg.flags.extended );
+  Serial.print("  LEN: "); Serial.print(msg.len);
 
-  // Serial.print(" DATA: ");
-  // for ( uint8_t i = 0; i <msg.len ; i++ ) {
-  //   Serial.print(msg.buf[i]); Serial.print(" ");
-  // }
-  // Serial.print("  TS: "); Serial.println(msg.timestamp);
+  Serial.print(" DATA: ");
+  for ( uint8_t i = 0; i <msg.len ; i++ ) {
+    Serial.print(msg.buf[i]); Serial.print(" ");
+  }
+  Serial.print("  TS: "); Serial.println(msg.timestamp);
 
   uint32_t frame[10] = {msg.id};
 
@@ -322,7 +322,7 @@ void pollstick(Task *me)
     }
     Can0.enhanceFilter(FIFO);
     Can0.onReceive(canSniff);
-    Can0.mailboxStatus();
+    //Can0.mailboxStatus();
 
     //Second CAN 
     Can1.begin();
@@ -331,18 +331,18 @@ void pollstick(Task *me)
     Can1.enableFIFO();
     Can1.enableFIFOInterrupt();
     Can1.setFIFOFilter(REJECT_ALL);
-    //Can1.setFIFOFilter(0, 1544, STD, NONE);
+    Can1.setFIFOFilter(0, 1544, STD, NONE);
     Can1.enhanceFilter(FIFO);
     Can1.onReceive(canSniff83);
-    Can1.mailboxStatus();
+    //Can1.mailboxStatus();
 
 
     justStarted = false;
     #endif
   }
 
-  Can0.events();
-  Can1.events();
+  //Can0.events();
+  //Can1.events();
   
   if(analogShifter) 
  {
