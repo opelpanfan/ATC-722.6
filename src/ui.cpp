@@ -38,10 +38,10 @@ void datalog(Task *me)
   {
     struct SensorVals sensor = readSensors();
 
-    if (debugEnabled)
-    {
-      debugEnabled = false;
-    }
+    // if (debugEnabled)
+    // {
+    //   debugEnabled = false;
+    // }
     if( millis() < timerLog ) {
         return;
     }

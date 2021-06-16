@@ -16,6 +16,9 @@
 
 #define cbsize 16
 #define CANBUS true
+#define NUM_TX_MAILBOXES 2
+#define NUM_RX_MAILBOXES 6
+
 byte wantedGear = 100;
 
 
@@ -87,6 +90,7 @@ void canSniff83(const CAN_message_t &msg)
 void canSniff(const CAN_message_t &msg)
 { // global callback
 
+  digitalToggleFast(LED_BUILTIN);
   //Uncomment this to view incoming CAN messages
   Serial.print("MB: "); Serial.print(msg.mb);
   Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
@@ -150,6 +154,9 @@ void canSniff(const CAN_message_t &msg)
       if (debugEnabled)
       {
         Serial.println("Park requested via canbus");
+        
+        Serial.print("wantedGear -> ");
+        Serial.println(wantedGear);
       }
     }
     if (frame[1] == 7)
@@ -163,17 +170,7 @@ void canSniff(const CAN_message_t &msg)
         Serial.println("Reverse requested via canbus");
       }
     }
-    if (frame[1] == 6)
-    {
-      wantedGear = 6;
-      garageShiftMove = false;
-      digitalWrite(reversePin, LOW);
-      if (debugEnabled)
-      {
-        Serial.println("Neutral requested via canbus");
-      }
-    }
-    if (frame[1] == 22) //16 HexToDec 22
+    if (frame[1] == 6 || frame[1] == 22)
     {
       wantedGear = 6;
       garageShiftMove = false;
@@ -184,7 +181,7 @@ void canSniff(const CAN_message_t &msg)
       }
     }
 
-    if (frame[1] == 5)
+    if (frame[1] == 5 || frame[1] == 21)
     {
       wantedGear = 2;
       garageShiftMove = false;
@@ -195,42 +192,16 @@ void canSniff(const CAN_message_t &msg)
       }
     }
 
-    if (frame[1] == 21) // 15 HexToDec = 21
+    if (frame[1] == 10 || frame[1] == 26)
     {
-      wantedGear = 2;
-      garageShiftMove = false;
-      digitalWrite(reversePin, LOW);
+      gearDown();
       if (debugEnabled)
       {
-        Serial.println("D requested via canbus");
+        Serial.println("Downshift requested via canbus");
       }
     }
 
-    if (frame[1] == 10)
-    {
-      gearDown();
-      if (debugEnabled)
-      {
-        Serial.println("Downshift requested via canbus");
-      }
-    }
-    if (frame[1] == 26) // 1A HexToDec = 26
-    {
-      gearDown();
-      if (debugEnabled)
-      {
-        Serial.println("Downshift requested via canbus");
-      }
-    }
-    if (frame[1] == 9)
-    {
-      gearUp();
-      if (debugEnabled)
-      {
-        Serial.println("Upshift requested via canbus");
-      }
-    }
-    if (frame[1] == 25) // 19 HexToDec = 25
+    if (frame[1] == 9 || frame[1] == 25)
     {
       gearUp();
       if (debugEnabled)
@@ -252,6 +223,8 @@ void canSniff(const CAN_message_t &msg)
     // 109-40=69 *C
     // Thats how it works
     // CAN ID 608 - HEX to DEC = 1544
+    
+
     if (frame[0] == 1544)
     {
       canCoolant = (frame[1]) - 40;
@@ -269,8 +242,6 @@ void canSniff(const CAN_message_t &msg)
     if (frame[0] == 528)
     {
       canTPS = 100 * (frame[3]) / 255; // (frame[7] << 8);
-      
-      Serial.println(canTPS);
     }
 
     // CAN-BUS RPM
@@ -305,43 +276,49 @@ void pollstick(Task *me)
   if (justStarted)
   {
     #ifdef CANBUS
-
     Can0.begin();
     Can0.setBaudRate(500000);
-    Can0.setMaxMB(16);
-    Can0.enableFIFO();
-    Can0.enableFIFOInterrupt();
-    Can0.setFIFOFilter(REJECT_ALL);
-    Can0.setFIFOFilter(0, 1544, STD, NONE); //608 - coolant
-    Can0.setFIFOFilter(1, 528, STD, NONE);  //210 - TPS
-    Can0.setFIFOFilter(2, 776, STD, NONE);  //308 - RPM
-    Can0.setFIFOFilter(3, 512, STD, NONE);  //200 - speed
+    
+    Can0.setMaxMB(NUM_TX_MAILBOXES + NUM_RX_MAILBOXES);
+    for (int i = 0; i<NUM_RX_MAILBOXES; i++){
+      Can0.setMB(i,RX,STD);
+    }
+    for (int i = NUM_RX_MAILBOXES; i<(NUM_TX_MAILBOXES + NUM_RX_MAILBOXES); i++){
+      Can0.setMB(i,TX,STD);
+    }
+    Can0.setMBFilter(REJECT_ALL);
+    Can0.enableMBInterrupts();    
+    Can0.onReceive(MB0,canSniff);
+    Can0.onReceive(MB1,canSniff);
+    //Can0.onReceive(MB2,canSniff);
+    Can0.setMBFilter(MB0, 1544); //608 - coolant
+    Can0.setMBFilter(MB0, 528); //210 - TPS
+    Can0.setMBFilter(MB0, 776); //308 - RPM
+    Can0.setMBFilter(MB0, 512); //200 - speed
     if(!analogShifter)
     {
-      Can0.setFIFOFilter(4, 560, STD, NONE);  //230 - shifter
+      Can0.setMBFilter(MB1, 560); //230 - shifter
     }
-    Can0.enhanceFilter(FIFO);
-    Can0.onReceive(canSniff);
     //Can0.mailboxStatus();
 
     //Second CAN 
-    Can1.begin();
-    Can1.setBaudRate(83000);
-    Can1.setMaxMB(16);
-    Can1.enableFIFO();
-    Can1.enableFIFOInterrupt();
-    Can1.setFIFOFilter(REJECT_ALL);
-    Can1.setFIFOFilter(0, 1544, STD, NONE);
-    Can1.enhanceFilter(FIFO);
-    Can1.onReceive(canSniff83);
-    //Can1.mailboxStatus();
+    // Can1.begin();
+    // Can1.setBaudRate(83000);
+    // Can1.setMaxMB(16);
+    // Can1.enableFIFO();
+    // Can1.enableFIFOInterrupt();
+    // Can1.setFIFOFilter(REJECT_ALL);
+    // Can1.setFIFOFilter(0, 1544, STD, NONE);
+    // //Can1.enhanceFilter(FIFO);
+    // Can1.onReceive(canSniff83);
+    // //Can1.mailboxStatus();
 
 
     justStarted = false;
     #endif
   }
 
-  //Can0.events();
+  Can0.events();
   //Can1.events();
   
   if(analogShifter) 
@@ -537,7 +514,6 @@ void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
   unsigned int shiftDelay = 2000;
-
   if (shiftBlocker)
   {
     if (tpsSensor)
@@ -583,7 +559,7 @@ void polltrans(Task *me)
   //int mpcVal = readMap(mpcNormalMap, sensor.curLoad, sensor.curAtfTemp);
 
   if (!shiftBlocker)
-  {
+  {  
     // Pulsed constantly while idling in Park or Neutral at approximately 33% Duty cycle.
     if (wantedGear == 6 || wantedGear == 8)
     {

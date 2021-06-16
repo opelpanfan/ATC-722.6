@@ -47,7 +47,7 @@ Task pollStick(100, pollstick);           // 100ms for checking stick position*
 Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
 Task pollSensors(80, pollsensors);        // 100ms to update sensor values*/
 Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
-Task pollSerialWatch(100, serialWatch);
+Task pollSerialWatch(50, serialWatch);
 Task keypadPressWatch(100, keypadWatch);
 
 
@@ -193,6 +193,8 @@ void setup()
   Serial.begin(115200);
   delay(5000);
   initConfig();
+  
+  pinMode(LED_BUILTIN, OUTPUT);  // 1-2/4-5 solenoid
 
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
