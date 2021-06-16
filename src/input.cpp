@@ -528,7 +528,7 @@ void polltrans(Task *me)
 {
   struct SensorVals sensor = readSensors();
   unsigned int shiftDelay = 2000;
-
+  digitalToggle(LED_BUILTIN);
   if (shiftBlocker)
   {
     if (tpsSensor)

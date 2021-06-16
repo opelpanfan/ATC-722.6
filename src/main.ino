@@ -194,6 +194,8 @@ void setup()
   delay(5000);
   initConfig();
 
+  pinMode(LED_BUILTIN, OUTPUT);
+
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
   // Lower the duty cycle, higher the pressures.
