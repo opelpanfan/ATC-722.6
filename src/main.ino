@@ -191,19 +191,10 @@ void slowRefreshScreen(Task *me) //screen refresh function all display data goes
 void setup()
 {
   Serial.begin(115200);
-  delay(5000);
+  delay(2000);
   initConfig();
 
   pinMode(LED_BUILTIN, OUTPUT);
-
-  // MPC and SPC should have frequency of 1000hz
-  // TCC should have frequency of 100hz
-  // Lower the duty cycle, higher the pressures.
-
-  analogWriteFrequency(spc, 1000);     // 1khz for spc
-  analogWriteFrequency(mpc, 1000);     // and mpc
-  analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
-  analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
 
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
@@ -212,6 +203,28 @@ void setup()
   pinMode(spc, OUTPUT); // shift pressure
   pinMode(mpc, OUTPUT); // modulation pressure
   pinMode(tcc, OUTPUT); // lock
+  
+  // MPC and SPC should have frequency of 1000hz
+  // TCC should have frequency of 100hz
+  // Lower the duty cycle, higher the pressures.
+
+  analogWriteFrequency(y3, 488.28);     // 1khz for spc
+  analogWriteFrequency(y4, 488.28);     // 1khz for spc
+  analogWriteFrequency(y5, 488.28);     // 1khz for spc
+  analogWriteFrequency(spc, 1000);     // 1khz for spc
+  analogWriteFrequency(mpc, 1000);     // and mpc
+  analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
+  analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
+
+  analogWrite(y4, 128); // 1-2/4-5 Solenoid is pulsed during ignition crank.
+  return;
+    // Make sure solenoids are all off.
+  analogWrite(y3, 255); // 1-2/4-5 Solenoid is pulsed during ignition crank.
+  analogWrite(y4, 0);
+  analogWrite(y5, 0);
+  analogWrite(spc, 0);
+  analogWrite(mpc, 0);
+  analogWrite(tcc, 0);
 
   // Other LOW-Side outputs
   pinMode(rpmMeter, OUTPUT); 
@@ -232,29 +245,10 @@ void setup()
   pinMode(keypadPin, INPUT);  //keypad analog pin
   pinMode(lowGearPin, INPUT);  //keypad analog pin
 
-
-  //*portConfigRegister(boostCtrl) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(hornPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(reversePin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  
   //For manual control
   pinMode(autoSwitch, INPUT);  // manual-auto mode
   pinMode(gupSwitch, INPUT);   // gear up
   pinMode(gdownSwitch, INPUT); // gear down
-
-  //pinMode(fuelInPin, INPUT); // Fuel flow meter in
-  // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
-  //*portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //#endif
-
-  //*portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
   //For stick control
   pinMode(whitepin, INPUT);
@@ -262,32 +256,14 @@ void setup()
   pinMode(greenpin, INPUT);
   pinMode(yellowpin, INPUT);
 
-  //*portConfigRegister(whitepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(bluepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //*portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-
-  // Make sure solenoids are all off.
-  analogWrite(y3, 255); // 1-2/4-5 Solenoid is pulsed during ignition crank.
-  analogWrite(y4, 0);
-  analogWrite(y5, 0);
-  analogWrite(spc, 0);
-  analogWrite(mpc, 0);
-  analogWrite(tcc, 0);
-  analogWrite(speedoCtrl, 0); // Wake up speedometer motor so it wont stick
-
   digitalWrite(rpmPin, HIGH); // pull-up
+  
+  analogWrite(speedoCtrl, 0); // Wake up speedometer motor so it wont stick
 
   attachInterrupt(digitalPinToInterrupt(n2pin), N2SpeedInterrupt, FALLING);
   attachInterrupt(digitalPinToInterrupt(n3pin), N3SpeedInterrupt, FALLING);
   attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
-
-  /* This is for erasing EEPROM on start.
-  for (int i = 0; i < EEPROM.length(); i++) {
-     EEPROM.write(i, 0);
-  }
-*/
 
   if (debugEnabled && !datalogger)
   {

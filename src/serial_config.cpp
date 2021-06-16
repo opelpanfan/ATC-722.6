@@ -118,7 +118,7 @@ void initConfig()
         setFeatures(16, 1);
         setFeatures(17, 1);
         setFeatures(18, 1);
-        setFeatures(19, 1);
+        setFeatures(19, 0);
         setFeatures(20, 0);
         setFeatures(21, 0);
         setFeatures(22, 0);
@@ -203,6 +203,9 @@ void initConfig()
             setDownGear(downGears[i], featureVal);
         }
     }
+    
+        setFeatures(18, 1);
+        setFeatures(19, 0);
 }
 void pollConfigMode()
 {
@@ -419,11 +422,6 @@ void setFeatures(int asset, int value)
     default:
         break;
     }
-    /*    if (debugEnabled) {
-      Serial.print(asset);
-      Serial.print(":");
-      Serial.println(value);
-     }*/
 }
 void setConfigFloat(int asset, float value)
 {
@@ -642,11 +640,6 @@ void setConfig(int asset, int value)
     default:
         break;
     }
-    /* if (debugEnabled) {
-    Serial.print(asset);
-    Serial.print(":");
-    Serial.println(value);
-    }*/
 }
 
 void getConfig()

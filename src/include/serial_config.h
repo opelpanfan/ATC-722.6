@@ -18,7 +18,6 @@ extern boolean adaptive;
 extern boolean evalGear;
 extern boolean tpsSensor;
 extern boolean boostSensor;
-extern boolean debugEnabled;
 extern boolean boostLimit;
 extern boolean diffSpeed;
 extern boolean rpmSpeed;

@@ -189,13 +189,6 @@ int speedRead()
         if (!speedFault)
         {
           speedFault = true; // if both sensors are enabled and difference is too great, then create a fault.
-          /* if (debugEnabled)
-          {
-          Serial.print(F("SPEED FAULT: detected - autoshift disabled "));
-          Serial.print(vehicleSpeedDiff);
-          Serial.print(F("-"));
-          Serial.println(vehicleSpeedRPM);
-          }*/
         }
       }
       else

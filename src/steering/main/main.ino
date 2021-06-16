@@ -3,7 +3,6 @@
 // Basically its just resistor ladder we're reading here and sending values over HC-11 radio transmitter
 // Unfortunately it is best to use strings for messaging as they are not so easily mixed with interfering radio traffic.
 double lastPress;
-boolean debugEnabled = true;
 
 void setup()
 {
@@ -69,5 +68,4 @@ void loop()
         Serial1.flush();
     }
     delay(100);
-    //if (debugEnabled) { Serial.print(rightSide); Serial.print("-"); Serial.println(leftSide); }
 }

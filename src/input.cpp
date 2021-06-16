@@ -42,9 +42,8 @@ int canSpeedPulses = 0;
 Circular_Buffer<uint32_t, cbsize> ids;
 Circular_Buffer<uint32_t, cbsize, 10> storage;
 
-
 void canSniff83(const CAN_message_t &msg)
-{ 
+{
   uint32_t frame[10] = {msg.id};
 
   if (!storage.find(frame, 10, 0, 0, 0))
@@ -76,7 +75,6 @@ void canSniff83(const CAN_message_t &msg)
 
   //}
 }
-
 
 void canSniff(const CAN_message_t &msg)
 { // global callback
@@ -296,10 +294,10 @@ void pollstick(Task *me)
 {
   if (justStarted)
   {
-    #ifdef CANBUS
+#ifdef CANBUS
     FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> Can1;
     FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16> Can0;
-
+    Can0.begin();
     Can0.setBaudRate(500000);
     Can0.setRX(DEF);
     Can0.setTX(DEF);
@@ -311,32 +309,32 @@ void pollstick(Task *me)
     Can0.setFIFOFilter(1, 528, STD, NONE);  //210 - TPS
     Can0.setFIFOFilter(2, 776, STD, NONE);  //308 - RPM
     Can0.setFIFOFilter(3, 512, STD, NONE);  //200 - speed
-    if(!analogShifter)
+
+    if (!analogShifter)
     {
-      Can0.setFIFOFilter(4, 560, STD, NONE);  //230 - shifter
+      Can0.setFIFOFilter(4, 560, STD, NONE); //230 - shifter
     }
-    Can0.enhanceFilter(FIFO);
     Can0.onReceive(canSniff);
 
-    //Second CAN 
-    Can1.setBaudRate(83000);
-    Can1.setRX(ALT);
-    Can1.setTX(ALT);
-    Can1.enableFIFO(1);
-    Can1.enableFIFOInterrupt(1);
-    //Can0.setFIFOFilter(ACCEPT_ALL);
-    Can1.setFIFOFilter(REJECT_ALL);
-    //Can1.setFIFOFilter(0, 1544, STD, NONE);
-    Can1.enhanceFilter(FIFO);
-    Can1.onReceive(canSniff83);
-
+    //Second CAN
+    // Can1.begin();
+    // Can1.setBaudRate(83000);
+    // return;
+    // Can1.setRX(ALT);
+    // Can1.setTX(ALT);
+    // Can1.enableFIFO(1);
+    // Can1.enableFIFOInterrupt(1);
+    // //Can0.setFIFOFilter(ACCEPT_ALL);
+    // Can1.setFIFOFilter(REJECT_ALL);
+    // //Can1.setFIFOFilter(0, 1544, STD, NONE);
+    // Can1.onReceive(canSniff83);
 
     justStarted = false;
-    #endif
+#endif
   }
 
-  if(analogShifter) 
- {
+  if (analogShifter)
+  {
     if (!resistiveStick)
     {
       // Read the stick.
@@ -425,7 +423,6 @@ void pollstick(Task *me)
         }
       }
     }
-
   }
 }
 
@@ -526,9 +523,9 @@ void hornOff()
 // idle SPC regulation
 void polltrans(Task *me)
 {
+  digitalToggle(LED_BUILTIN);
   struct SensorVals sensor = readSensors();
   unsigned int shiftDelay = 2000;
-  digitalToggle(LED_BUILTIN);
   if (shiftBlocker)
   {
     if (tpsSensor)
@@ -564,7 +561,6 @@ void polltrans(Task *me)
     else if (postShift && !postShiftDone)
     {
       doPostShift();
-
     }
   }
 
