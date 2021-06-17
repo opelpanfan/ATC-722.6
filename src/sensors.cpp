@@ -291,7 +291,6 @@ void tpsInit(int action)
 
 int rpmRead()
 {
-
   if (useCanSensors) {
     rpmRevs = canRPM;
   } 

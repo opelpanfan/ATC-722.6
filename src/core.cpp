@@ -154,7 +154,6 @@ void doShift()
   analogWrite(tcc, 0);
   analogWrite(spc, spcPressureNormalized);
   analogWrite(mpc, mpcPressureNormalized);
-  //analogWrite(cSolenoidEnabled, onPressureNormalized); // Beginning of gear change
   digitalWrite(cSolenoidEnabled, HIGH);
 
   if (debugEnabled)
@@ -162,7 +161,9 @@ void doShift()
     Serial.print(F("[switchGearStart->doShift] spcPercentVal/mpcPercentVal "));
     Serial.print(spcPercentVal);
     Serial.print(F("/"));
-    Serial.println(mpcPercentVal);
+    Serial.print(mpcPercentVal);
+    Serial.print(F("/"));
+    Serial.println(cSolenoidEnabled);
   }
   preShiftDone = false;
   shiftDone = true;
@@ -187,7 +188,6 @@ void doPostShift()
 // End of gear change phase
 void switchGearStop()
 {
-  // analogWrite(cSolenoidEnabled, 0); // turn shift solenoid off
   digitalWrite(cSolenoidEnabled, LOW);
   analogWrite(spc, 0);          // spc off
   analogWrite(mpc, 0);          // mpc off
@@ -205,7 +205,7 @@ void switchGearStop()
     Serial.print(F("-"));
     Serial.print(newGear);
     Serial.print(F("-"));
-    Serial.println(cSolenoid);
+    Serial.println(cSolenoidEnabled);
   }
   shiftStartTime = 0;
   postShift = true;

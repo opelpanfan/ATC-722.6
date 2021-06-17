@@ -92,17 +92,17 @@ void canSniff(const CAN_message_t &msg)
 
   digitalToggleFast(LED_BUILTIN);
   //Uncomment this to view incoming CAN messages
-  Serial.print("MB: "); Serial.print(msg.mb);
-  Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
-  Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
-  Serial.print("  EXT: "); Serial.print(msg.flags.extended );
-  Serial.print("  LEN: "); Serial.print(msg.len);
+  // Serial.print("MB: "); Serial.print(msg.mb);
+  // Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
+  // Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
+  // Serial.print("  EXT: "); Serial.print(msg.flags.extended );
+  // Serial.print("  LEN: "); Serial.print(msg.len);
 
-  Serial.print(" DATA: ");
-  for ( uint8_t i = 0; i <msg.len ; i++ ) {
-    Serial.print(msg.buf[i]); Serial.print(" ");
-  }
-  Serial.print("  TS: "); Serial.println(msg.timestamp);
+  // Serial.print(" DATA: ");
+  // for ( uint8_t i = 0; i <msg.len ; i++ ) {
+  //   Serial.print(msg.buf[i]); Serial.print(" ");
+  // }
+  // Serial.print("  TS: "); Serial.println(msg.timestamp);
 
   uint32_t frame[10] = {msg.id};
 
@@ -249,7 +249,7 @@ void canSniff(const CAN_message_t &msg)
     // 256 x 02 + 78 (02 to dec & 78 to dec)
     // 256 x 2 + 120 = 632 RPM
     // CAN ID308
-    if (frame[0] == 776)
+    if (frame[0] == 0x308)
     {
       canRPM = 256 * (frame[2]) + (frame[3]);
     }
@@ -290,15 +290,20 @@ void pollstick(Task *me)
     Can0.enableMBInterrupts();    
     Can0.onReceive(MB0,canSniff);
     Can0.onReceive(MB1,canSniff);
+    Can0.onReceive(MB2,canSniff);
+    Can0.onReceive(MB3,canSniff);
+    Can0.onReceive(MB4,canSniff);
     //Can0.onReceive(MB2,canSniff);
-    Can0.setMBFilter(MB0, 1544); //608 - coolant
-    Can0.setMBFilter(MB0, 528); //210 - TPS
-    Can0.setMBFilter(MB0, 776); //308 - RPM
-    Can0.setMBFilter(MB0, 512); //200 - speed
+    //Can0.setMBFilter(MB1, 0x608, 0x210, 0x308, 0x200); //608 - coolant
+    Can0.setMBFilter(MB1, 0x608); //210 - TPS
+    Can0.setMBFilter(MB2, 0x210); //210 - TPS
+    Can0.setMBFilter(MB3, 0x308); //308 - RPM
+    Can0.setMBFilter(MB4, 0x200); //200 - speed
     if(!analogShifter)
     {
-      Can0.setMBFilter(MB1, 560); //230 - shifter
+      Can0.setMBFilter(MB0, 0x230); //230 - shifter
     }
+    
     //Can0.mailboxStatus();
 
     //Second CAN 
@@ -570,9 +575,7 @@ void polltrans(Task *me)
     // Pulsed constantly while idling in Park or Neutral at approximately 40% Duty cycle, also for normal mpc operation
     if (wantedGear == 8 || wantedGear == 6 || (wantedGear <= 6 && !shiftPending && !shiftBlocker && (millis() - lastShiftPoint) > 5000))
     {
-      // int mpcSetVal = (100 - mpcVal) * 2.55;
       int mpcSetVal = 100;
-      //  analogWrite(mpc, mpcSetVal);
     }
 
     if ((wantedGear == 7 || (wantedGear < 6 && !shiftPending)) && garageShift && (millis() - garageTime > 1000))
@@ -585,12 +588,12 @@ void polltrans(Task *me)
     // Testing whether we actually need this.
     if (wantedGear > 5 && garageShiftMove && stickCtrl)
     {
-      analogWrite(y5, 255);
+      digitalWrite(y5, HIGH);
       // delay(500);
     }
     if (!garageShiftMove)
     {
-      analogWrite(y5, 0);
+      digitalWrite(y5, LOW);
     }
 
     if (tccLock)
@@ -624,7 +627,7 @@ void polltrans(Task *me)
     // "1-2/4-5 Solenoid is pulsed during ignition crank." stop doing this after we get ourselves together.
     if (ignition)
     {
-      analogWrite(y3, 0);
+      digitalWrite(y3, LOW);
       ignition = false;
     }
     if (evalGear && !shiftBlocker && millis() - lastShiftPoint > 5000 & wrongGearPoint < 5 & !shiftConfirmed)

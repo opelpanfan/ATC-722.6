@@ -41,3 +41,4 @@ extern boolean rpmSpeed;
 extern boolean useCanSensors;
 extern boolean batteryMonitor, exhaustPresSensor, carRunning;
 extern int evalGearVal, speedoRPM;
+extern double canTPS, canRPM, canCoolant, canSpeed;
