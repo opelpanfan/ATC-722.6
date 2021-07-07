@@ -43,7 +43,7 @@
 // "Protothreading", we have time slots for different functions to be run.
 //Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
 Task pollData(33, datalog);               // 200ms to update datalogging
-Task pollStick(100, pollstick);           // 100ms for checking stick position*
+Task pollStick(0, pollstick);           // 1ms for checking stick position*
 Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
 Task pollSensors(80, pollsensors);        // 100ms to update sensor values*/
 Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
@@ -191,7 +191,7 @@ void slowRefreshScreen(Task *me) //screen refresh function all display data goes
 void setup()
 {
   Serial.begin(115200);
-  delay(5000);
+  delay(2000);
   initConfig();
   
   pinMode(LED_BUILTIN, OUTPUT);  // 1-2/4-5 solenoid
@@ -212,6 +212,15 @@ void setup()
   pinMode(spc, OUTPUT); // shift pressure
   pinMode(mpc, OUTPUT); // modulation pressure
   pinMode(tcc, OUTPUT); // lock
+
+  // digitalWrite(y3, HIGH); // 1-2/4-5 Solenoid is pulsed during ignition crank.
+  // digitalWrite(y4, HIGH);
+  // digitalWrite(y5, HIGH);
+  // analogWrite(spc, 255);
+  // analogWrite(mpc, 255);
+  // analogWrite(tcc, 0);
+
+  // return;
 
   // Other LOW-Side outputs
   pinMode(rpmMeter, OUTPUT); 

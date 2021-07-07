@@ -205,6 +205,7 @@ void initConfig()
     }
     
     setFeatures(24, 1);
+    setFeatures(25, 0);
 }
 void pollConfigMode()
 {
