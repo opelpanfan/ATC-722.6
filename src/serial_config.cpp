@@ -97,6 +97,8 @@ struct ConfigParam config = {
 void initConfig()
 {
     byte virginByte = EEPROM.read(1022);
+    Serial.print("virginByte -> ");
+    Serial.println(virginByte);
     if (virginByte != 69)
     {
         // Virgin config set
@@ -145,7 +147,7 @@ void initConfig()
         setConfig(68, 5000);
         setConfig(69, 1);
         setConfig(71, 1);
-        setConfigFloat(67, 1.00);        
+        setConfigFloat(67, 1.00);
         setConfigFloat(70, 1.00);
         setUpGear(1, 35);
         setUpGear(2, 71);
@@ -172,35 +174,35 @@ void initConfig()
             asset = features[i] * 11;
             byte featureVal;
             EEPROM.get(asset, featureVal);
-            setFeatures(features[i], featureVal);
+            setFeatures(features[i], featureVal, false);
         }
         for (int i = 0; i < sizeof config / sizeof config[0]; i++)
         {
             asset = config[i] * 10;
             int configVal;
             EEPROM.get(asset, configVal);
-            setConfig(config[i], configVal);
+            setConfig(config[i], configVal, false);
         }
         for (int i = 0; i < sizeof configF / sizeof configF[0]; i++)
         {
             asset = configF[i] * 10;
             float configFVal;
             EEPROM.get(asset, configFVal);
-            setConfigFloat(configF[i], configFVal);
+            setConfigFloat(configF[i], configFVal, false);
         }
         for (int i = 0; i < sizeof upGears / sizeof upGears[0]; i++)
         {
             asset = upGears[i] * 10 + 800;
             byte featureVal;
             EEPROM.get(asset, featureVal);
-            setUpGear(upGears[i], featureVal);
+            setUpGear(upGears[i], featureVal, false);
         }
         for (int i = 0; i < sizeof downGears / sizeof downGears[0]; i++)
         {
             asset = downGears[i] * 10 + 900;
             byte featureVal;
             EEPROM.get(asset, featureVal);
-            setDownGear(downGears[i], featureVal);
+            setDownGear(downGears[i], featureVal, false);
         }
     }
 }
@@ -322,22 +324,25 @@ void getFeatures()
     Serial.print(int(useCanSensors));
     Serial.print(";");
     Serial.print("25:");
-    Serial.println(int(analogShifter));    
+    Serial.println(int(analogShifter));
 }
 
-void setFeatures(int asset, int value)
+void setFeatures(int asset, int value, bool store = true)
 {
     int assetLocation = asset * 11;
-        if (debugEnabled)
-        {
-            Serial.print("Setting feature: ");
-            Serial.print(assetLocation);
-            Serial.print(":");
-            Serial.print(asset);
-            Serial.print(":");
-            Serial.println(value);
-        }
-        EEPROM.put(assetLocation, value);
+    if (debugEnabled)
+    {
+        Serial.print("Setting feature: ");
+        Serial.print(assetLocation);
+        Serial.print(":");
+        Serial.print(asset);
+        Serial.print(":");
+        Serial.println(value);
+    }
+    if (store)
+    {
+        EEPROM.write(assetLocation, value);
+    }
 
     switch (asset)
     {
@@ -425,21 +430,24 @@ void setFeatures(int asset, int value)
       Serial.println(value);
      }*/
 }
-void setConfigFloat(int asset, float value)
+void setConfigFloat(int asset, float value, bool store = true)
 {
     lastActiveConfig = millis();
 
     int assetLocation = asset * 10;
-        if (debugEnabled)
-        {
-            Serial.print("Setting configF: ");
-            Serial.print(assetLocation);
-            Serial.print(":");
-            Serial.print(asset);
-            Serial.print(":");
-            Serial.println(value);
-        }
+    if (debugEnabled)
+    {
+        Serial.print("Setting configF: ");
+        Serial.print(assetLocation);
+        Serial.print(":");
+        Serial.print(asset);
+        Serial.print(":");
+        Serial.println(value);
+    }
+    if (store)
+    {
         EEPROM.put(assetLocation, value);
+    }
 
     switch (asset)
     {
@@ -460,7 +468,7 @@ void setConfigFloat(int asset, float value)
     }
 }
 
-void setUpGear(int asset, int value)
+void setUpGear(int asset, int value, bool store = true)
 {
     lastActiveConfig = millis();
 
@@ -476,7 +484,10 @@ void setUpGear(int asset, int value)
             Serial.print(":");
             Serial.println(value);
         }
-        EEPROM.put(assetLocation, value);
+        if (store)
+        {
+            EEPROM.put(assetLocation, value);
+        }
     }
 
     switch (asset)
@@ -500,7 +511,7 @@ void setUpGear(int asset, int value)
     }
 }
 
-void setDownGear(int asset, int value)
+void setDownGear(int asset, int value, bool store = true)
 {
     lastActiveConfig = millis();
 
@@ -516,7 +527,10 @@ void setDownGear(int asset, int value)
             Serial.print(":");
             Serial.println(value);
         }
-        EEPROM.put(assetLocation, value);
+        if (store)
+        {
+            EEPROM.put(assetLocation, value);
+        }
     }
 
     switch (asset)
@@ -567,21 +581,24 @@ void getGears()
     Serial.print("5:");
     Serial.println(config.fiveTofour);
 }
-void setConfig(int asset, int value)
+void setConfig(int asset, int value, bool store = true)
 {
     lastActiveConfig = millis();
 
     int assetLocation = asset * 10;
-        if (debugEnabled)
-        {
-            Serial.print("Setting config: ");
-            Serial.print(assetLocation);
-            Serial.print(":");
-            Serial.print(asset);
-            Serial.print(":");
-            Serial.println(value);
-        }
+    if (debugEnabled)
+    {
+        Serial.print("Setting config: ");
+        Serial.print(assetLocation);
+        Serial.print(":");
+        Serial.print(asset);
+        Serial.print(":");
+        Serial.println(value);
+    }
+    if (store)
+    {
         EEPROM.put(assetLocation, value);
+    }
 
     switch (asset)
     {
@@ -710,7 +727,7 @@ void getConfig()
     Serial.print(config.highRPMshiftLimit);
     Serial.print(";");
     Serial.print("69:");
-    Serial.print(config.lowRPMshiftLimit);    
+    Serial.print(config.lowRPMshiftLimit);
     Serial.print(";");
     Serial.print("70:");
     Serial.print(config.transferRatio);
@@ -726,7 +743,7 @@ void serialConfig()
     // Start receiving command from Serial
     while (Serial.available() > 0)
     {
-        delay(3);
+        delay(1);
 
         if (key < INPUT_SIZE && Serial.available())
         {
@@ -819,6 +836,10 @@ void serialConfig()
 
                 if (featureSet)
                 {
+                    Serial.print("asset ");
+                    Serial.print(asset);
+                    Serial.print(" -> ");
+                    Serial.print(value);
                     setFeatures(asset, value);
                 }
 

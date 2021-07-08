@@ -7,8 +7,8 @@
 #define mpc 6
 #define spc 5
 #define tcc 9
-#define speedoCtrl 10 //10
-#define rpmMeter 22   //26
+#define speedoCtrl 10 //PWM
+#define rpmMeter 22   //PWM
 #define hornPin 31
 #define reversePin 26 //reverse light digital pin
 

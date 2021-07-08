@@ -46,11 +46,6 @@ void updateSpeedo()
   
   int speedPWM = map(sensor.curSpeed, 0, 255, 0, 255);
   analogWrite(speedoCtrl, speedPWM); // Wake up speedometer motor so it wont stick
-  if (debugEnabled)
-  {
-    Serial.print("speedPWM -> ");
-    Serial.println(speedPWM);
-  }
 }
 
 void rpmMeterUpdate()
@@ -59,11 +54,6 @@ void rpmMeterUpdate()
 
   int rpmPWM = map(sensor.curRPM, 0, config.maxRPM, 0, 255);
   analogWrite(rpmMeter, rpmPWM);
-  if (debugEnabled)
-  {
-    Serial.print("rpmPWM -> ");
-    Serial.println(rpmPWM);
-  }
 }
 void datalog(Task *me)
 {
