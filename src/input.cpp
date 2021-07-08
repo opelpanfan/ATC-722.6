@@ -295,14 +295,14 @@ void pollstick(Task *me)
     Can0.onReceive(MB4,canSniff);
     //Can0.onReceive(MB2,canSniff);
     //Can0.setMBFilter(MB1, 0x608, 0x210, 0x308, 0x200); //608 - coolant
-    Can0.setMBFilter(MB1, 0x608); //210 - TPS
-    Can0.setMBFilter(MB2, 0x210); //210 - TPS
-    Can0.setMBFilter(MB3, 0x308); //308 - RPM
-    Can0.setMBFilter(MB4, 0x200); //200 - speed
     if(!analogShifter)
     {
       Can0.setMBFilter(MB0, 0x230); //230 - shifter
     }
+    Can0.setMBFilter(MB1, 0x608); //608 - coolant
+    Can0.setMBFilter(MB2, 0x210); //210 - TPS
+    Can0.setMBFilter(MB3, 0x308); //308 - RPM
+    Can0.setMBFilter(MB4, 0x200); //200 - speed
     
     //Can0.mailboxStatus();
 

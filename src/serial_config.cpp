@@ -203,9 +203,6 @@ void initConfig()
             setDownGear(downGears[i], featureVal);
         }
     }
-    
-    setFeatures(24, 1);
-    setFeatures(25, 0);
 }
 void pollConfigMode()
 {
