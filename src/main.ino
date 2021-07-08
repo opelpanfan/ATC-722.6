@@ -41,7 +41,7 @@
 #include <AutoPID.h>
 
 // "Protothreading", we have time slots for different functions to be run.
-//Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
+Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
 Task pollData(33, datalog);               // 200ms to update datalogging
 Task pollStick(0, pollstick);           // 1ms for checking stick position*
 Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
@@ -204,6 +204,7 @@ void setup()
   analogWriteFrequency(mpc, 1000);     // and mpc
   analogWriteFrequency(boostCtrl, 30); // 30hz for boost controller
   analogWriteFrequency(rpmMeter, 50);  // 50hz for w124 rpm meter
+  analogWriteFrequency(speedoCtrl, 50);  // 50hz for w124 rpm meter
 
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
@@ -305,6 +306,7 @@ void setup()
 
   // initialize timers
   SoftTimer.add(&pollData);
+  SoftTimer.add(&pollDisplay);
   SoftTimer.add(&pollStick);
   SoftTimer.add(&pollGear);
   SoftTimer.add(&pollSensors);

@@ -21,6 +21,30 @@ AutoPID speedoPID(&pidSpeedoLim, &pidSpeedo, &speedoPWM, 0, 255, speedoKp, speed
 
 boolean infoBoost = false;
 
+void updateDisplay(Task* me)
+{
+  if (w124rpm)
+  {
+    rpmMeterUpdate();
+  }
+  if (w124speedo)
+  {
+    updateSpeedo();
+  }
+}
+
+void updateSpeedo()
+{
+  struct SensorVals sensor = readSensors();
+  //pidSpeedo = double(sensor.curSpeed) * 0.70;
+  //pidSpeedoLim = double(speedoRPM) / 6;
+  // speedoPID.setBangBang(1);
+  //speedoPID.setTimeStep(200);
+  //speedoPID.run();
+  int speedPWM = map(sensor.curSpeed, 0, 255, 0, 255);
+  analogWrite(speedoCtrl, speedoPWM);
+}
+
 void rpmMeterUpdate()
 {
   struct SensorVals sensor = readSensors();
