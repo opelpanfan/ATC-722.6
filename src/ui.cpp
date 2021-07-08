@@ -17,12 +17,14 @@ const double speedoKd = 0; //100, 1 Pid Derivative Gain.
 double pidSpeedo, speedoPWM, pidSpeedoLim;
 int updateCount;
 
-AutoPID speedoPID(&pidSpeedoLim, &pidSpeedo, &speedoPWM, 0, 255, speedoKp, speedoKi, speedoKd);
+//AutoPID speedoPID(&pidSpeedoLim, &pidSpeedo, &speedoPWM, 0, 255, speedoKp, speedoKi, speedoKd);
 
 boolean infoBoost = false;
 
-void updateDisplay(Task* me)
+void updateDisplay(Task *me)
 {
+  digitalToggleFast(LED_BUILTIN);
+  
   if (w124rpm)
   {
     rpmMeterUpdate();
@@ -41,8 +43,14 @@ void updateSpeedo()
   // speedoPID.setBangBang(1);
   //speedoPID.setTimeStep(200);
   //speedoPID.run();
+  
   int speedPWM = map(sensor.curSpeed, 0, 255, 0, 255);
-  analogWrite(speedoCtrl, speedoPWM);
+  analogWrite(speedoCtrl, speedPWM); // Wake up speedometer motor so it wont stick
+  if (debugEnabled)
+  {
+    Serial.print("speedPWM -> ");
+    Serial.println(speedPWM);
+  }
 }
 
 void rpmMeterUpdate()
@@ -51,6 +59,11 @@ void rpmMeterUpdate()
 
   int rpmPWM = map(sensor.curRPM, 0, config.maxRPM, 0, 255);
   analogWrite(rpmMeter, rpmPWM);
+  if (debugEnabled)
+  {
+    Serial.print("rpmPWM -> ");
+    Serial.println(rpmPWM);
+  }
 }
 void datalog(Task *me)
 {
@@ -65,8 +78,9 @@ void datalog(Task *me)
     // {
     //   debugEnabled = false;
     // }
-    if( millis() < timerLog ) {
-        return;
+    if (millis() < timerLog)
+    {
+      return;
     }
     timerLog = millis() + 1000;
     Serial.print(counter);
@@ -108,9 +122,9 @@ void datalog(Task *me)
     Serial.print(F(";"));
     Serial.print(boostPWM);
     Serial.print(F(";"));
-    Serial.print( wantedGear );
+    Serial.print(wantedGear);
     Serial.print(F(";"));
     Serial.println(sensor.curExTemp);
   }
-    counter++;
+  counter++;
 }
