@@ -277,8 +277,8 @@ void tpsInit(int action)
     //{
     byte lowByte = ((tpsVoltage >> 0) & 0xFF);
     byte highByte = ((tpsVoltage >> 8) & 0xFF);
-    EEPROM.write(1000, lowByte);
-    EEPROM.write(1001, highByte);
+    EEPROM.write(1002, lowByte);
+    EEPROM.write(1003, highByte);
     Serial.print("Written voltage val 2000:");
     Serial.println(tpsVoltage);
     //  }

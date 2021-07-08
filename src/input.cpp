@@ -5,7 +5,6 @@
 #include "include/core.h"
 #include "include/sensors.h"
 #include "include/maps.h"
-#include "include/eeprom.h"
 #include "include/input.h"
 #include "include/config.h"
 #include "include/ui.h"

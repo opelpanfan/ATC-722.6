@@ -2,7 +2,6 @@
 #include "include/ui.h"
 #include "include/pins.h"
 #include "include/sensors.h"
-#include "include/eeprom.h"
 #include "include/core.h"
 #include "include/config.h"
 #include "include/maps.h"
