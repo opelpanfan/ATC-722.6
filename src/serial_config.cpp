@@ -206,6 +206,7 @@ void initConfig()
         }
     }
 }
+
 void pollConfigMode()
 {
     int key = 0;
@@ -329,19 +330,23 @@ void getFeatures()
 
 void setFeatures(int asset, int value, bool store = true)
 {
-    int assetLocation = asset * 11;
-    if (debugEnabled)
+    lastActiveConfig = millis();
+    if (asset > 0 && asset < 40)
     {
-        Serial.print("Setting feature: ");
-        Serial.print(assetLocation);
-        Serial.print(":");
-        Serial.print(asset);
-        Serial.print(":");
-        Serial.println(value);
-    }
-    if (store)
-    {
-        EEPROM.write(assetLocation, value);
+        int assetLocation = asset * 11;
+        if (debugEnabled)
+        {
+            Serial.print("Setting feature: ");
+            Serial.print(assetLocation);
+            Serial.print(":");
+            Serial.print(asset);
+            Serial.print(":");
+            Serial.println(value);
+        }
+        if (store)
+        {
+            EEPROM.write(assetLocation, value);
+        }
     }
 
     switch (asset)
@@ -434,19 +439,22 @@ void setConfigFloat(int asset, float value, bool store = true)
 {
     lastActiveConfig = millis();
 
-    int assetLocation = asset * 10;
-    if (debugEnabled)
+    if (asset > 49 && asset < 72)
     {
-        Serial.print("Setting configF: ");
-        Serial.print(assetLocation);
-        Serial.print(":");
-        Serial.print(asset);
-        Serial.print(":");
-        Serial.println(value);
-    }
-    if (store)
-    {
-        EEPROM.put(assetLocation, value);
+        int assetLocation = asset * 10;
+        if (debugEnabled)
+        {
+            Serial.print("Setting configF: ");
+            Serial.print(assetLocation);
+            Serial.print(":");
+            Serial.print(asset);
+            Serial.print(":");
+            Serial.println(value);
+        }
+        if (store)
+        {
+            EEPROM.put(assetLocation, value);
+        }
     }
 
     switch (asset)
@@ -584,20 +592,22 @@ void getGears()
 void setConfig(int asset, int value, bool store = true)
 {
     lastActiveConfig = millis();
-
-    int assetLocation = asset * 10;
-    if (debugEnabled)
+    if (asset > 49 && asset < 72)
     {
-        Serial.print("Setting config: ");
-        Serial.print(assetLocation);
-        Serial.print(":");
-        Serial.print(asset);
-        Serial.print(":");
-        Serial.println(value);
-    }
-    if (store)
-    {
-        EEPROM.put(assetLocation, value);
+        int assetLocation = asset * 10;
+        if (debugEnabled)
+        {
+            Serial.print("Setting config: ");
+            Serial.print(assetLocation);
+            Serial.print(":");
+            Serial.print(asset);
+            Serial.print(":");
+            Serial.println(value);
+        }
+        if (store)
+        {
+            EEPROM.put(assetLocation, value);
+        }
     }
 
     switch (asset)
@@ -743,7 +753,7 @@ void serialConfig()
     // Start receiving command from Serial
     while (Serial.available() > 0)
     {
-        delay(1);
+        delay(3);
 
         if (key < INPUT_SIZE && Serial.available())
         {
@@ -781,6 +791,7 @@ void serialConfig()
                 }
                 else if (asset == 60000)
                 {
+                    
                     downGear = false;
                     upGear = false;
                     configSet = false;
@@ -836,16 +847,12 @@ void serialConfig()
 
                 if (featureSet)
                 {
-                    Serial.print("asset ");
-                    Serial.print(asset);
-                    Serial.print(" -> ");
-                    Serial.print(value);
                     setFeatures(asset, value);
                 }
 
                 if (configSet)
                 {
-                    if (asset == 58 || asset == 61 || asset == 67 || asset == 70)
+                    if (asset == 58 || asset == 61 || asset == 67)
                     {
                         float fvalue = atof(separator);
                         setConfigFloat(asset, fvalue);
@@ -877,7 +884,6 @@ void serialConfig()
         }
         Serial.println("69696969");
     }
-    Serial.print("");
 }
 /*
 void setup() {
@@ -887,7 +893,6 @@ void setup() {
 */
 void serialWatch(Task *me)
 {
-    // put your main code here, to run repeatedly:
     pollConfigMode();
     if (configMode)
     {

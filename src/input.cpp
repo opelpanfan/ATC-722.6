@@ -89,6 +89,7 @@ void canSniff83(const CAN_message_t &msg)
 void canSniff(const CAN_message_t &msg)
 { // global callback
 
+  digitalToggleFast(LED_BUILTIN);
   //Uncomment this to view incoming CAN messages
   // Serial.print("MB: "); Serial.print(msg.mb);
   // Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);

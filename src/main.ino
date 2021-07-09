@@ -47,7 +47,7 @@ Task pollStick(0, pollstick);           // 1ms for checking stick position*
 Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
 Task pollSensors(80, pollsensors);        // 100ms to update sensor values*/
 Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
-Task pollSerialWatch(50, serialWatch);
+Task pollSerialWatch(200, serialWatch);
 Task keypadPressWatch(100, keypadWatch);
 
 
