@@ -1,5 +1,4 @@
-#include <Arduino.h>
-
+#include "include/globals.h"
 
 void pollstick();
 void gearUp();

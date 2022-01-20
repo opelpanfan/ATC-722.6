@@ -1,7 +1,3 @@
-#include <Arduino.h>
-#include <EEPROM.h>
-#include "include/config.h"
-#include "include/sensors.h"
 #include "include/serial_config.h"
 
 #define INPUT_SIZE 256

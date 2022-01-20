@@ -48,7 +48,7 @@ typedef const struct
   uint8_t BRP;
 } CAN_bit_timing_config_t;
 
-typedef enum CAN_PINS {DEF, ALT, ALT2,} CAN_PINS;
+typedef enum CAN_PINS {DEF, ALT, ALT_2} CAN_PINS;
 
 //STM32 has only 3 TX mailboxes
 typedef enum CAN_MAILBOX {
@@ -67,13 +67,6 @@ typedef enum CAN_CHANNEL {_CAN1, _CAN2,} CAN_CHANNEL;
 //APB1 at 42MHz:
 #if defined(STM32F407xx) || defined(STM32F405xx)
 CAN_bit_timing_config_t can_configs[6] = {{2, 12, 56}, {2, 12, 28}, {2, 13, 21}, {2, 11, 12}, {2, 11, 6}, {1, 5, 6}};
-//APB1 at 36MHz
-#elif defined(STM32F1xx)
-CAN_bit_timing_config_t can_configs[6] = {{2, 13, 45}, {2, 15, 20}, {2, 13, 18}, {2, 13, 9}, {2, 15, 4}, {2, 15, 2}};
-//APB1 at 45MHz
-#elif defined(STM32F446xx)
-CAN_bit_timing_config_t can_configs[6] = {{2, 12, 60}, {2, 12, 30}, {2, 12, 24}, {2, 12, 12}, {2, 12, 6}, {1, 7, 5}};
-//If support for more APB1 clock speeds is needed, use this calculator: http://www.bittiming.can-wiki.info/
 #endif
 
 class STM32_CAN {

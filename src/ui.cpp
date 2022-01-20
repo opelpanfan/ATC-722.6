@@ -1,16 +1,4 @@
-#include <Arduino.h>
 #include "include/ui.h"
-#include "include/pins.h"
-#include "include/sensors.h"
-#include "include/eeprom.h"
-#include "include/core.h"
-#include "include/config.h"
-#include "include/maps.h"
-#include "include/input.h"
-#include "include/serial_config.h"
-
-
-
 
 #define DISPLAYTYPE1 // Can be DISPLAYTYPE2 also.
 

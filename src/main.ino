@@ -28,36 +28,13 @@
 */
 
 #include <Arduino.h>
-#include "include/pins.h"
-#include "include/sensors.h"
-#include "include/core.h"
-#include "include/input.h"
-#include "include/ui.h"
-#include "include/serial_config.h"
-#include "include/config.h"
-
-#include <EEPROM.h>
-
-#include <STM32_CAN.h>
+#include "include/globals.h"
 
 STM32_CAN Can0 (_CAN1, DEF);
 static CAN_message_t outMsg;
 static CAN_message_t inMsg;
 
 #define DISPLAYTYPE1 // Can be DISPLAYTYPE2 also.
-
-// "Protothreading", we have time slots for different functions to be run.
-// Task pollDisplay(200, updateDisplay);     // 500ms to update display*/
-// Task pollData(33, datalog);               // 200ms to update datalogging
-// Task pollStick(100, pollstick);           // 100ms for checking stick position*
-// Task pollGear(200, decideGear);           // 200ms for deciding new gear*/
-// Task pollSensors(80, pollsensors);        // 100ms to update sensor values*/
-// Task pollTrans(50, polltrans);            // 50ms to check transmission state (this needs to be faster than stick.)
-// Task pollFuelControl(1000, fuelControl);  // 1000ms for fuel pump control
-// Task pollBoostControl(100, boostControl); // 100ms for boost control*/
-// //Task pollFaultMon(10, faultMon);          // 10ms Fault monitor
-// Task pollSerialWatch(100, serialWatch);
-// Task keypadPressWatch(100, keypadWatch);
 
 #ifdef ECU
 Task pollInjectionControl(100, injectionControl);
@@ -294,9 +271,8 @@ void slowRefreshScreen() //screen refresh function all display data goes here
 
 void setup()
 {
-  delay(5000);
-
-  initConfig();
+  initialiseTimers();
+  //initConfig();
 
   // MPC and SPC should have frequency of 1000hz
   // TCC should have frequency of 100hz
@@ -317,6 +293,11 @@ void setup()
       Serial.println("Radio initialized.");
     }
   }
+  
+  pinMode(Running_LED, OUTPUT);
+  pinMode(Warning_LED, OUTPUT);
+  pinMode(Alert_LED, OUTPUT);
+  pinMode(Comms_LED, OUTPUT);
 
   // Solenoid outputs
   pinMode(y3, OUTPUT);  // 1-2/4-5 solenoid
@@ -345,16 +326,6 @@ void setup()
   pinMode(keypadPin, INPUT);  //keypad analog pin
   pinMode(lowGearPin, INPUT);  //keypad analog pin
 
-
-  // *portConfigRegister(boostCtrl) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // //  *portConfigRegister(tpsPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // //*portConfigRegister(atfPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // //*portConfigRegister(n2pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // //*portConfigRegister(n3pin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(speedPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(rpmPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(hornPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(reversePin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   //For manual control
   pinMode(autoSwitch, INPUT);
 
@@ -362,8 +333,6 @@ void setup()
   {
     pinMode(gupSwitch, INPUT);   // gear up
     pinMode(gdownSwitch, INPUT); // gear down
-    // *portConfigRegister(gupSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-    // *portConfigRegister(gdownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
   }
   else
   {
@@ -372,12 +341,6 @@ void setup()
   }
 
   pinMode(fuelInPin, INPUT); // Fuel flow meter in
-  // pinMode(fuelOutPin, INPUT); // Fuel flow meter out
-  // *portConfigRegister(fuelInPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // // *portConfigRegister(fuelOutPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // //#endif
-
-  // *portConfigRegister(autoSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
 
   //For stick control
   pinMode(whitepin, INPUT);
@@ -385,22 +348,8 @@ void setup()
   pinMode(greenpin, INPUT);
   pinMode(yellowpin, INPUT);
 
-  // *portConfigRegister(whitepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(bluepin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(greenpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(yellowpin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-
-  /*#ifdef ASPC
-  pinMode(aSpcUpSwitch, INPUT);
-  pinMode(aSpcDownSwitch, INPUT);
-  *portConfigRegister(aSpcUpSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  *portConfigRegister(aSpcDownSwitch) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-#else*/
   pinMode(exhaustPresPin, INPUT);
   pinMode(exhaustTempPin, INPUT);
-  // *portConfigRegister(exhaustPresPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  // *portConfigRegister(exhaustTempPin) = PORT_PCR_MUX(1) | PORT_PCR_PE;
-  //#endif
 
   // Make sure solenoids are all off.
   analogWrite(y3, 255); // 1-2/4-5 Solenoid is pulsed during ignition crank.
@@ -423,48 +372,82 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(speedPin), vehicleSpeedInterrupt, RISING);
   attachInterrupt(digitalPinToInterrupt(rpmPin), rpmInterrupt, RISING);
 
-  /* This is for erasing EEPROM on start.
-  for (int i = 0; i < EEPROM.length(); i++) {
-     EEPROM.write(i, 0);
-  }
-*/
 
   if (debugEnabled && !datalogger)
   {
     Serial.println(F("Started."));
   }
 
-  // initialize timers
-  // SoftTimer.add(&pollDisplay);
-  // SoftTimer.add(&pollData);
-  // SoftTimer.add(&pollStick);
-  // SoftTimer.add(&pollGear);
-  // SoftTimer.add(&pollSensors);
-  // SoftTimer.add(&pollTrans);
-  // SoftTimer.add(&pollFuelControl);
-  // SoftTimer.add(&pollBoostControl);
-  // SoftTimer.add(&pollSerialWatch);
-  // SoftTimer.add(&keypadPressWatch);
-
 #ifdef ECU
   // SoftTimer.add(&pollInjectionControl);
 #endif
 
 #ifdef NEXTION // nextion display implementation
-
   Serial1.begin(115200); //begin serial communication
   screen.setupScreen(Serial1); // begin screen communication using serial port defned above
   screen.setPage("0"); // set screen page
   screen.setDim(100);  // set screen brightness
-
-  // SoftTimer.add(&pollNextionFast); // start screen refresh task
-  // SoftTimer.add(&pollNextionAverage); // start screen refresh task
-  // SoftTimer.add(&pollNextionSlow); // start screen refresh task
-
 #endif
 }
 
 void loop()
 {
+  mainLoopCount++;
+  LOOP_TIMER = TIMER_mask;
 
+if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_1KHZ))
+  {
+    BIT_CLEAR(TIMER_mask, BIT_TIMER_1KHZ);
+  }
+  if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_200HZ))
+  {
+    BIT_CLEAR(TIMER_mask, BIT_TIMER_200HZ);
+  }
+  if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_100HZ))
+  {
+    BIT_CLEAR(TIMER_mask, BIT_TIMER_100HZ);
+  }
+  if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_50HZ))
+  {
+    BIT_CLEAR(TIMER_mask, BIT_TIMER_50HZ);
+    faultMon();
+    digitalToggle(Comms_LED);
+  }
+  if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_30HZ))
+  {
+    BIT_CLEAR(TIMER_mask, BIT_TIMER_30HZ);   
+    polltrans(); 
+  }
+
+  if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_15HZ))
+  {
+    BIT_CLEAR(TIMER_mask, BIT_TIMER_15HZ); 
+    decideGear();
+    digitalToggle(Warning_LED);
+  }
+
+  if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_10HZ))
+  {
+    BIT_CLEAR(TIMER_mask, BIT_TIMER_10HZ);
+    updateDisplay();
+    pollstick();
+    pollsensors();
+    boostControl();
+    serialWatch();
+    keypadWatch();
+    digitalToggle(Running_LED);
+  }
+
+  if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_4HZ))
+  {
+    BIT_CLEAR(TIMER_mask, BIT_TIMER_4HZ);
+    datalog();
+  }
+
+  if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_1HZ))
+  {
+    BIT_CLEAR(TIMER_mask, BIT_TIMER_1HZ);
+    fuelControl();
+    digitalToggle(Alert_LED);
+  }
 }

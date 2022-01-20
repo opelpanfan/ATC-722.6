@@ -2,8 +2,7 @@
 #ifndef nextion_h
 #define nextion_h
 
-#include <Arduino.h>
-#include "Stream.h"
+#include "include/globals.h"
 
 class Nextion
 {

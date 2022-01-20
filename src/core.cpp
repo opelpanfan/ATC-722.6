@@ -1,11 +1,4 @@
-#include <Arduino.h>
-#include "include/pins.h"
-#include "include/calc.h"
-#include "include/maps.h"
-#include "include/sensors.h"
-#include "include/input.h"
 #include "include/core.h"
-#include "include/config.h"
 
 
 // CORE

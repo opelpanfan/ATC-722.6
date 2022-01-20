@@ -399,7 +399,7 @@ void STM32_CAN::SetTXRX()
       CANSetGpio(GPIOB, 8);                // Set PB8
     }
     //PA11/PA12 are second alternative pins, but it can't be used if native USB connection is in use.
-    if (_pins == ALT2) {
+    if (_pins == ALT_2) {
       RCC->AHB1ENR |= 0x1;                 // Enable GPIOA clock 
       CANSetGpio(GPIOA, 12);               // Set PA12
       CANSetGpio(GPIOA, 11);               // Set PA11

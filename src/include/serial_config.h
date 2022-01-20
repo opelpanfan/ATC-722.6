@@ -1,4 +1,5 @@
-#include <Arduino.h>
+
+#include "include/globals.h"
 
 extern bool boostSensor;
 extern bool debugEnabled;

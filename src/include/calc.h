@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "include/globals.h"
 
 int readTPSVoltage(int voltage);
 int readBoostVoltage(int voltage);

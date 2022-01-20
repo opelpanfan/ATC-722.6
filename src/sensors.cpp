@@ -1,16 +1,3 @@
-#include <Arduino.h>
-#include <EEPROM.h>
-#include "include/pins.h"
-#include "include/calc.h"
-#include "include/maps.h"
-#include "include/sensors.h"
-#include "include/ui.h"
-#include "include/config.h"
-#include "include/core.h"
-#include "include/serial_config.h"
-#include "include/input.h"
-#include <Filters.h>
-
 using namespace std;
 
 

@@ -1,8 +1,4 @@
-#include <Arduino.h>
-#include <EEPROM.h>
-#include "include/pins.h"
-#include "include/config.h"
-#include "include/sensors.h"
+#include "include/calc.h"
 
 // Macro for sizeof for better support with 2d arrays.
 #define LEN(arr) ((int)(sizeof(arr) / sizeof(arr)[0]))

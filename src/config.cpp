@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "include/config.h"
 
 // Environment configuration, THIS IS DEPRECATED, CONFIG NOW RESIDES IN EEPROM AND IS VIRGIN INITIALIZED FROM serial_config.cpp.

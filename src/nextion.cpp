@@ -1,5 +1,4 @@
 #include "include/nextion.h"
-#include <Arduino.h>
 
 Nextion::Nextion() {}
 

@@ -1,5 +1,3 @@
-#include <Arduino.h>
-#include <EEPROM.h>
 #include "include/eeprom.h"
 
 // start reading from the first byte (address 0) of the EEPROM

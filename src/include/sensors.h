@@ -1,5 +1,8 @@
+#ifndef SENSORS_H
+#define SENSORS_H
 
 #include <Arduino.h>
+#include "include/globals.h"
 
 struct SensorVals
 {
@@ -42,3 +45,5 @@ extern bool rpmSpeed;
 extern bool useCanSpeed;
 extern bool batteryMonitor, exhaustPresSensor, carRunning;
 extern int evalGearVal, speedoRPM;
+
+#endif // SENSORS_H

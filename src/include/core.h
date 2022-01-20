@@ -1,5 +1,4 @@
-#include <Arduino.h>
-
+#include "include/globals.h"
 
 void switchGearStart(int cSolenoid, int spcVal, int mpcVal);
 void switchGearStop();
